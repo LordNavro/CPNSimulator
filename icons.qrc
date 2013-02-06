@@ -1,0 +1,21 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/load.ico</file>
+        <file>icons/save.ico</file>
+        <file>icons/new.ico</file>
+        <file>icons/about.ico</file>
+        <file>icons/arc.ico</file>
+        <file>icons/eject.ico</file>
+        <file>icons/pause.ico</file>
+        <file>icons/place.ico</file>
+        <file>icons/play.ico</file>
+        <file>icons/step.ico</file>
+        <file>icons/fastfwd.ico</file>
+        <file>icons/repeat.ico</file>
+        <file>icons/rewind.ico</file>
+        <file>icons/stop.ico</file>
+        <file>icons/transition.ico</file>
+        <file>icons/delete.ico</file>
+        <file>icons/cursor.ico</file>
+    </qresource>
+</RCC>
