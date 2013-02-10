@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -13,9 +13,31 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    place.cpp \
+    transition.cpp \
+    arc.cpp \
+    cpnet.cpp \
+    sheettabwidget.cpp \
+    cpneteditor.cpp \
+    arcform.cpp \
+    placeform.cpp \
+    transitionform.cpp \
+    cpnetform.cpp \
+    cpnetscene.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    place.h \
+    transition.h \
+    arc.h \
+    cpnet.h \
+    sheettabwidget.h \
+    cpneteditor.h \
+    arcform.h \
+    placeform.h \
+    transitionform.h \
+    cpnetform.h \
+    cpnetscene.h
 
 RESOURCES += \
     icons.qrc

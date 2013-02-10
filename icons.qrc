@@ -17,5 +17,6 @@
         <file>icons/transition.ico</file>
         <file>icons/delete.ico</file>
         <file>icons/cursor.ico</file>
+        <file>icons/hammer.ico</file>
     </qresource>
 </RCC>

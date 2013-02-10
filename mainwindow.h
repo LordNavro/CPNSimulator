@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
-
+#include "sheettabwidget.h"
+#include "cpneteditor.h"
 
 //icons: http://www.iconfinder.com/search/?q=iconset%3Afatcow+control
 
@@ -16,10 +17,15 @@ public:
     ~MainWindow();
 
 private:
-    QAction *actionNew;
-    QAction *actionSave;
-    QAction *actionLoad;
+    QActionGroup *actionGroupTool;
 
+    QAction *actionNew;
+    QAction *actionLoad;
+    QAction *actionSave;
+    QAction *actionSaveAs;
+    QAction *actionClose;
+
+    QAction *actionSelect;
     QAction *actionPlace;
     QAction *actionTransition;
     QAction *actionArc;
@@ -36,9 +42,30 @@ private:
     QMenu *menuSimulation;
     QMenu *menuAbout;
 
+    SheetTabWidget *tabWidget;
+
     void createActions(void);
     void createToolBars(void);
     void createMenuBars(void);
+
+    void setCurrentTool(CPNetScene::Tool tool);
+
+public slots:
+    void slotNew();
+    void slotLoad();
+    void slotSave();
+    void slotSaveAs();
+    void slotClose();
+
+    void slotSelect();
+    void slotPlace();
+    void slotTransition();
+    void slotArc();
+    void slotDelete();
+
+    void slotAbout();
+
+    void slotTabCloseRequest(int index);
 };
 
 #endif // MAINWINDOW_H
