@@ -11,7 +11,7 @@ class Arc : public QObject
 public:
     explicit Arc(QObject *parent = 0);
     
-    QString arcExpression;
+    QString expression;
     Place *place;
     Transition *transition;
     bool isPreset;

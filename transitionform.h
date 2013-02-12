@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "transitionitem.h"
+#include "inscriptionedit.h"
 
 class TransitionForm : public QWidget
 {
@@ -11,11 +12,17 @@ private:
     TransitionItem *transitionItem;
 public:
     explicit TransitionForm(QWidget *parent = 0);
+
+    QFormLayout *layout;
+    QLineEdit *lineName;
+    InscriptionEdit *inscriptionGuard;
     
     void setTransitionItem(TransitionItem *transitionItem);
 signals:
     
 public slots:
+    void nameChanged(QString name);
+    void guardChanged();
     
 };
 

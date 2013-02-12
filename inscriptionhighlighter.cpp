@@ -27,7 +27,7 @@ InscriptionHighlighter::InscriptionHighlighter(QTextDocument *parent) :
     format.setFontWeight(QFont::Normal);
     format.setForeground(Qt::darkGreen);
     rule.format = format;
-    rule.pattern = QRegExp("[0-9]+");
+    rule.pattern = QRegExp("\\b[0-9]+");
     rules.append(rule);
 
     QStringList operators;

@@ -9,6 +9,7 @@ class Transition : public QObject
 public:
     explicit Transition(QObject *parent = 0);
     
+    QString name;
     QString guard;
 signals:
     

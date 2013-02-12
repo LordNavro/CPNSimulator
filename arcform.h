@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "arcitem.h"
+#include "inscriptionedit.h"
 
 class ArcForm : public QWidget
 {
@@ -12,10 +13,14 @@ private:
 public:
     explicit ArcForm(QWidget *parent = 0);
     
+    QFormLayout *layout;
+    InscriptionEdit *inscriptionExpression;
+
     void setArcItem(ArcItem *arcItem);
 signals:
     
 public slots:
+    void expressionChanged();
     
 };
 
