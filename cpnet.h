@@ -10,6 +10,7 @@ class CPNet : public QObject
 public:
     explicit CPNet(QObject *parent = 0);
 
+    QString name;
     QString declaration;
 
     QList<Place *> places;

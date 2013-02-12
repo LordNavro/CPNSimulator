@@ -4,6 +4,10 @@
 #include <QtGui>
 #include "cpnet.h"
 #include "cpnetscene.h"
+#include "cpnetform.h"
+#include "placeform.h"
+#include "transitionform.h"
+#include "arcform.h"
 
 class CPNetEditor : public QWidget
 {
@@ -14,11 +18,17 @@ public:
     CPNetScene *scene;
     QGraphicsView *view;
 
+    CPNetForm *formNet;
+    PlaceForm *formPlace;
+    TransitionForm *formTransition;
+    ArcForm *formArc;
+
     QHBoxLayout *layout;
 
 signals:
     
 public slots:
+    void slotSelectionChanged();
     
 };
 

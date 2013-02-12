@@ -11,8 +11,10 @@ public:
     
     typedef enum {UNIT, BOOL, INT} ColourSet;
 
+    QString name;
     Place::ColourSet colourSet;
-    QString initMarking;
+    QString initialMarking;
+    QString currentMarking;
 
 
 

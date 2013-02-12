@@ -27,7 +27,9 @@ SOURCES += main.cpp\
     cpnetscene.cpp \
     placeitem.cpp \
     transitionitem.cpp \
-    arcitem.cpp
+    arcitem.cpp \
+    inscriptionedit.cpp \
+    inscriptionhighlighter.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -43,7 +45,9 @@ HEADERS  += mainwindow.h \
     cpnetscene.h \
     placeitem.h \
     transitionitem.h \
-    arcitem.h
+    arcitem.h \
+    inscriptionedit.h \
+    inscriptionhighlighter.h
 
 RESOURCES += \
     icons.qrc

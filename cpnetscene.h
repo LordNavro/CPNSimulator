@@ -6,6 +6,10 @@
 #include "placeitem.h"
 #include "transitionitem.h"
 #include "arcitem.h"
+#include "cpnetform.h"
+#include "placeform.h"
+#include "transitionform.h"
+#include "arcform.h"
 
 class CPNetScene : public QGraphicsScene
 {
@@ -20,6 +24,12 @@ public:
     Tool currentTool;
     CPNet net;
 
+    CPNetForm *netForm;
+    PlaceForm *placeForm;
+    TransitionForm *transitionForm;
+    ArcForm *arcForm;
+
+
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void addPlace(QGraphicsSceneMouseEvent *mouseEvent);
     void addTransition(QGraphicsSceneMouseEvent *mouseEvent);
@@ -29,7 +39,6 @@ public:
 signals:
     
 public slots:
-    
 };
 
 #endif // CPNETSCENE_H

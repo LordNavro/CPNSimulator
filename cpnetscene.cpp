@@ -13,6 +13,9 @@ void CPNetScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
      switch(currentTool)
      {
+     case CPNetScene::SELECT:
+         QGraphicsScene::mousePressEvent(mouseEvent);
+         break;
      case CPNetScene::PLACE:
          addPlace(mouseEvent);
          break;
@@ -28,7 +31,6 @@ void CPNetScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
      default:
          break;
      }
-     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
@@ -41,6 +43,7 @@ void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
     placeItem->setPos(mouseEvent->scenePos());
     addItem(placeItem);
     net.places.append(place);
+    QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void CPNetScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
@@ -53,6 +56,7 @@ void CPNetScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
     transitionItem->setPos(mouseEvent->scenePos());
     addItem(transitionItem);
     net.transitions.append(transition);
+    QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
 void CPNetScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
@@ -87,8 +91,6 @@ void CPNetScene::deleteArc(Place *place, Transition *transition)
     {
         if(ArcItem *arcItem = qgraphicsitem_cast<ArcItem *>(item))
         {
-            qDebug() << "Got item " << arcItem;
-            continue;
             if(arcItem->arc->transition == transition || arcItem->arc->place == place)
             {
                 net.arcs.removeAt(net.arcs.indexOf(arcItem->arc));
@@ -99,3 +101,4 @@ void CPNetScene::deleteArc(Place *place, Transition *transition)
         }
     }
 }
+
