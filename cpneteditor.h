@@ -13,7 +13,6 @@ public:
 
     CPNetScene *scene;
     QGraphicsView *view;
-    CPNet net;
 
     QHBoxLayout *layout;
 

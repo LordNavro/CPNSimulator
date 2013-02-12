@@ -5,6 +5,7 @@ CPNetEditor::CPNetEditor(QWidget *parent) :
 {
     view = new QGraphicsView(this);
     scene = new CPNetScene(this);
+    view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     view->setScene(scene);
 
 

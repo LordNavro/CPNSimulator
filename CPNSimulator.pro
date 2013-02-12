@@ -24,7 +24,10 @@ SOURCES += main.cpp\
     placeform.cpp \
     transitionform.cpp \
     cpnetform.cpp \
-    cpnetscene.cpp
+    cpnetscene.cpp \
+    placeitem.cpp \
+    transitionitem.cpp \
+    arcitem.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -37,7 +40,10 @@ HEADERS  += mainwindow.h \
     placeform.h \
     transitionform.h \
     cpnetform.h \
-    cpnetscene.h
+    cpnetscene.h \
+    placeitem.h \
+    transitionitem.h \
+    arcitem.h
 
 RESOURCES += \
     icons.qrc
