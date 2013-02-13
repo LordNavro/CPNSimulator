@@ -24,6 +24,8 @@ public:
     Tool currentTool;
     CPNet net;
 
+    QGraphicsLineItem *line;
+
     CPNetForm *netForm;
     PlaceForm *placeForm;
     TransitionForm *transitionForm;
@@ -31,6 +33,9 @@ public:
 
 
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
+
     void addPlace(QGraphicsSceneMouseEvent *mouseEvent);
     void addTransition(QGraphicsSceneMouseEvent *mouseEvent);
     void deleteItem(QGraphicsSceneMouseEvent *mouseEvent);

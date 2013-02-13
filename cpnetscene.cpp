@@ -3,34 +3,61 @@
 CPNetScene::CPNetScene(QObject *parent) :
     QGraphicsScene(parent)
 {
+    line = NULL;
     addLine(0,0,1,1,QPen(Qt::white));
 }
 
 void CPNetScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
- {
-     if (mouseEvent->button() != Qt::LeftButton)
-         return;
+{
+    if (mouseEvent->button() != Qt::LeftButton)
+        return;
+    switch(currentTool)
+    {
+    case CPNetScene::SELECT:
+        QGraphicsScene::mousePressEvent(mouseEvent);
+        break;
+    case CPNetScene::PLACE:
+        addPlace(mouseEvent);
+        break;
+    case CPNetScene::TRANSITION:
+        addTransition(mouseEvent);
+        break;
+    case CPNetScene::ARC:
+        line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()), NULL, this);
+        break;
+    case CPNetScene::DELETE:
+        deleteItem(mouseEvent);
+        break;
+    default:
+        break;
+    }
+}
 
-     switch(currentTool)
-     {
-     case CPNetScene::SELECT:
-         QGraphicsScene::mousePressEvent(mouseEvent);
-         break;
-     case CPNetScene::PLACE:
-         addPlace(mouseEvent);
-         break;
-     case CPNetScene::TRANSITION:
-         addTransition(mouseEvent);
-         break;
-     case CPNetScene::ARC:
+void CPNetScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if(currentTool == ARC && line != NULL)
+    {
+        line->setLine(QLineF(line->line().p1(), mouseEvent->scenePos()));
+    }
+    else
+    {
+        QGraphicsScene::mouseMoveEvent(mouseEvent);
+    }
+}
 
-         break;
-     case CPNetScene::DELETE:
-         deleteItem(mouseEvent);
-         break;
-     default:
-         break;
-     }
+void CPNetScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    if(currentTool == ARC && line != NULL)
+    {
+        addArc(line->line().p1(), line->line.p2());
+        removeItem(line);
+        delete line;
+        line = NULL;
+    }
+    else
+    {
+        QGraphicsScene::mouseReleaseEvent(mouseEvent);
+    }
 }
 
 void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
@@ -57,6 +84,16 @@ void CPNetScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
     addItem(transitionItem);
     net.transitions.append(transition);
     QGraphicsScene::mousePressEvent(mouseEvent);
+}
+
+void CPNetScene::addArc(QPoinF from, QPointF to)
+{
+    QList<QGraphicsItem *> startItems = items(from);
+    if(startItems.count() && startItems.first() == line)
+        startItems.removeFirst();
+    QList<QGraphicsItem *> endItems = items(to);
+    if(endItems.count() && endItems.first() == line)
+        endItems.removeFirst();
 }
 
 void CPNetScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
