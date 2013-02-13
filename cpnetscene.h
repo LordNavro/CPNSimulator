@@ -38,8 +38,9 @@ public:
 
     void addPlace(QGraphicsSceneMouseEvent *mouseEvent);
     void addTransition(QGraphicsSceneMouseEvent *mouseEvent);
+    void addArc(QPointF from, QPointF to);
     void deleteItem(QGraphicsSceneMouseEvent *mouseEvent);
-    void deleteArc(Place *place, Transition *transition);
+    void deleteArc(ArcItem *arcItem);
 
 signals:
     

@@ -3,6 +3,7 @@
 
 #include <QtGui>
 #include "place.h"
+#include "arcitem.h"
 
 class PlaceItem : public QGraphicsEllipseItem
 {
@@ -12,8 +13,11 @@ public:
     explicit PlaceItem();
     
     Place *place;
+    QList<ArcItem *>arcItems;
 
     int type() const{ return Type; }
+
+    QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value);
 signals:
     
 public slots:

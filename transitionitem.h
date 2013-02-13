@@ -3,6 +3,7 @@
 
 #include <QGraphicsRectItem>
 #include "transition.h"
+#include <arcitem.h>
 
 class TransitionItem : public QGraphicsRectItem
 {
@@ -12,8 +13,11 @@ public:
     explicit TransitionItem();
     
     Transition *transition;
+    QList<ArcItem *>arcItems;
 
     int type() const{ return Type; }
+
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 signals:
     
