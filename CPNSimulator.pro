@@ -11,9 +11,14 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CPNSimulator
 TEMPLATE = app
 
+include(flex.pri)
+include(bison.pri)
+
+FLEXSOURCES += scanner.l
+BISONSOURCES += parser.y
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
+    mainwindow.cpp \
     place.cpp \
     transition.cpp \
     arc.cpp \
