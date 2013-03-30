@@ -52,7 +52,8 @@ HEADERS  += mainwindow.h \
     transitionitem.h \
     arcitem.h \
     inscriptionedit.h \
-    inscriptionhighlighter.h
+    inscriptionhighlighter.h \
+    compiler.h
 
 RESOURCES += \
     icons.qrc

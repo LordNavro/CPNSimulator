@@ -1,15 +1,60 @@
-/* from the flex and bison book do a word count */
+
 
 %{
-int chars=0;
-int words=0;
-int lines=0;
+    #include "compiler.h"
+    if (startToken)
+    {
+        int t = start_token;
+        start_token = 0;
+        return t;
+    }
 %}
 
+al          [a-zA-z]
+num         [0-9]
+alnum       al|num
+
+%s COMMENT
+
+%option noyywrap nodefault yylineno
+
+
 %%
 
-[a-zA-Z]+ { words++; chars += strlen(yytext); }
-\n    { chars++; lines++; }
-.     { chars++; }
+"//".*              {}
+"/*"                {begin(COMMENT);}
+<COMMENT>"*/"       {begin(INITIAL);}
+<COMMENT>.          {}
+<COMMENT><<EOF>>    {return 0;}
+\t|\n|\r|" "        {if(yytext[0] == "\n") yylineno++;}
+
+if      {return IF;}
+else    {return ELSE;}
+while   {return WHILE;}
+do      {return DO;}
+case    {return CASE;}
+switch  {return SWITCH;}
+
+unit        {yylval.dataType = UNIT; return DATATYPE;}
+bool        {yylval.dataType = BOOL; return DATATYPE;}
+int         {yylval.dataType = INT; return DATATYPE;}
+multiunit   {yylval.dataType = MULTIUNIT; return DATATYPE;}
+multibool   {yylval.dataType = MULTIBOOL; return DATATYPE;}
+multiint    {yylval.dataType = MULTIINT; return DATATYPE;}
+
+true        {yylval.boolVal = true; return BOOLVAL;}
+false       {yylval.boolVal = false; return BOOLVAL;}
+
+{al}{alnum}*    {yylval.id = yytext; return ID;}
+{num}+          {yylval.intVal = atoi(yytext); return INTVAL}
+
+"=="                {return EQ;}
+">="                {return GEQ;}
+"<="                {return LEQ;}
+[-+*/&|!^=,{}()]    {return yytext[0];}
+
+.               {return 0;}
 
 %%
+
+yylex()
