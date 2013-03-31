@@ -10,6 +10,7 @@ Expression::~Expression()
     case Expression::OR:
     case Expression::LEQ:
     case Expression::EQ:
+    case Expression::NEQ:
     case Expression::GEQ:
     case Expression::GT:
     case Expression::LT:
@@ -22,7 +23,7 @@ Expression::~Expression()
     case Expression::UMINUS:
     case Expression::FN:
     case Expression::VAR:
-    case Expression::VAL:
+    case Expression::DATA:
         break;
     }
 }

@@ -2,14 +2,9 @@
 
 %{
     #include "compiler.h"
-    #include "parser.tab.h"
+    #include "parser.parser.hpp"
 
-    if (startToken)
-    {
-        int t = start_token;
-        start_token = 0;
-        return t;
-    }
+    int startToken = 0;
 %}
 
 al          [a-zA-z]
@@ -22,6 +17,16 @@ alnum       al|num
 
 
 %%
+
+
+%{
+    if (startToken)
+    {
+        int t = startToken;
+        startToken = 0;
+        return t;
+    }
+%}
 
 "//".*              {}
 "/*"                {BEGIN(COMMENT);}
@@ -38,26 +43,27 @@ case    {return CASE;}
 switch  {return SWITCH;}
 return  {return RETURN;}
 
-unit        {yylval.dataType = UNIT; return DATATYPE;}
-bool        {yylval.dataType = BOOL; return DATATYPE;}
-int         {yylval.dataType = INT; return DATATYPE;}
-multiunit   {yylval.dataType = MULTIUNIT; return DATATYPE;}
-multibool   {yylval.dataType = MULTIBOOL; return DATATYPE;}
-multiint    {yylval.dataType = MULTIINT; return DATATYPE;}
+unit        {yylval.dataType = Data::UNIT; return DATATYPE;}
+bool        {yylval.dataType = Data::BOOL; return DATATYPE;}
+int         {yylval.dataType = Data::INT; return DATATYPE;}
+multiunit   {yylval.dataType = Data::MULTIUNIT; return DATATYPE;}
+multibool   {yylval.dataType = Data::MULTIBOOL; return DATATYPE;}
+multiint    {yylval.dataType = Data::MULTIINT; return DATATYPE;}
 
-true        {yylval.boolVal = true; return BOOLVAL;}
-false       {yylval.boolVal = false; return BOOLVAL;}
+true        {yylval.data = new Data(Data::BOOL); yylval.data->value.b = true; return DATA;}
+false       {yylval.data = new Data(Data::BOOL); yylval.data->value.b = false; return DATA;}
 
-{al}{alnum}*    {yylval.id = yytext; return ID;}
-{num}+          {yylval.intVal = atoi(yytext); return INTVAL}
+{al}{alnum}*    {yylval.id = new Id(yytext); return ID;}
+{num}+          {yylval.data = new Data(Data::BOOL); yylval.data->value.i = atoi(yytext); return DATA;}
 
-"=="                {return EQ;}
 ">="                {return GEQ;}
 "<="                {return LEQ;}
+"=="                {return EQ;}
+"!="                {return NEQ;}
+
 [-+*/&|!^=,{}()%]   {return yytext[0];}
 
 .               {return 0;}
 
 %%
 
-yylex()

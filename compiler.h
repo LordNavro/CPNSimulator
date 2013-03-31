@@ -6,6 +6,9 @@
 #include <QPair>
 #include <QMap>
 
+    /* to emulate multiple start symbols via scanner prologue */
+    extern int startSymbol;
+
     /* multiset data values */
     typedef int MultiUnit;
     typedef struct
@@ -56,8 +59,8 @@
     class Expression
     {
     public:
-        typedef enum {ASSIGN, MULTISET, AND, OR, LEQ, EQ, GEQ, GT, LT,
-                      PLUS, MINUS, MULT, DIV, MOD, NOT, UMINUS, FN, VAR, VAL} Type;
+        typedef enum {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
+                      PLUS, MINUS, MULT, DIV, MOD, NOT, UMINUS, FN, VAR, DATA} Type;
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
