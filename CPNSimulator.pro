@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     transitionitem.cpp \
     arcitem.cpp \
     inscriptionedit.cpp \
-    inscriptionhighlighter.cpp
+    inscriptionhighlighter.cpp \
+    compiler.cpp
 
 HEADERS  += mainwindow.h \
     place.h \

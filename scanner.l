@@ -2,6 +2,8 @@
 
 %{
     #include "compiler.h"
+    #include "parser.tab.h"
+
     if (startToken)
     {
         int t = start_token;
@@ -22,11 +24,11 @@ alnum       al|num
 %%
 
 "//".*              {}
-"/*"                {begin(COMMENT);}
-<COMMENT>"*/"       {begin(INITIAL);}
+"/*"                {BEGIN(COMMENT);}
+<COMMENT>"*/"       {BEGIN(INITIAL);}
 <COMMENT>.          {}
 <COMMENT><<EOF>>    {return 0;}
-\t|\n|\r|" "        {if(yytext[0] == "\n") yylineno++;}
+\t|\n|\r|" "        {if(yytext[0] == '\n') yylineno++;}
 
 if      {return IF;}
 else    {return ELSE;}
@@ -34,6 +36,7 @@ while   {return WHILE;}
 do      {return DO;}
 case    {return CASE;}
 switch  {return SWITCH;}
+return  {return RETURN;}
 
 unit        {yylval.dataType = UNIT; return DATATYPE;}
 bool        {yylval.dataType = BOOL; return DATATYPE;}
@@ -51,7 +54,7 @@ false       {yylval.boolVal = false; return BOOLVAL;}
 "=="                {return EQ;}
 ">="                {return GEQ;}
 "<="                {return LEQ;}
-[-+*/&|!^=,{}()]    {return yytext[0];}
+[-+*/&|!^=,{}()%]   {return yytext[0];}
 
 .               {return 0;}
 

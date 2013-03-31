@@ -1,21 +1,24 @@
 %{
+
     #include "compiler.h"
-    #include <QList>
-    #include <QVector>
-    #include <QPair>
+
 %}
 
 %union{
     int intVal;
     bool boolVal;
     DataType dataType;
-    IdList idList;
-    QString id;
-    ParameterList parameterList;
+    IdList *idList;
+    Id *id;
+    ParameterList *parameterList;
+    Expression *expression;
+    Expressionist *expressionList;
+    Declaration *declaration;
+    DeclarationList *declarationList;
 }
 
 %token START_EXPRESSION START_DECLARATION
-%token IF ELSE WHILE DO SWITCH CASE
+%token IF ELSE WHILE DO SWITCH CASE RETURN
 %token ID
 %token DATATYPE
 %token UNITVAL BOOLVAL INTVAL
@@ -24,9 +27,9 @@
 %left '='
 %left '^'
 %left '&' '|'
-%left LEQ GEQ EQ
+%left LEQ GEQ EQ '>' '<'
 %left '+' '-'
-%left '*' '/'
+%left '*' '/' '%'
 %nonassoc '!' UMINUS
 
 %type <intVal> INTVAL
@@ -35,21 +38,25 @@
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
 %type <idList> idList
+%type <expression> expression
+%type <expressionList> expressionList
+%type <declaration> declaration
+%type <declarationList> declarationList
 
 %start start
 
 %%
 
-start: START_DECLARATION declarations
+start: START_DECLARATION declarationList
     | START_EXPRESSION expression
     ;
 
-declarations: /*empty*/ { $$ = NULL; }
-    | declaration declarations { $$ = mergeDeclarations($1, $2); }
+declarationList: /*empty*/ { $$ = NULL; }
+    | declaration declarationList { $$ = mergeDeclarations($1, $2); }
     ;
 
 declaration: DATATYPE idList ';' { }
-    | DATATYPE ID '(' parameterList ')' '{' commands '}' { }
+    | DATATYPE ID '(' parameterList ')' command { }
     ;
 
 idList: ID { $$ = newIDList($1); }
@@ -75,7 +82,9 @@ command: WHILE '(' expression ')' command
     | IF '(' expression ')' command ELSE command
     | DO command WHILE '(' expression ')'
     | DATATYPE idList ';'
-    | expression
+    | expression ';'
+    | RETURN expression ';'
+    | '{' commands '}'
     ;
 
 expression: ID '=' expression
@@ -85,14 +94,20 @@ expression: ID '=' expression
     | expression LEQ expression
     | expression GEQ expression
     | expression EQ expression
+    | expression '>' expression
+    | expression '<' expression
     | expression '+' expression
     | expression '-' expression
     | expression '*' expression
     | expression '/' expression
+    | expression '%' expression
     | '(' expression ')'
     | '!' expression
     | '-' expression %prec UMINUS
     | ID '(' expressionList ')'
+    | INTVAL
+    | BOOLVAL
+    | '(' ')'
     ;
 
 expressionList: /* empty */

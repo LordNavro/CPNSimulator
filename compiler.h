@@ -1,33 +1,108 @@
 #ifndef COMPILER_H
 #define COMPILER_H
 
-    typedef QList<QString> IdList;
+#include <QList>
+#include <QString>
+#include <QPair>
+#include <QMap>
 
-    typedef QList<QPair<DataType, QString> > ParameterList;
-
-    typedef enum {UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT} DataType;
-
-    typedef enum {UNITVAL, INTVAL, BOOLVAL} ExpressionType;
-
-    typedef struct _Expression
+    /* multiset data values */
+    typedef int MultiUnit;
+    typedef struct
     {
-        ExpressionType expressionType;
-        struct _Expression *left;
-        struct _Expression *right;
-        QList<struct _Expression> expressionList;
-        int intVal;
-        bool boolVal;
-    } Expression;
+        int t;
+        int f;
+    } MultiBool;
+    typedef QMap<int, int> MultiInt;
 
-    typedef QList<Expression> ExpressionList;
-
-    typedef enum {FUNCTION, VARIABLE} DeclarationType;
-
-    typedef struct _Declaration
+    /* data model */
+    typedef union
     {
-        DeclarationType declarationType;
-        DataType dataType;
-        IdList idList;
-    } Declaration;
+        MultiUnit multiUnit;
+        MultiBool multiBool;
+        MultiInt *multiInt;
+        bool b;
+        int i;
+    } Value;
+
+
+    class Data
+    {
+    public:
+        typedef enum {UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT} Type;
+
+        Data(Data::Type type) : type(type){if(type == Data::MULTIINT) value.multiInt = new MultiInt;}
+        ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
+        Data::Type type;
+        Value value;
+    };
+
+    /* forward declarations */
+    class Expression;
+    class Declaration;
+    class Command;
+
+    /* aliases */
+    typedef QString Id;
+    typedef QPair<Data::Type, Id> Parameter;
+
+    typedef QList<Expression *> ExpressionList;
+    typedef QList<Declaration *> DeclarationList;
+    typedef QList<Command *> CommandList;
+    typedef QList<Id> IdList;
+    typedef QList<Parameter> ParameterList;
+
+    /* Expressions */
+    class Expression
+    {
+    public:
+        typedef enum {ASSIGN, MULTISET, AND, OR, LEQ, EQ, GEQ, GT, LT,
+                      PLUS, MINUS, MULT, DIV, MOD, NOT, UMINUS, FN, VAR, VAL} Type;
+
+        Expression(Expression::Type type) : type(type){}
+        ~Expression();
+        Expression::Type type;
+        Data::Type dataType;  //expression return type
+        Expression *left;   //for operators
+        Expression *right;   //for operators
+        Id id;  //for functions/variables
+        ExpressionList *expressionList;  //for function calls
+        Data *data; //for direct data
+    };
+
+    /* Declarations */
+
+    class Declaration
+    {
+    public:
+        typedef enum {FN, VAR} Type;
+
+        Declaration(Declaration::Type type) : type(type){}
+        ~Declaration();
+        Declaration::Type type;
+        Data::Type dataType;  //return type/variable type
+        IdList idList;  //declared variables
+        ParameterList parameterList;    //declared parameters
+        Command *command;    //function body
+    };
+
+
+    /* Commands */
+    class Command
+    {
+    public:
+        typedef enum {IF, IFELSE, EXPR, WHILE, DOWHILE, BLOCK, RETURN, DECL} Type;
+
+        Command(Command::Type type) : type(type){}
+        ~Command();
+        Command::Type type;
+        Expression *expression;  //for branching, loops, return, simple expression
+        Data::Type dataType;  //for declarations
+        IdList idList;  //for declarations
+        CommandList commandList;   //for blocks
+        Command *command;   //for loops/branches
+        Command *command2;  //for else branch
+    };
+
 
 #endif // COMPILER_H
