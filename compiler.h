@@ -60,7 +60,7 @@
     {
     public:
         typedef enum {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
-                      PLUS, MINUS, MULT, DIV, MOD, NOT, UMINUS, FN, VAR, DATA} Type;
+                      PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA} Type;
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
@@ -84,6 +84,7 @@
         ~Declaration();
         Declaration::Type type;
         Data::Type dataType;  //return type/variable type
+        Id id;  //function name
         IdList idList;  //declared variables
         ParameterList parameterList;    //declared parameters
         Command *command;    //function body

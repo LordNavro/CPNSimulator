@@ -1,7 +1,9 @@
 %{
 
     #include "compiler.h"
-
+    Command *branchCommand(Command::Type type, Expression *e, Command *c);
+    Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2);
+    Expression *unaryOp(Expression::Type type, Expression *e1);
 %}
 
 %union{
@@ -9,6 +11,8 @@
     Data::Type dataType;
     IdList *idList;
     Id *id;
+    Command * command;
+    CommandList * commandList;
     ParameterList *parameterList;
     Expression *expression;
     ExpressionList *expressionList;
@@ -58,16 +62,16 @@ declarationList: /*empty*/ { $$ = new DeclarationList(); }
 
 declaration: DATATYPE idList ';' {
         $$ = new Declaration(Declaration::VAR);
-        $$.dataType = $1;
-        $$.idList = *$2;
+        $$->dataType = $1;
+        $$->idList = *$2;
         delete $2;
     }
     | DATATYPE ID '(' parameterList ')' command {
         $$ = new Declaration(Declaration::FN);
-        $$.dataType = $1;
-        $$.id = *$2;
-        $$.parameterList = *$4;
-        $$.command1 = $6;
+        $$->dataType = $1;
+        $$->id = *$2;
+        $$->parameterList = *$4;
+        $$->command = $6;
         delete $4;
         delete $2;
     }
@@ -75,12 +79,12 @@ declaration: DATATYPE idList ';' {
 
 idList: ID {
         $$ = new IdList();
-        $$.append(*$1);
+        $$->append(*$1);
         delete $1;
     }
     | ID ',' idList {
         $$ = $3;
-        $$.append(*$1);
+        $$->append(*$1);
         delete $1;
     }
     ;
@@ -88,31 +92,31 @@ idList: ID {
 parameterList: /*empty*/ { $$ = new ParameterList(); }
     | DATATYPE ID {
         $$ = new ParameterList();
-        $$.append(Parameter($1, $2));
+        $$->append(Parameter($1, *$2));
         delete $2;
     }
     | DATATYPE ID ',' parameterListNE {
         $$ = $4;
-        $$.append(Parameter($1, $2));
+        $$->append(Parameter($1, *$2));
         delete $2;
     }
     ;
 
 parameterListNE: DATATYPE ID {
         $$ = new ParameterList();
-        $$.append(Parameter($1, $2));
+        $$->append(Parameter($1, *$2));
         delete $2;
     }
     | DATATYPE ID ',' parameterListNE {
         $$ = $4;
-        $$.append(Parameter($1, $2));
+        $$->append(Parameter($1, *$2));
         delete $2;
     }
     ;
 
 
 commandList: /*empty*/ { $$ = new CommandList(); }
-    | commandList command { $$ = $1; $1.append($2); }
+    | commandList command { $$ = $1; $$->append($2); }
     ;
 
 command: WHILE '(' expression ')' command { $$ = branchCommand(Command::WHILE, $3, $5); }
@@ -132,7 +136,7 @@ command: WHILE '(' expression ')' command { $$ = branchCommand(Command::WHILE, $
 
 expression:   ID '=' expression {
         $$ = unaryOp(Expression::ASSIGN, $3);
-        $$.id = *$1; delete $1;
+        $$->id = *$1; delete $1;
     }
     | expression '&' expression {$$ = binaryOp(Expression::AND, $1, $3);}
     | expression '|' expression {$$ = binaryOp(Expression::OR,  $1, $3);}
@@ -153,12 +157,12 @@ expression:   ID '=' expression {
     | '-' expression %prec UMINUS   {$$ = unaryOp(Expression::UMINUS, $2);}
     | ID '(' expressionList ')'     {
         $$ = new Expression(Expression::FN);
-        $$.id = *$1;
+        $$->id = *$1;
         delete $1;
-        $$.expresssionList = $3;
+        $$->expressionList = $3;
     }
-    | DATA  {$$ = new Expression(Expression::DATA); $$.data = $1;}
-    | '(' ')' {$$ = new Expression(Expression::DATA); $$.data = new Data(Data::UNIT);}
+    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1;}
+    | '(' ')' {$$ = new Expression(Expression::DATA); $$->data = new Data(Data::UNIT);}
     ;
 
 expressionList: /* empty */ { $$ = new ExpressionList(); }
@@ -173,9 +177,9 @@ expressionListNE: expression { $$ = new ExpressionList(); $$->append($1); }
 
 Command *branchCommand(Command::Type type, Expression *e, Command *c)
 {
-    Command com = new Command(type);
+    Command *com = new Command(type);
     com->expression = e;
-    com->command = cl
+    com->command = c;
     return com;
 }
 
@@ -191,4 +195,11 @@ Expression *unaryOp(Expression::Type type, Expression *e1)
     Expression *e = new Expression(type);
     e->left = e1;
     return e;
+}
+
+#include <iostream>
+
+extern void yyerror(char* msg)
+{
+    std::cout << " Syntax Error in Line : %d : %s\n", yylineno, msg;
 }

@@ -16,7 +16,7 @@ Expression::~Expression()
     case Expression::LT:
     case Expression::PLUS:
     case Expression::MINUS:
-    case Expression::MULT:
+    case Expression::MUL:
     case Expression::DIV:
     case Expression::MOD:
     case Expression::NOT:
