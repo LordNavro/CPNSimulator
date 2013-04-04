@@ -1,10 +1,15 @@
 #include "compiler.h"
+#include "parser.parser.hpp"
+
+int startSymbol;
+
+Expression *parsedExpression;
+DeclarationList *parsedDeclaration;
 
 Expression::~Expression()
 {
     switch(this->type)
     {
-    case Expression::ASSIGN:
     case Expression::MULTISET:
     case Expression::AND:
     case Expression::OR:
@@ -19,11 +24,20 @@ Expression::~Expression()
     case Expression::MUL:
     case Expression::DIV:
     case Expression::MOD:
+        delete right;
+    case Expression::ASSIGN:
     case Expression::NOT:
     case Expression::UMINUS:
+        delete left;
+        break;
     case Expression::FN:
-    case Expression::VAR:
+        qDeleteAll(*expressionList);
+        delete expressionList;
+        break;
     case Expression::DATA:
+        delete data;
+        break;
+    case Expression::VAR:
         break;
     }
 }
@@ -32,8 +46,10 @@ Declaration::~Declaration()
 {
     switch(this->type)
     {
-    case Declaration::VAR:
     case Declaration::FN:
+        delete command;
+        break;
+    case Declaration::VAR:
         break;
     }
 }
@@ -43,13 +59,19 @@ Command::~Command()
 {
     switch(this->type)
     {
-    case Command::IF:
     case Command::IFELSE:
-    case Command::EXPR:
+        delete command2;
+    case Command::IF:
     case Command::WHILE:
     case Command::DOWHILE:
-    case Command::BLOCK:
+        delete command;
+    case Command::EXPR:
     case Command::RETURN:
+        delete expression;
+        break;
+    case Command::BLOCK:
+        qDeleteAll(commandList);
+        break;
     case Command::DECL:
         break;
     }

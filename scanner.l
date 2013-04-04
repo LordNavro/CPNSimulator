@@ -5,6 +5,7 @@
     #include "parser.parser.hpp"
 
     int startToken = 0;
+    extern int yyparse(void);
 %}
 
 al          [a-zA-z]
@@ -13,7 +14,9 @@ alnum       al|num
 
 %s COMMENT
 
-%option noyywrap nodefault yylineno
+%option noyywrap
+%option nodefault
+%option yylineno
 
 
 %%
@@ -43,7 +46,6 @@ case    {return CASE;}
 switch  {return SWITCH;}
 return  {return RETURN;}
 
-unit        {yylval.dataType = Data::UNIT; return DATATYPE;}
 bool        {yylval.dataType = Data::BOOL; return DATATYPE;}
 int         {yylval.dataType = Data::INT; return DATATYPE;}
 multiunit   {yylval.dataType = Data::MULTIUNIT; return DATATYPE;}
@@ -54,7 +56,8 @@ true        {yylval.data = new Data(Data::BOOL); yylval.data->value.b = true; re
 false       {yylval.data = new Data(Data::BOOL); yylval.data->value.b = false; return DATA;}
 
 {al}{alnum}*    {yylval.id = new Id(yytext); return ID;}
-{num}+          {yylval.data = new Data(Data::BOOL); yylval.data->value.i = atoi(yytext); return DATA;}
+{num}+          {yylval.data = new Data(Data::INT); yylval.data->value.i = atoi(yytext); return DATA;}
+unit            {yylval.data = new Data(Data::UNIT); return DATA;}
 
 ">="                {return GEQ;}
 "<="                {return LEQ;}
@@ -67,3 +70,12 @@ false       {yylval.data = new Data(Data::BOOL); yylval.data->value.b = false; r
 
 %%
 
+
+int parseQString(QString input, int symbol)
+{
+    startSymbol = symbol;
+    YY_BUFFER_STATE buffer = yy_scan_string (input.toAscii().data());
+    int result  = yyparse();
+    yy_delete_buffer(buffer);
+    return result;
+}

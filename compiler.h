@@ -28,7 +28,6 @@
         int i;
     } Value;
 
-
     class Data
     {
     public:
@@ -54,6 +53,11 @@
     typedef QList<Command *> CommandList;
     typedef QList<Id> IdList;
     typedef QList<Parameter> ParameterList;
+
+
+    /* to handle parsed data structures */
+    extern Expression *parsedExpression;
+    extern DeclarationList *parsedDeclaration;
 
     /* Expressions */
     class Expression
@@ -107,6 +111,8 @@
         Command *command;   //for loops/branches
         Command *command2;  //for else branch
     };
+
+    int parseQString(QString input, int symbol);
 
 
 #endif // COMPILER_H

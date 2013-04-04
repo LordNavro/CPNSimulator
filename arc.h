@@ -15,6 +15,11 @@ public:
     Place *place;
     Transition *transition;
     bool isPreset;
+
+    bool isCompiled;
+
+    Expression *compiledExpression;
+
 signals:
     
 public slots:

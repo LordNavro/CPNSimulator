@@ -4,6 +4,13 @@
     Command *branchCommand(Command::Type type, Expression *e, Command *c);
     Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2);
     Expression *unaryOp(Expression::Type type, Expression *e1);
+    #include <iostream>
+    extern int yylineno;
+    extern char *yytext;
+
+    int yylex();
+    int yyerror(const char *message) { std::cout << message << std::endl; return 0;}
+
 %}
 
 %union{
@@ -20,7 +27,7 @@
     DeclarationList *declarationList;
 }
 
-%token START_EXPRESSION START_DECLARATION
+%token START_EXPRESSION START_DECLARATION START_MARKING START_PRESET
 %token IF ELSE WHILE DO SWITCH CASE RETURN
 %token UNIT BOOL INT MULTIUNIT MULTIBOOL MULTIINT
 %token ID
@@ -37,6 +44,8 @@
 %nonassoc '!' UMINUS
 
 %type <data> DATA
+%type <expression> marking markingNE
+%type <expression> preset idOrData
 %type <id> ID
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
@@ -52,9 +61,12 @@
 
 %%
 
-start: START_DECLARATION declarationList
-    | START_EXPRESSION expression
+start: START_DECLARATION declarationList { parsedDeclaration = $2; }
+    | START_EXPRESSION expression { parsedExpression = $2; }
+    | START_MARKING marking { parsedExpression = $2; }
+    | START_PRESET preset { parsedExpression = $2; }
     ;
+
 
 declarationList: /*empty*/ { $$ = new DeclarationList(); }
     | declaration declarationList { $2->append($1); $$ = $2; }
@@ -114,7 +126,6 @@ parameterListNE: DATATYPE ID {
     }
     ;
 
-
 commandList: /*empty*/ { $$ = new CommandList(); }
     | commandList command { $$ = $1; $$->append($2); }
     ;
@@ -161,18 +172,42 @@ expression:   ID '=' expression {
         delete $1;
         $$->expressionList = $3;
     }
-    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1;}
-    | '(' ')' {$$ = new Expression(Expression::DATA); $$->data = new Data(Data::UNIT);}
+    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1; }
+    | ID {$$ = new Expression(Expression::VAR); $$->id = *$1; delete $1; }
     ;
 
 expressionList: /* empty */ { $$ = new ExpressionList(); }
-    | expression { $$ = new ExpressionList(); $$->append($1); }
-    | expression ',' expressionListNE { $$ = $3; $$->append($1); }
+    | expressionListNE { $$ = $1; }
     ;
 
 expressionListNE: expression { $$ = new ExpressionList(); $$->append($1); }
     | expression ',' expressionListNE { $$ = $3; $$->append($1); }
     ;
+
+marking: /* empty */ { $$ = NULL; }
+    | markingNE {$$ = $1;}
+    ;
+
+markingNE: DATA '^' DATA {
+        Expression *e1 = new Expression(Expression::DATA); e1->data = $1;
+        Expression *e2 = new Expression(Expression::DATA); e2->data = $3;
+        $$ = binaryOp(Expression::MULTISET, e1, e2);
+    }
+    | markingNE '+' DATA '^' DATA {
+        Expression *e1 = new Expression(Expression::DATA); e1->data = $3;
+        Expression *e2 = new Expression(Expression::DATA); e2->data = $5;
+        $$ = binaryOp(Expression::PLUS, $1, binaryOp(Expression::MULTISET, e1, e2)); }
+    ;
+
+preset: idOrData '^' idOrData { $$ = binaryOp(Expression::MULTISET, $1, $3); }
+    | preset '+' idOrData '^' idOrData { $$ = binaryOp(Expression::PLUS, $1, binaryOp(Expression::MULTISET, $3, $5)); }
+    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1;}
+    ;
+
+idOrData: DATA  {$$ = new Expression(Expression::DATA); $$->data = $1; }
+    | ID {$$ = new Expression(Expression::VAR); $$->id = *$1; delete $1; }
+    ;
+
 %%
 
 Command *branchCommand(Command::Type type, Expression *e, Command *c)
@@ -197,9 +232,8 @@ Expression *unaryOp(Expression::Type type, Expression *e1)
     return e;
 }
 
-#include <iostream>
 
 extern void yyerror(char* msg)
 {
-    std::cout << " Syntax Error in Line : %d : %s\n", yylineno, msg;
+    std::cout << " Syntax Error in Line : " << yylineno << " : " << msg << "\n";
 }

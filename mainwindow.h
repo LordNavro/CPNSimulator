@@ -33,6 +33,9 @@ private:
 
     QAction *actionAbout;
 
+    QAction *actionCompile;
+    QAction *actionSimulate;
+
     QToolBar *toolBarFile;
     QToolBar *toolBarTools;
     QToolBar *toolBarSimulation;
@@ -66,6 +69,10 @@ public slots:
     void slotAbout();
 
     void slotTabCloseRequest(int index);
+
+    void slotCompilationNeeded();
+    void slotCompilationDone();
+    void slotTabChanged(int i);
 };
 
 #endif // MAINWINDOW_H

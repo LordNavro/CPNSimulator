@@ -21,7 +21,7 @@ public:
     InscriptionEdit *inscriptionCurrentMarking;
 
 signals:
-    
+    void compilationNeeded();
 public slots:
     void nameChanged(QString name);
     void colourSetChanged(int colourSet);

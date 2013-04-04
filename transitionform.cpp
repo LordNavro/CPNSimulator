@@ -33,4 +33,6 @@ void TransitionForm::guardChanged()
     if(this->transitionItem == NULL)
         return;
     transitionItem->transition->guard = inscriptionGuard->document()->toPlainText();
+    transitionItem->transition->isCompiled = false;
+    emit(compilationNeeded());
 }

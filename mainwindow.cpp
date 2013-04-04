@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(slotTabCloseRequest(int)));
     this->setCentralWidget(tabWidget);
 
-    connect(this->tabWidget, SIGNAL(currentChanged(int)), this->actionSelect, SLOT(trigger()));
+    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int));
 
     setWindowTitle("CPNSimulator");
     setWindowIcon(QIcon(style()->standardIcon(QStyle::SP_CommandLink)));
@@ -107,6 +107,7 @@ void MainWindow::slotNew()
     tabWidget->addTab(e, "New net");
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
     actionSelect->trigger();
+    connect(e, SIGNAL(compilationNeeded()), this, slot(slotCompilationNeeded());
 }
 
 void MainWindow::slotLoad()
@@ -131,7 +132,7 @@ void MainWindow::setCurrentTool(CPNetScene::Tool tool)
 
     if(tabWidget->currentIndex() == -1)
         return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->widget(tabWidget->currentIndex()));
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
     e->scene->currentTool = tool;
 }
 
@@ -164,8 +165,39 @@ void MainWindow::slotAbout()
 {
 }
 
+void MainWindow::slotCompile()
+{
+}
+
+void MainWindow::slotSimulate()
+{
+}
+
 void MainWindow::slotTabCloseRequest(int index)
 {
     tabWidget->setCurrentIndex(index);
     slotClose();
+}
+
+void MainWindow::slotCompilationNeeded()
+{
+    this->actionCompile->setEnabled(true);
+    this->actionSimulate->setEnabled(false);
+}
+
+void MainWindow::slotCompilationDone()
+{
+    this->actionCompile->setEnabled(false);
+    this->actionSimulate->setEnabled(true);
+}
+
+void MainWindow::slotTabChanged(int i)
+{
+    actionSelect->trigger();
+    CPNetEditor *e = qobject_cast<CPNetEditor *> tabWidget->currentWidget();
+    if(e->scene->net.isCompiled)
+        slotCompilationDone();
+    else
+        slotCompilationDone();
+
 }

@@ -2,6 +2,9 @@
 #define TRANSITION_H
 
 #include <QObject>
+#include "compiler.h"
+
+class CPNet;
 
 class Transition : public QObject
 {
@@ -11,6 +14,9 @@ public:
     
     QString name;
     QString guard;
+
+    Expression *compiledGuard;
+
 signals:
     
 public slots:

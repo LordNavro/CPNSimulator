@@ -2,7 +2,8 @@
 #define CPNET_H
 
 #include <QObject>
-#include <arc.h>
+#include "arc.h"
+#include "compiler.h"
 
 class CPNet : public QObject
 {
@@ -16,6 +17,10 @@ public:
     QList<Place *> places;
     QList<Transition *> transitions;
     QList<Arc *> arcs;
+
+    DeclarationList *compiledDeclaration;
+
+    bool isCompiled;
 
 signals:
     

@@ -29,4 +29,6 @@ void CPNetForm::nameChanged(QString name)
 void CPNetForm::declarationChanged()
 {
     net->declaration = inscriptionDeclaration->document()->toPlainText();
+    net->isCompiled = false;
+    emit(compilationNeeded());
 }

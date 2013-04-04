@@ -20,7 +20,7 @@ public:
     void setNet(CPNet *net);
 
 signals:
-    
+    void compilationNeeded();
 public slots:
     void nameChanged(QString name);
     void declarationChanged();

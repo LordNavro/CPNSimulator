@@ -4,3 +4,4 @@ CPNet::CPNet(QObject *parent) :
     QObject(parent)
 {
 }
+

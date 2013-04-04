@@ -2,12 +2,14 @@
 #define PLACE_H
 
 #include <QObject>
+#include "compiler.h"
+
 
 class Place : public QObject
 {
     Q_OBJECT
 public:
-    explicit Place(QObject *parent = 0);
+    explicit Place(QObject *parent);
     
     typedef enum {UNIT, BOOL, INT} ColourSet;
 
@@ -15,8 +17,6 @@ public:
     Place::ColourSet colourSet;
     QString initialMarking;
     QString currentMarking;
-
-
 
 signals:
     
