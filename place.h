@@ -18,6 +18,9 @@ public:
     QString initialMarking;
     QString currentMarking;
 
+    Expression *parsedInitialMarking;
+    Expression *parsedCurrentMarking;
+
 signals:
     
 public slots:

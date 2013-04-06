@@ -1,7 +1,7 @@
 #include "place.h"
 
-Place::Place(QObject *parent, CPNet *net) :
-    QObject(parent), net(net)
+Place::Place(QObject *parent) :
+    QObject(parent), parsedInitialMarking(NULL), parsedCurrentMarking(NULL)
 {
     colourSet = UNIT;
 }

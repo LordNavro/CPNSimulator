@@ -15,7 +15,7 @@ public:
     QString name;
     QString guard;
 
-    Expression *compiledGuard;
+    Expression *parsedGuard;
 
 signals:
     

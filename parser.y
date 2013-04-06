@@ -1,15 +1,19 @@
 %{
 
     #include "compiler.h"
+    #include "cpnet.h"
     Command *branchCommand(Command::Type type, Expression *e, Command *c);
     Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2);
     Expression *unaryOp(Expression::Type type, Expression *e1);
-    #include <iostream>
+    #include <QtGui>
     extern int yylineno;
     extern char *yytext;
 
     int yylex();
-    int yyerror(const char *message) { std::cout << message << std::endl; return 0;}
+    void yyerror(const char *message)
+    {
+        currentParsedNet->addError(CPNet::SYNTACTIC, message);
+    }
 
 %}
 
@@ -18,7 +22,7 @@
     Data::Type dataType;
     IdList *idList;
     Id *id;
-    Command * command;
+    Command *command;
     CommandList * commandList;
     ParameterList *parameterList;
     Expression *expression;
@@ -34,6 +38,7 @@
 %token DATATYPE
 %token DATA
 %token LEQ GEQ EQ NEQ
+
 
 %left '='
 %left '&' '|'
@@ -57,14 +62,19 @@
 %type <commandList> commandList
 %type <command> command
 
+%destructor {delete $$;} <expression> <id> <data> <declaration> <command>
+%destructor {qDeleteAll(*$$); delete $$;} <expressionList> <declarationList> <commandList>
+
+%error-verbose
+
 %start start
 
 %%
 
-start: START_DECLARATION declarationList { parsedDeclaration = $2; }
-    | START_EXPRESSION expression { parsedExpression = $2; }
-    | START_MARKING marking { parsedExpression = $2; }
-    | START_PRESET preset { parsedExpression = $2; }
+start: START_DECLARATION declarationList { currentParsedDeclarationList = $2; }
+    | START_EXPRESSION expression { currentParsedExpression = $2; }
+    | START_MARKING marking { currentParsedExpression = $2; }
+    | START_PRESET preset { currentParsedExpression = $2; }
     ;
 
 
@@ -233,7 +243,3 @@ Expression *unaryOp(Expression::Type type, Expression *e1)
 }
 
 
-extern void yyerror(char* msg)
-{
-    std::cout << " Syntax Error in Line : " << yylineno << " : " << msg << "\n";
-}

@@ -3,8 +3,9 @@
 
 int startSymbol;
 
-Expression *parsedExpression;
-DeclarationList *parsedDeclaration;
+Expression *currentParsedExpression = NULL;
+DeclarationList *currentParsedDeclarationList = NULL;
+
 
 Expression::~Expression()
 {

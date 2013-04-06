@@ -18,7 +18,7 @@ public:
 
     void setArcItem(ArcItem *arcItem);
 signals:
-    void compilationNeeded();
+
 public slots:
     void expressionChanged();
     

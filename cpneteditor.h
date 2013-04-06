@@ -26,7 +26,7 @@ public:
     QHBoxLayout *layout;
 
 signals:
-    void compilationNeeded();
+
 public slots:
     void slotSelectionChanged();
     

@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(slotTabCloseRequest(int)));
     this->setCentralWidget(tabWidget);
 
-    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int));
+    connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)));
 
     setWindowTitle("CPNSimulator");
     setWindowIcon(QIcon(style()->standardIcon(QStyle::SP_CommandLink)));
@@ -57,6 +57,10 @@ void MainWindow::createActions()
     actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About program"), this);
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
+
+    actionCompile = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Compile"), this);
+
+    connect(actionCompile, SIGNAL(triggered()), this, SLOT(slotCompile()));
 }
 
 void MainWindow::createToolBars()
@@ -64,6 +68,7 @@ void MainWindow::createToolBars()
     toolBarFile = addToolBar(tr("File options"));
     toolBarSimulation = addToolBar(tr("Simulation options"));
     toolBarTools = addToolBar(tr("Tool options"));
+    toolBarSimulation = addToolBar(tr("Simulation options"));
 
     toolBarFile->addAction(actionNew);
     toolBarFile->addAction(actionLoad);
@@ -77,6 +82,7 @@ void MainWindow::createToolBars()
     toolBarTools->addAction(actionArc);
     toolBarTools->addAction(actionDelete);
 
+    toolBarSimulation->addAction(actionCompile);
 }
 
 void MainWindow::createMenuBars()
@@ -84,6 +90,7 @@ void MainWindow::createMenuBars()
     menuFile = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_FileIcon)), tr("File"));
     menuTool = menuBar()->addMenu(QIcon(":/icons/icons/hammer.ico"), tr("Tool"));
     menuAbout = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About"));
+    menuSimulation = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Simulation"));
 
     menuFile->addAction(actionNew);
     menuFile->addAction(actionLoad);
@@ -99,6 +106,7 @@ void MainWindow::createMenuBars()
 
     menuAbout->addAction(actionAbout);
 
+    menuSimulation->addAction(actionCompile);
 }
 
 void MainWindow::slotNew()
@@ -107,7 +115,6 @@ void MainWindow::slotNew()
     tabWidget->addTab(e, "New net");
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
     actionSelect->trigger();
-    connect(e, SIGNAL(compilationNeeded()), this, slot(slotCompilationNeeded());
 }
 
 void MainWindow::slotLoad()
@@ -167,6 +174,9 @@ void MainWindow::slotAbout()
 
 void MainWindow::slotCompile()
 {
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
+    CPNet *net = &e->scene->net;
+    net->compile();
 }
 
 void MainWindow::slotSimulate()
@@ -179,25 +189,8 @@ void MainWindow::slotTabCloseRequest(int index)
     slotClose();
 }
 
-void MainWindow::slotCompilationNeeded()
-{
-    this->actionCompile->setEnabled(true);
-    this->actionSimulate->setEnabled(false);
-}
-
-void MainWindow::slotCompilationDone()
-{
-    this->actionCompile->setEnabled(false);
-    this->actionSimulate->setEnabled(true);
-}
 
 void MainWindow::slotTabChanged(int i)
 {
     actionSelect->trigger();
-    CPNetEditor *e = qobject_cast<CPNetEditor *> tabWidget->currentWidget();
-    if(e->scene->net.isCompiled)
-        slotCompilationDone();
-    else
-        slotCompilationDone();
-
 }

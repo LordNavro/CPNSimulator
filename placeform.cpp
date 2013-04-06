@@ -53,8 +53,6 @@ void PlaceForm::colourSetChanged(int colourSet)
         placeItem->place->colourSet = Place::INT;
         break;
     }
-    placeItem->place->isCompiled = false;
-    emit(compilationNeeded());
 }
 
 void PlaceForm::initialMarkingChanged()
@@ -62,8 +60,6 @@ void PlaceForm::initialMarkingChanged()
     if(placeItem == NULL)
         return;
     placeItem->place->initialMarking = inscriptionInitialMarking->document()->toPlainText();
-    placeItem->place->isCompiled = false;
-    emit(compilationNeeded());
 }
 
 void PlaceForm::currentMarkingChanged()
@@ -71,6 +67,4 @@ void PlaceForm::currentMarkingChanged()
     if(placeItem == NULL)
         return;
     placeItem->place->currentMarking = inscriptionCurrentMarking->document()->toPlainText();
-    placeItem->place->isCompiled = false;
-    emit(compilationNeeded());
 }

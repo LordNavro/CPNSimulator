@@ -68,10 +68,11 @@ public slots:
 
     void slotAbout();
 
+    void slotCompile();
+    void slotSimulate();
+
     void slotTabCloseRequest(int index);
 
-    void slotCompilationNeeded();
-    void slotCompilationDone();
     void slotTabChanged(int i);
 };
 

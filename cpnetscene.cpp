@@ -64,7 +64,7 @@ void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
 {
     Place *place;
     PlaceItem *placeItem;
-    place = new Place(this, &this->net);
+    place = new Place(this);
     placeItem = new PlaceItem;
     placeItem->place = place;
     addItem(placeItem);

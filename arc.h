@@ -16,9 +16,7 @@ public:
     Transition *transition;
     bool isPreset;
 
-    bool isCompiled;
-
-    Expression *compiledExpression;
+    Expression *parsedExpression;
 
 signals:
     

@@ -6,32 +6,30 @@
 #include <QPair>
 #include <QMap>
 
-    /* to emulate multiple start symbols via scanner prologue */
-    extern int startSymbol;
 
     /* multiset data values */
     typedef int MultiUnit;
-    typedef struct
+    struct MultiBool
     {
         int t;
         int f;
-    } MultiBool;
+    } ;
     typedef QMap<int, int> MultiInt;
 
     /* data model */
-    typedef union
+    union Value
     {
         MultiUnit multiUnit;
         MultiBool multiBool;
         MultiInt *multiInt;
         bool b;
         int i;
-    } Value;
+    };
 
     class Data
     {
     public:
-        typedef enum {UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT} Type;
+        enum Type{UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT};
 
         Data(Data::Type type) : type(type){if(type == Data::MULTIINT) value.multiInt = new MultiInt;}
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
@@ -54,17 +52,18 @@
     typedef QList<Id> IdList;
     typedef QList<Parameter> ParameterList;
 
-
+    /* to emulate multiple start symbols via scanner prologue */
+    extern int startSymbol;
     /* to handle parsed data structures */
-    extern Expression *parsedExpression;
-    extern DeclarationList *parsedDeclaration;
+    extern Expression *currentParsedExpression;
+    extern DeclarationList *currentParsedDeclarationList;
 
     /* Expressions */
     class Expression
     {
     public:
-        typedef enum {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
-                      PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA} Type;
+        enum Type {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
+                      PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA};
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
@@ -82,7 +81,7 @@
     class Declaration
     {
     public:
-        typedef enum {FN, VAR} Type;
+        enum Type {FN, VAR};
 
         Declaration(Declaration::Type type) : type(type){}
         ~Declaration();
@@ -99,7 +98,7 @@
     class Command
     {
     public:
-        typedef enum {IF, IFELSE, EXPR, WHILE, DOWHILE, BLOCK, RETURN, DECL} Type;
+        enum Type {IF, IFELSE, EXPR, WHILE, DOWHILE, BLOCK, RETURN, DECL};
 
         Command(Command::Type type) : type(type){}
         ~Command();

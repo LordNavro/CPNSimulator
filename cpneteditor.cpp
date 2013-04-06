@@ -14,11 +14,6 @@ CPNetEditor::CPNetEditor(QWidget *parent) :
     formTransition = new TransitionForm(this);
     formArc = new ArcForm(this);
 
-    connect(formNet, SIGNAL(compilationNeeded()), this, SIGNAL(compilationNeeded()));
-    connect(formPlace, SIGNAL(compilationNeeded()), this, SIGNAL(compilationNeeded()));
-    connect(formTransition, SIGNAL(compilationNeeded()), this, SIGNAL(compilationNeeded()));
-    connect(formArc, SIGNAL(compilationNeeded()), this, SIGNAL(compilationNeeded()));
-
     layout = new QHBoxLayout(this);
     layout->addWidget(view);
     layout->addWidget(formNet);
