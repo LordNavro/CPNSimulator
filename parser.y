@@ -12,7 +12,7 @@
     int yylex();
     void yyerror(const char *message)
     {
-        currentParsedNet->addError(CPNet::SYNTACTIC, message);
+        currentParsedNet->addError(CPNet::SYNTACTIC, message + 13); // discard default "syntax error," prefix
     }
 
 %}

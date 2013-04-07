@@ -61,13 +61,13 @@ void CPNetEditor::compile()
         switch(error.type)
         {
         case CPNet::LEXICAL:
-            eType = "Lexical";
+            eType = tr("Lexical");
             break;
         case CPNet::SYNTACTIC:
-            eType ="Syntax";
+            eType = tr("Syntax");
             break;
         case CPNet::SEMANTIC:
-            eType = "Semantic";
+            eType = tr("Semantic");
             break;
         }
 
@@ -75,38 +75,38 @@ void CPNetEditor::compile()
         switch(error.inscription)
         {
         case CPNet::EXPRESSION:
-            eInscription = "expression";
+            eInscription = tr("expression");
             break;
         case CPNet::GUARD:
-            eInscription = "guard";
+            eInscription = tr("guard");
             break;
         case CPNet::CURRENT:
-            eInscription = "current marking";
+            eInscription = tr("current marking");
             break;
         case CPNet::INITIAL:
-            eInscription = "initial marking";
+            eInscription = tr("initial marking");
             break;
         case CPNet::DECLARATION:
-            eInscription = "declaration";
+            eInscription = tr("declaration");
             break;
         }
         QString eItem;
         switch(error.item)
         {
         case CPNet::NET:
-            eItem = "net ";
+            eItem = tr("net ");
             eItem += error.reference.net->name;
             break;
         case CPNet::PLACE:
-            eItem = "place ";
+            eItem = tr("place ");
             eItem += error.reference.place->name;
             break;
         case CPNet::TRANSITION:
-            eItem = "transition";
+            eItem = tr("transition");
             eItem += error.reference.transition->name;
             break;
         case CPNet::ARC:
-            eItem = "arc";
+            eItem = tr("arc");
             eItem += error.reference.arc->place->name + " <-> " + error.reference.arc->transition->name;
             break;
         }
