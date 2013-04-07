@@ -4,15 +4,16 @@
 CPNet *currentParsedNet = NULL;
 CPNet::ErrorItem currentParsedItem;
 CPNet::ErrorReference currentParsedReference((CPNet *)NULL);
+CPNet::ErrorInscription currentParsedInscription;
 
 CPNet::CPNet(QObject *parent) :
-    QObject(parent)
+    QObject(parent), parsedDeclaration(NULL)
 {
 }
 
 void CPNet::addError(CPNet::ErrorType type, QString message)
 {
-    errorList.append(Error(type, currentParsedItem, currentParsedReference, yylineno, message));
+    errorList.append(Error(type, currentParsedItem, currentParsedReference, currentParsedInscription, yylineno, message));
 }
 
 void CPNet::compile()
@@ -20,6 +21,7 @@ void CPNet::compile()
     currentParsedNet = this;
     currentParsedItem = CPNet::NET;
     currentParsedReference = CPNet::ErrorReference(this);
+    currentParsedInscription = CPNet::DECLARATION;
     this->errorList.clear();
 
     /* compile net itself */
@@ -37,11 +39,13 @@ void CPNet::compile()
     {
         currentParsedReference = CPNet::ErrorReference(place);
 
+        currentParsedInscription = CPNet::INITIAL;
         if(place->parsedInitialMarking)
             delete place->parsedInitialMarking;
         parseQString(place->initialMarking, START_MARKING);
         place->parsedInitialMarking = currentParsedExpression;
 
+        currentParsedInscription = CPNet::CURRENT;
         if(place->parsedCurrentMarking)
             delete place->parsedCurrentMarking;
         parseQString(place->currentMarking, START_MARKING);
@@ -50,6 +54,7 @@ void CPNet::compile()
 
     /* compile transiion guards */
     currentParsedItem = CPNet::TRANSITION;
+    currentParsedInscription = CPNet::GUARD;
     foreach(Transition *transition, transitions)
     {
         currentParsedReference = CPNet::ErrorReference(transition);
@@ -62,6 +67,7 @@ void CPNet::compile()
 
     /* compile arc expressions */
     currentParsedItem = CPNet::ARC;
+    currentParsedInscription = CPNet::EXPRESSION;
     foreach(Arc *arc, arcs)
     {
         currentParsedReference = CPNet::ErrorReference(arc);
@@ -72,9 +78,5 @@ void CPNet::compile()
         arc->parsedExpression = currentParsedExpression;
     }
 
-    foreach(CPNet::Error error, errorList)
-    {
-        qDebug() << "ERROR" << error.message.toAscii().data();
-    }
 }
 

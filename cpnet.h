@@ -12,8 +12,9 @@ class CPNet : public QObject
 {
     Q_OBJECT
 public:
-    typedef enum {LEXICAL, SYNTACTIC, SEMANTIC} ErrorType;
-    typedef enum {PLACE, TRANSITION, ARC, NET} ErrorItem;
+    enum ErrorType {LEXICAL, SYNTACTIC, SEMANTIC};
+    enum ErrorItem {PLACE, TRANSITION, ARC, NET};
+    enum ErrorInscription {INITIAL, CURRENT, EXPRESSION, GUARD, DECLARATION};
     union ErrorReference
     {
         Place *place;
@@ -31,10 +32,11 @@ public:
         CPNet::ErrorType type;
         CPNet::ErrorItem item;
         CPNet::ErrorReference reference;
+        CPNet::ErrorInscription inscription;
         int lineNo;
         QString message;
-        Error(CPNet::ErrorType type, CPNet::ErrorItem item, CPNet::ErrorReference reference, int lineNo, QString message)
-            : type(type), item(item), reference(reference), lineNo(lineNo), message(message){}
+        Error(CPNet::ErrorType type, CPNet::ErrorItem item, CPNet::ErrorReference reference, CPNet::ErrorInscription inscription, int lineNo, QString message)
+            : type(type), item(item), reference(reference), inscription(inscription), lineNo(lineNo), message(message){}
     };
 
     explicit CPNet(QObject *parent = 0);
@@ -64,5 +66,6 @@ public slots:
 extern CPNet *currentParsedNet;
 extern CPNet::ErrorItem currentParsedItem;
 extern CPNet::ErrorReference currentParsedReference;
+extern CPNet::ErrorInscription currentParsedInscription;
 
 #endif // CPNET_H

@@ -174,9 +174,10 @@ void MainWindow::slotAbout()
 
 void MainWindow::slotCompile()
 {
+    if(!tabWidget->currentWidget())
+        return;
     CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
-    CPNet *net = &e->scene->net;
-    net->compile();
+    e->compile();
 }
 
 void MainWindow::slotSimulate()

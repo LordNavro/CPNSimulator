@@ -9,13 +9,12 @@ class CPNetForm : public QWidget
 {
     Q_OBJECT
 
-private:
+public:
     CPNet *net;
     QFormLayout *layout;
     QLineEdit *lineName;
     InscriptionEdit *inscriptionDeclaration;
 
-public:
     explicit CPNetForm(QWidget *parent = 0);
     void setNet(CPNet *net);
 

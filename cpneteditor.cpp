@@ -8,21 +8,116 @@ CPNetEditor::CPNetEditor(QWidget *parent) :
     view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     view->setScene(scene);
     connect(scene, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()));
+    table = new QTableWidget(this);
+    table->setColumnCount(1);
+    table->setMaximumHeight(100);
+
+    QStringList labels;
+    labels.append(tr("Compilation output"));
+    table->setHorizontalHeaderLabels(labels);
+    table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    table->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+    table->verticalHeader()->setResizeMode(QHeaderView::Fixed);
+    table->verticalHeader()->setDefaultSectionSize(16);
+
+    connect(table, SIGNAL(cellClicked(int,int)), this, SLOT(slotCellClicked(int,int)));
 
     formNet = new CPNetForm(this);
     formPlace = new PlaceForm(this);
     formTransition = new TransitionForm(this);
     formArc = new ArcForm(this);
 
-    layout = new QHBoxLayout(this);
-    layout->addWidget(view);
-    layout->addWidget(formNet);
-    layout->addWidget(formPlace);
-    layout->addWidget(formTransition);
-    layout->addWidget(formArc);
+    layout = new QGridLayout(this);
+    layout->addWidget(view, 0, 0);
+    layout->addWidget(formNet,0,1);
+    layout->addWidget(formPlace,0,1);
+    layout->addWidget(formTransition,0,1);
+    layout->addWidget(formArc,0,1);
+    layout->addWidget(table, 1,0,1,2);
 
     setLayout(layout);
     slotSelectionChanged();
+}
+
+void CPNetEditor::compile()
+{
+    CPNet *net = &scene->net;
+    net->compile();
+    if(net->errorList.isEmpty())
+    {
+        table->setRowCount(1);
+        QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        table->setItem(0, 0, item);
+        return;
+    }
+
+    table->setRowCount(net->errorList.length());
+    int row = 0;
+    foreach(CPNet::Error error, net->errorList)
+    {
+        QString eType;
+        switch(error.type)
+        {
+        case CPNet::LEXICAL:
+            eType = "Lexical";
+            break;
+        case CPNet::SYNTACTIC:
+            eType ="Syntax";
+            break;
+        case CPNet::SEMANTIC:
+            eType = "Semantic";
+            break;
+        }
+
+        QString eInscription;
+        switch(error.inscription)
+        {
+        case CPNet::EXPRESSION:
+            eInscription = "expression";
+            break;
+        case CPNet::GUARD:
+            eInscription = "guard";
+            break;
+        case CPNet::CURRENT:
+            eInscription = "current marking";
+            break;
+        case CPNet::INITIAL:
+            eInscription = "initial marking";
+            break;
+        case CPNet::DECLARATION:
+            eInscription = "declaration";
+            break;
+        }
+        QString eItem;
+        switch(error.item)
+        {
+        case CPNet::NET:
+            eItem = "net ";
+            eItem += error.reference.net->name;
+            break;
+        case CPNet::PLACE:
+            eItem = "place ";
+            eItem += error.reference.place->name;
+            break;
+        case CPNet::TRANSITION:
+            eItem = "transition";
+            eItem += error.reference.transition->name;
+            break;
+        case CPNet::ARC:
+            eItem = "arc";
+            eItem += error.reference.arc->place->name + " <-> " + error.reference.arc->transition->name;
+            break;
+        }
+
+        QString message = tr("%1 error on line %2 in %3 of %4: %5").arg(eType, QString::number(error.lineNo),
+                                                                        eInscription, eItem, error.message);
+
+        QTableWidgetItem *item = new QTableWidgetItem(message);
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        table->setItem(row++, 0, item);
+    }
 }
 
 void CPNetEditor::slotSelectionChanged()
@@ -53,5 +148,55 @@ void CPNetEditor::slotSelectionChanged()
     {
         formArc->setArcItem(arcItem);
         formArc->show();
+    }
+}
+
+void CPNetEditor::slotCellClicked(int x, int /*y*/)
+{
+    CPNet *net = &scene->net;
+    if(x >= net->errorList.length())
+        return;
+    foreach(QGraphicsItem *item, scene->items())
+        item->setSelected(false);
+    CPNet::Error error = net->errorList[x];
+    InscriptionEdit *i = NULL;
+    switch(error.item)
+    {
+    case CPNet::NET:
+        i = formNet->inscriptionDeclaration;
+        break;
+    case CPNet::PLACE:
+        if(error.inscription == CPNet::CURRENT)
+            i = formPlace->inscriptionCurrentMarking;
+        else
+            i = formPlace->inscriptionInitialMarking;
+        foreach(QGraphicsItem *item, scene->items())
+            if(PlaceItem *placeItem = qgraphicsitem_cast<PlaceItem *>(item))
+                if(placeItem->place == error.reference.place)
+                    placeItem->setSelected(true);
+        break;
+    case CPNet::TRANSITION:
+        i = formTransition->inscriptionGuard;
+        foreach(QGraphicsItem *item, scene->items())
+            if(TransitionItem *transitionItem = qgraphicsitem_cast<TransitionItem *>(item))
+                if(transitionItem->transition == error.reference.transition)
+                    transitionItem->setSelected(true);
+        break;
+    case CPNet::ARC:
+        i = formArc->inscriptionExpression;
+        foreach(QGraphicsItem *item, scene->items())
+            if(ArcItem *arcItem = qgraphicsitem_cast<ArcItem *>(item))
+                if(arcItem->arc == error.reference.arc)
+                    arcItem->setSelected(true);
+        break;
+    }
+    if(i)
+    {
+        QTextCursor c;
+        i->setFocus();
+        c = i->textCursor();
+        c.setPosition(0);
+        c.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, error.lineNo);
+        i->setTextCursor(c);
     }
 }

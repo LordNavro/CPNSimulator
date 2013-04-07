@@ -17,18 +17,23 @@ public:
 
     CPNetScene *scene;
     QGraphicsView *view;
+    QTableWidget *table;
 
     CPNetForm *formNet;
     PlaceForm *formPlace;
     TransitionForm *formTransition;
     ArcForm *formArc;
 
-    QHBoxLayout *layout;
+    QGridLayout *layout;
+
+
+    void compile(void);
 
 signals:
 
 public slots:
     void slotSelectionChanged();
+    void slotCellClicked(int x, int y);
     
 };
 
