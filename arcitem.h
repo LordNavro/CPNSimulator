@@ -16,8 +16,6 @@ public:
     QGraphicsItem *from;
     QGraphicsItem *to;
 
-    QPointF start;
-    QPointF end;
 
     int type() const{ return Type; }
 

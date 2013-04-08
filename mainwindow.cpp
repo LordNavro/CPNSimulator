@@ -125,7 +125,18 @@ void MainWindow::slotLoad()
         return;
     CPNetEditor *e = new CPNetEditor(this);
     e->fileName = fileName;
-    e->loadNet();
+
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly);
+    if(!file.isOpen())
+    {
+        QMessageBox::warning(this, "Open file error", "Failed to open file " + fileName);
+        return;
+    }
+    QDomDocument xml("ColouredPetriNet");
+    xml.setContent(file.readAll());
+    e->xmlToNet(xml);
+
     tabWidget->addTab(e, e->fileName);
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
     actionSelect->trigger();
@@ -141,24 +152,35 @@ void MainWindow::slotSave()
         slotSaveAs();
         return;
     }
-    e->saveNet();
+    QFile file(e->fileName);
+    if(!file.open(QIODevice::WriteOnly))
+    {
+        QMessageBox::warning(this, tr("Error saving net"), tr("Cant open file %1 in write mode!").arg(e->fileName));
+        return;
+    }
+    QTextStream ts(&file);
+    ts << e->netToXml().toString();
+    file.close();
+
+    QMessageBox::information(this, tr("Save net"), tr("Net %1 successfully saved as %2").arg(e->scene->net.name, e->fileName));
 }
 
 void MainWindow::slotSaveAs()
 {
     if(!tabWidget->currentWidget())
         return;
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Coloured Petri Net"), QString(), "Coloured Petri Net (*.cpn)");
     if(fileName == "")
         return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
     e->fileName = fileName;
-    e->saveNet();
-    QMessageBox::information(this, tr("Save net"), tr("Net %1 successfully saved as %2").arg(e->scene->net.name, e->fileName));
+    tabWidget->setTabText(tabWidget->currentIndex(), e->fileName);
+    slotSave();
 }
 
 void MainWindow::slotClose()
 {
+    delete tabWidget->currentWidget();
     tabWidget->removeTab(tabWidget->currentIndex());
 }
 

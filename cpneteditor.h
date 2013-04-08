@@ -8,6 +8,7 @@
 #include "placeform.h"
 #include "transitionform.h"
 #include "arcform.h"
+#include <QtXml/QDomDocument>
 
 class CPNetEditor : public QWidget
 {
@@ -29,8 +30,8 @@ public:
     QString fileName;
 
     void compile(void);
-    void saveNet();
-    void loadNet();
+    QDomDocument netToXml();
+    void xmlToNet(QDomDocument xml);
 
 signals:
 

@@ -49,7 +49,6 @@ public:
     QList<Arc *> arcs;
 
     DeclarationList *parsedDeclaration;
-
     QList<CPNet::Error> errorList;
 
     void addError(CPNet::ErrorType type, QString message);
