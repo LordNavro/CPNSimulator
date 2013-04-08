@@ -32,6 +32,7 @@ void MainWindow::createActions()
 
     connect(actionNew, SIGNAL(triggered()), this, SLOT(slotNew()));
     connect(actionSave, SIGNAL(triggered()), this, SLOT(slotSave()));
+    connect(actionSaveAs, SIGNAL(triggered()), this, SLOT(slotSaveAs()));
     connect(actionLoad, SIGNAL(triggered()), this, SLOT(slotLoad()));
     connect(actionClose, SIGNAL(triggered()), this, SLOT(slotClose()));
 
@@ -119,14 +120,41 @@ void MainWindow::slotNew()
 
 void MainWindow::slotLoad()
 {
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Load Coloured Petri Net"), QString(), "Coloured Petri Net (*.cpn)");
+    if(fileName == "")
+        return;
+    CPNetEditor *e = new CPNetEditor(this);
+    e->fileName = fileName;
+    e->loadNet();
+    tabWidget->addTab(e, e->fileName);
+    tabWidget->setCurrentIndex(tabWidget->count() - 1);
+    actionSelect->trigger();
 }
 
 void MainWindow::slotSave()
 {
+    if(!tabWidget->currentWidget())
+        return;
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
+    if(e->fileName == "")
+    {
+        slotSaveAs();
+        return;
+    }
+    e->saveNet();
 }
 
 void MainWindow::slotSaveAs()
 {
+    if(!tabWidget->currentWidget())
+        return;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save Coloured Petri Net"), QString(), "Coloured Petri Net (*.cpn)");
+    if(fileName == "")
+        return;
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
+    e->fileName = fileName;
+    e->saveNet();
+    QMessageBox::information(this, tr("Save net"), tr("Net %1 successfully saved as %2").arg(e->scene->net.name, e->fileName));
 }
 
 void MainWindow::slotClose()

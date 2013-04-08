@@ -1,4 +1,5 @@
 #include "cpneteditor.h"
+#include <QtXml/QDomDocument>
 
 CPNetEditor::CPNetEditor(QWidget *parent) :
     QWidget(parent)
@@ -120,6 +121,44 @@ void CPNetEditor::compile()
     }
 }
 
+void CPNetEditor::saveNet()
+{
+    CPNet *net = &scene->net;
+    QDomDocument xml("DisjointSetsForest");
+    QDomElement root = xml.createElement("cpnet");
+    root.setAttribute("name", net->name);
+    QDomElement declaration = xml.createElement("declaration");
+    QDomCDATASection declarationData = xml.createCDATASection(net->declaration);
+    declaration.appendChild(declarationData);
+    root.appendChild(declaration);
+    QDomElement places = xml.createElement("places");
+    foreach(Place *place, net->places)
+    {
+        QDomElement placeElem = xml.createElement("place");
+        PlaceItem *placeItem = scene->getPlaceItem(place);
+        QDomElement initial = xml.createElement("initialMarking");
+        QDomElement current = xml.createElement("currentMarking");
+        QDomCDATASection initialData = xml.createCDATASection(place->initialMarking);
+        QDomCDATASection currentData = xml.createCDATASection(place->currentMarking);
+        initial.appendChild(initialData);
+        current.appendChild(currentData);
+        placeElem.appendChild(initial);
+        placeElem.appendChild(current);
+        placeElem.setAttribute("name", place->name);
+        placeElem.setAttribute("x", placeItem->x());
+        placeElem.setAttribute("y", placeItem->y());
+        placeElem.setAttribute("colourSet", place->colourSet);
+        places.appendChild(placeElem);
+    }
+    root.appendChild(places);
+    xml.appendChild(root);
+    qDebug() << xml.toString();
+}
+
+void CPNetEditor::loadNet()
+{
+}
+
 void CPNetEditor::slotSelectionChanged()
 {
     formNet->hide();
@@ -170,24 +209,18 @@ void CPNetEditor::slotCellClicked(int x, int /*y*/)
             i = formPlace->inscriptionCurrentMarking;
         else
             i = formPlace->inscriptionInitialMarking;
-        foreach(QGraphicsItem *item, scene->items())
-            if(PlaceItem *placeItem = qgraphicsitem_cast<PlaceItem *>(item))
-                if(placeItem->place == error.reference.place)
-                    placeItem->setSelected(true);
+        if(PlaceItem *placeItem = scene->getPlaceItem(error.reference.place))
+            placeItem->setSelected(true);
         break;
     case CPNet::TRANSITION:
         i = formTransition->inscriptionGuard;
-        foreach(QGraphicsItem *item, scene->items())
-            if(TransitionItem *transitionItem = qgraphicsitem_cast<TransitionItem *>(item))
-                if(transitionItem->transition == error.reference.transition)
-                    transitionItem->setSelected(true);
+        if(TransitionItem *transitionItem = scene->getTransitionItem(error.reference.transition))
+            transitionItem->setSelected(true);
         break;
     case CPNet::ARC:
         i = formArc->inscriptionExpression;
-        foreach(QGraphicsItem *item, scene->items())
-            if(ArcItem *arcItem = qgraphicsitem_cast<ArcItem *>(item))
-                if(arcItem->arc == error.reference.arc)
-                    arcItem->setSelected(true);
+        if(ArcItem *arcItem = scene->getArcItem(error.reference.arc))
+            arcItem->setSelected(true);
         break;
     }
     if(i)

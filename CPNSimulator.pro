@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     arcitem.cpp \
     inscriptionedit.cpp \
     inscriptionhighlighter.cpp \
-    compiler.cpp
+    compiler.cpp \
+    symboltable.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -54,7 +55,8 @@ HEADERS  += mainwindow.h \
     arcitem.h \
     inscriptionedit.h \
     inscriptionhighlighter.h \
-    compiler.h
+    compiler.h \
+    symboltable.h
 
 RESOURCES += \
     icons.qrc

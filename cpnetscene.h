@@ -42,6 +42,10 @@ public:
     void deleteItem(QGraphicsSceneMouseEvent *mouseEvent);
     void deleteArc(ArcItem *arcItem);
 
+    PlaceItem *getPlaceItem(Place *place);
+    TransitionItem *getTransitionItem(Transition *transition);
+    ArcItem *getArcItem(Arc *arc);
+
 signals:
     
 public slots:

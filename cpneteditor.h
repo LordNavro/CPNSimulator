@@ -26,8 +26,11 @@ public:
 
     QGridLayout *layout;
 
+    QString fileName;
 
     void compile(void);
+    void saveNet();
+    void loadNet();
 
 signals:
 

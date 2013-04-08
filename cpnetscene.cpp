@@ -199,3 +199,30 @@ void CPNetScene::deleteArc(ArcItem *arcItem)
     delete arcItem;
 }
 
+PlaceItem *CPNetScene::getPlaceItem(Place *place)
+{
+    foreach(QGraphicsItem *item, items())
+        if(PlaceItem *placeItem = qgraphicsitem_cast<PlaceItem *>(item))
+            if(placeItem->place == place)
+                return placeItem;
+    return NULL;
+}
+
+TransitionItem *CPNetScene::getTransitionItem(Transition *transition)
+{
+    foreach(QGraphicsItem *item, items())
+        if(TransitionItem *transitionItem = qgraphicsitem_cast<TransitionItem *>(item))
+            if(transitionItem->transition == transition)
+                return transitionItem;
+    return NULL;
+}
+
+ArcItem *CPNetScene::getArcItem(Arc *arc)
+{
+    foreach(QGraphicsItem *item, items())
+        if(ArcItem *arcItem = qgraphicsitem_cast<ArcItem *>(item))
+            if(arcItem->arc == arc)
+                return arcItem;
+    return NULL;
+}
+
