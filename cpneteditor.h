@@ -8,6 +8,7 @@
 #include "placeform.h"
 #include "transitionform.h"
 #include "arcform.h"
+#include "compiler.h"
 #include <QtXml/QDomDocument>
 
 class CPNetEditor : public QWidget

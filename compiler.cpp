@@ -1,3 +1,4 @@
+#include "symboltable.h"
 #include "compiler.h"
 #include "parser.parser.hpp"
 
@@ -5,6 +6,8 @@ int startSymbol;
 
 Expression *currentParsedExpression = NULL;
 DeclarationList *currentParsedDeclarationList = NULL;
+SymbolTable *currentGlobalSymbolTable = NULL;
+SymbolTable *currentLocalSymbolTable = NULL;
 
 
 Expression::~Expression()

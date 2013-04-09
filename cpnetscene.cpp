@@ -182,7 +182,7 @@ void CPNetScene::deleteArc(ArcItem *arcItem)
 {
     PlaceItem *placeItem;
     TransitionItem *transitionItem;
-    if(placeItem = qgraphicsitem_cast<PlaceItem *>(arcItem->from))
+    if((placeItem = qgraphicsitem_cast<PlaceItem *>(arcItem->from)) != NULL)
     {
         transitionItem = qgraphicsitem_cast<TransitionItem *>(arcItem->to);
     }

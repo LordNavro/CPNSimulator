@@ -53,7 +53,11 @@ public:
 
     void addError(CPNet::ErrorType type, QString message);
 
-    void compile(void);
+    void syntaxAnalysis(void);
+    void semanticAnalysis();
+    IdList collectIds(Expression *expression);
+    QList<Arc *> presetArcs(Transition *transition);
+    QList<Arc *> postsetArcs(Transition *transition);
 
 signals:
     

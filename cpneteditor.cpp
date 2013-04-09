@@ -44,14 +44,18 @@ CPNetEditor::CPNetEditor(QWidget *parent) :
 void CPNetEditor::compile()
 {
     CPNet *net = &scene->net;
-    net->compile();
+    net->syntaxAnalysis();
     if(net->errorList.isEmpty())
     {
-        table->setRowCount(1);
-        QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
-        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-        table->setItem(0, 0, item);
-        return;
+        net->semanticAnalysis();
+        if(net->errorList.isEmpty())
+        {
+            table->setRowCount(1);
+            QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
+            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+            table->setItem(0, 0, item);
+            return;
+        }
     }
 
     table->setRowCount(net->errorList.length());
@@ -120,6 +124,7 @@ void CPNetEditor::compile()
         table->setItem(row++, 0, item);
     }
 }
+
 
 QDomDocument CPNetEditor::netToXml()
 {
@@ -208,9 +213,9 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     qDeleteAll(net->places);
     qDeleteAll(net->transitions);
     qDeleteAll(net->arcs);
-    net->places.empty();
-    net->transitions.empty();
-    net->arcs.empty();
+    net->places.clear();
+    net->transitions.clear();
+    net->arcs.clear();
     qDeleteAll(scene->items());
 
     QDomElement root = xml.firstChildElement("cpnet");

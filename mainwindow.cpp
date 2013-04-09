@@ -241,7 +241,7 @@ void MainWindow::slotTabCloseRequest(int index)
 }
 
 
-void MainWindow::slotTabChanged(int i)
+void MainWindow::slotTabChanged(int /*i*/)
 {
     actionSelect->trigger();
 }

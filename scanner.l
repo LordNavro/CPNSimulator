@@ -76,6 +76,7 @@ false       {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data-
 
 int parseQString(QString input, int symbol)
 {
+    yylineno = 0;
     startSymbol = symbol;
     YY_BUFFER_STATE buffer = yy_scan_string (input.toAscii().data());
     int result  = yyparse();

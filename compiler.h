@@ -41,6 +41,7 @@
     class Expression;
     class Declaration;
     class Command;
+    class SymbolTable;
 
     /* aliases */
     typedef QString Id;
@@ -57,6 +58,9 @@
     /* to handle parsed data structures */
     extern Expression *currentParsedExpression;
     extern DeclarationList *currentParsedDeclarationList;
+    /* symbol tables */
+    extern SymbolTable *currentGlobalSymbolTable;
+    extern SymbolTable *currentLocalSymbolTable;
 
     /* Expressions */
     class Expression

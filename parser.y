@@ -2,9 +2,17 @@
 
     #include "compiler.h"
     #include "cpnet.h"
+    #include "symboltable.h"
     Command *branchCommand(Command::Type type, Expression *e, Command *c);
     Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2);
     Expression *unaryOp(Expression::Type type, Expression *e1);
+
+    #define checkNotDeclaration(command)  if(command->type == Command::DECL)\
+    {\
+        yyerror("syntax error, command in branch expression cannot be declaration");\
+        YYERROR;\
+    };
+
     #include <QtGui>
     extern int yylineno;
     extern char *yytext;
@@ -60,7 +68,7 @@
 %type <declaration> declaration
 %type <declarationList> declarationList
 %type <commandList> commandList
-%type <command> command
+%type <command> command commandND
 
 %destructor {delete $$;} <expression> <id> <data> <declaration> <command>
 %destructor {qDeleteAll(*$$); delete $$;} <expressionList> <declarationList> <commandList>
@@ -83,17 +91,74 @@ declarationList: /*empty*/ { $$ = new DeclarationList(); }
     ;
 
 declaration: DATATYPE idList ';' {
+        if($1 == Data::MULTIUNIT || $1 == Data::MULTIBOOL || $1 == Data::MULTIINT)
+        {
+            yyerror("syntax error, global variables cannot be of multiset type");
+            YYERROR;
+        }
         $$ = new Declaration(Declaration::VAR);
         $$->dataType = $1;
         $$->idList = *$2;
+        foreach(Id id, $$->idList)
+        {
+            SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
+            symbol->dataType = $1;
+            symbol->data = new Data($1);
+            if(!currentGlobalSymbolTable->addSymbol(id, symbol))
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " already declared/defined in this scope");
+        }
         delete $2;
     }
-    | DATATYPE ID '(' parameterList ')' command {
+    | DATATYPE ID '(' parameterList ')' {
+        currentLocalSymbolTable = new SymbolTable();
+        foreach(Parameter parameter, *$4)
+        {
+            SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
+            symbol->dataType = parameter.first;
+            if(!currentLocalSymbolTable->addSymbol(parameter.second, symbol))
+                currentParsedNet->addError(CPNet::SEMANTIC, "Duplicate parameter " + parameter.second);
+        }
+    } commandND {
         $$ = new Declaration(Declaration::FN);
         $$->dataType = $1;
         $$->id = *$2;
         $$->parameterList = *$4;
-        $$->command = $6;
+        $$->command = $7;
+        SymbolTable::Symbol *existing = currentGlobalSymbolTable->findSymbol(*$2);
+        if(existing)
+        {
+            if(existing->type != SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already declared as a variable");
+            else if(existing->command)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already defined");
+            else if(existing->dataType != $1 || existing->parameterList != *$4)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Definition of " + *$2 + " does not match declaration");
+            existing->command = $7;
+        }
+        else
+        {
+            SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::FN);
+            symbol->dataType = $1;
+            symbol->parameterList = *$4;
+            symbol->command = $7;
+            currentGlobalSymbolTable->addSymbol(*$2, symbol);
+        }
+        delete $4;
+        delete $2;
+        delete(currentLocalSymbolTable);
+    }
+    | DATATYPE ID '(' parameterList ')' ';' {
+        $$ = new Declaration(Declaration::FN);
+        $$->dataType = $1;
+        $$->id = *$2;
+        $$->parameterList = *$4;
+        $$->command = NULL;
+        SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::FN);
+        symbol->dataType = $1;
+        symbol->parameterList = *$4;
+        symbol->command = NULL;
+        if(!currentGlobalSymbolTable->addSymbol(*$2, symbol))
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already declared/defined in this scope");
         delete $4;
         delete $2;
     }
@@ -112,16 +177,7 @@ idList: ID {
     ;
 
 parameterList: /*empty*/ { $$ = new ParameterList(); }
-    | DATATYPE ID {
-        $$ = new ParameterList();
-        $$->append(Parameter($1, *$2));
-        delete $2;
-    }
-    | DATATYPE ID ',' parameterListNE {
-        $$ = $4;
-        $$->append(Parameter($1, *$2));
-        delete $2;
-    }
+    | parameterListNE { $$ = $1; }
     ;
 
 parameterListNE: DATATYPE ID {
@@ -140,24 +196,37 @@ commandList: /*empty*/ { $$ = new CommandList(); }
     | commandList command { $$ = $1; $$->append($2); }
     ;
 
-command: WHILE '(' expression ')' command { $$ = branchCommand(Command::WHILE, $3, $5); }
-    | IF '(' expression ')' command { $$ = branchCommand(Command::IF, $3, $5); }
-    | IF '(' expression ')' command ELSE command { $$ = branchCommand(Command::IFELSE, $3, $5); $$->command2 = $7; }
-    | DO command WHILE '(' expression ')' { $$ = branchCommand(Command::DOWHILE, $5, $2); }
+command: commandND
     | DATATYPE idList ';' {
         $$ = new Command(Command::DECL);
         $$->dataType = $1;
         $$->idList = *$2;
+        foreach(Id id, $$->idList)
+        {
+            SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
+            symbol->dataType = $1;
+            symbol->data = new Data($1);
+            if(!currentLocalSymbolTable->addSymbol(id, symbol))
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " already declared/defined in this scope");
+        }
         delete $2;
     }
+    ;
+
+commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHILE, $3, $5); }
+    | IF '(' expression ')' commandND { $$ = branchCommand(Command::IF, $3, $5); }
+    | IF '(' expression ')' commandND ELSE commandND { $$ = branchCommand(Command::IFELSE, $3, $5); $$->command2 = $7; }
+    | DO commandND WHILE '(' expression ')' { $$ = branchCommand(Command::DOWHILE, $5, $2); }
     | expression ';' { $$ = new Command(Command::EXPR); $$->expression = $1; }
     | RETURN expression ';' { $$ = new Command(Command::RETURN); $$->expression = $2; }
-    | '{' commandList '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$2; delete $2; }
+    | '{' { currentLocalSymbolTable->increaseScope(); } commandList { currentLocalSymbolTable->decreaseScope(); } '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$3; delete $3; }
     ;
 
 expression:   ID '=' expression {
+        SymbolTable::Symbol symbol = currentLocalSymbolTable->findSymbol(*$1));
         $$ = unaryOp(Expression::ASSIGN, $3);
-        $$->id = *$1; delete $1;
+        $$->id = *$1;
+        delete $1;
     }
     | expression '&' expression {$$ = binaryOp(Expression::AND, $1, $3);}
     | expression '|' expression {$$ = binaryOp(Expression::OR,  $1, $3);}
@@ -241,5 +310,7 @@ Expression *unaryOp(Expression::Type type, Expression *e1)
     e->left = e1;
     return e;
 }
+
+
 
 
