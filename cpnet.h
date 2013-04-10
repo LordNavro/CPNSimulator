@@ -50,6 +50,7 @@ public:
 
     DeclarationList *parsedDeclaration;
     QList<CPNet::Error> errorList;
+    SymbolTable *globalSymbolTable;
 
     void addError(CPNet::ErrorType type, QString message);
 

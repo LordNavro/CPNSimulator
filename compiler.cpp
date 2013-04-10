@@ -8,6 +8,8 @@ Expression *currentParsedExpression = NULL;
 DeclarationList *currentParsedDeclarationList = NULL;
 SymbolTable *currentGlobalSymbolTable = NULL;
 SymbolTable *currentLocalSymbolTable = NULL;
+SymbolTable *currentSymbolTable = NULL;
+Data::Type currentReturnType;
 
 
 Expression::~Expression()
@@ -32,6 +34,7 @@ Expression::~Expression()
     case Expression::ASSIGN:
     case Expression::NOT:
     case Expression::UMINUS:
+    case Expression::CONVERT:
         delete left;
         break;
     case Expression::FN:

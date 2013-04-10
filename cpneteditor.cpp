@@ -45,17 +45,14 @@ void CPNetEditor::compile()
 {
     CPNet *net = &scene->net;
     net->syntaxAnalysis();
+    net->semanticAnalysis();
     if(net->errorList.isEmpty())
     {
-        net->semanticAnalysis();
-        if(net->errorList.isEmpty())
-        {
-            table->setRowCount(1);
-            QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
-            item->setFlags(item->flags() ^ Qt::ItemIsEditable);
-            table->setItem(0, 0, item);
-            return;
-        }
+        table->setRowCount(1);
+        QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
+        item->setFlags(item->flags() ^ Qt::ItemIsEditable);
+        table->setItem(0, 0, item);
+        return;
     }
 
     table->setRowCount(net->errorList.length());

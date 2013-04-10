@@ -7,8 +7,10 @@ CPNet::ErrorItem currentParsedItem;
 CPNet::ErrorReference currentParsedReference((CPNet *)NULL);
 CPNet::ErrorInscription currentParsedInscription;
 
+Expression *convert(Data::Type type, Expression *e);
+
 CPNet::CPNet(QObject *parent) :
-    QObject(parent), parsedDeclaration(NULL)
+    QObject(parent), parsedDeclaration(NULL), globalSymbolTable(NULL)
 {
 }
 
@@ -23,9 +25,11 @@ void CPNet::syntaxAnalysis()
     currentParsedItem = CPNet::NET;
     currentParsedReference = CPNet::ErrorReference(this);
     currentParsedInscription = CPNet::DECLARATION;
-    this->errorList.clear();
+    errorList.clear();
 
-    currentGlobalSymbolTable = new SymbolTable();
+    if(globalSymbolTable != NULL)
+        delete globalSymbolTable;
+    currentGlobalSymbolTable = globalSymbolTable = new SymbolTable();
 
     /* compile net itself */
     if(parsedDeclaration)
@@ -80,9 +84,6 @@ void CPNet::syntaxAnalysis()
         parseQString(arc->expression, arc->isPreset ? START_PRESET : START_EXPRESSION);
         arc->parsedExpression = currentParsedExpression;
     }
-
-    delete currentGlobalSymbolTable;
-
 }
 
 QList<Arc *> CPNet::presetArcs(Transition *transition)
@@ -129,12 +130,78 @@ void CPNet::semanticAnalysis()
     }
 
     /* Definition of declared functions */
-    //!FIXME
+    foreach(Declaration *declaration, *parsedDeclaration)
+    {
+        if(declaration->type == Declaration::FN && globalSymbolTable->findSymbol(declaration->id)->command == NULL)
+            errorList.append(Error(SEMANTIC, NET, ErrorReference(this), DECLARATION, 0, tr("Function %1 declared, but not defined").arg(declaration->id)));
+    }
+
+
+    /* Place markings type */
+    foreach(Place *place, places)
+    {
+        Data::Type dataType;
+        switch(place->colourSet)
+        {
+        case Place::UNIT:
+            dataType = Data::MULTIUNIT;
+            break;
+        case Place::BOOL:
+            dataType = Data::MULTIBOOL;
+            break;
+        case Place::INT:
+            dataType = Data::MULTIINT;
+            break;
+        }
+
+        if(place->parsedInitialMarking)
+            place->parsedInitialMarking = convert(dataType, place->parsedInitialMarking);
+        if(place->parsedCurrentMarking)
+            place->parsedCurrentMarking = convert(dataType, place->parsedCurrentMarking);
+    }
+
+    /* Arc expression type */
+    foreach(Arc *arc, arcs)
+    {
+        Data::Type dataType;
+        switch(arc->place->colourSet)
+        {
+        case Place::UNIT:
+            dataType = Data::MULTIUNIT;
+            break;
+        case Place::BOOL:
+            dataType = Data::MULTIBOOL;
+            break;
+        case Place::INT:
+            dataType = Data::MULTIINT;
+            break;
+        }
+
+        if(arc->parsedExpression)
+        {
+            if(arc->isPreset)
+            {
+                if(arc->parsedExpression->dataType != dataType)
+                    addError(CPNet::SEMANTIC, "Invalid type of arc expression");
+            }
+            else
+                arc->parsedExpression = convert(dataType, arc->parsedExpression);
+        }
+    }
+
+    /* Transition guard types */
+    foreach(Transition *transition, transitions)
+    {
+        if(transition->parsedGuard)
+            transition->parsedGuard = convert(Data::BOOL, transition->parsedGuard);
+    }
 }
 
 IdList CPNet::collectIds(Expression *expression)
 {
     IdList result;
+    if(expression == NULL)
+        return result;
     switch(expression->type)
     {
     case Expression::MULTISET:
@@ -155,6 +222,7 @@ IdList CPNet::collectIds(Expression *expression)
     case Expression::ASSIGN:
     case Expression::NOT:
     case Expression::UMINUS:
+    case Expression::CONVERT:
         result.append(collectIds(expression->left));
         break;
     case Expression::FN:

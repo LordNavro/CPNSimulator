@@ -4,8 +4,12 @@
     #include "cpnet.h"
     #include "symboltable.h"
     Command *branchCommand(Command::Type type, Expression *e, Command *c);
-    Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2);
-    Expression *unaryOp(Expression::Type type, Expression *e1);
+    Expression *binaryOp(Data::Type dataType, Expression::Type type, Expression *e1, Expression *e2);
+    Expression *unaryOp(Data::Type dataType, Expression::Type type, Expression *e1);
+    Expression *convert(Data::Type type, Expression *e);
+    Expression *plus(Expression *e1, Expression *e2);
+    Expression *multiset(Expression *e1, Expression *e2);
+    bool isSimpleType(Data::Type type);
 
     #define checkNotDeclaration(command)  if(command->type == Command::DECL)\
     {\
@@ -57,8 +61,8 @@
 %nonassoc '!' UMINUS
 
 %type <data> DATA
-%type <expression> marking markingNE
-%type <expression> preset idOrData
+%type <expression> marking markingNE markingItem
+%type <expression> preset presetItem idOrData
 %type <id> ID
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
@@ -79,10 +83,11 @@
 
 %%
 
-start: START_DECLARATION declarationList { currentParsedDeclarationList = $2; }
-    | START_EXPRESSION expression { currentParsedExpression = $2; }
-    | START_MARKING marking { currentParsedExpression = $2; }
-    | START_PRESET preset { currentParsedExpression = $2; }
+start: START_DECLARATION {currentSymbolTable = currentLocalSymbolTable;} declarationList { currentParsedDeclarationList = $3; }
+    | START_EXPRESSION {currentSymbolTable = currentGlobalSymbolTable;} expression { currentParsedExpression = $3; }
+    | START_MARKING {currentSymbolTable = currentGlobalSymbolTable;} marking { currentParsedExpression = $3; }
+    | START_PRESET {currentSymbolTable = currentGlobalSymbolTable;} preset { currentParsedExpression = $3; }
+    | error { currentParsedDeclarationList = NULL; currentParsedExpression = NULL; }
     ;
 
 
@@ -111,6 +116,7 @@ declaration: DATATYPE idList ';' {
     }
     | DATATYPE ID '(' parameterList ')' {
         currentLocalSymbolTable = new SymbolTable();
+        currentSymbolTable = currentLocalSymbolTable;
         foreach(Parameter parameter, *$4)
         {
             SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
@@ -118,6 +124,7 @@ declaration: DATATYPE idList ';' {
             if(!currentLocalSymbolTable->addSymbol(parameter.second, symbol))
                 currentParsedNet->addError(CPNet::SEMANTIC, "Duplicate parameter " + parameter.second);
         }
+        currentReturnType = $1;
     } commandND {
         $$ = new Declaration(Declaration::FN);
         $$->dataType = $1;
@@ -143,6 +150,8 @@ declaration: DATATYPE idList ';' {
             symbol->command = $7;
             currentGlobalSymbolTable->addSymbol(*$2, symbol);
         }
+        if($7->type != Command::RETURN && ($7->type != Command::BLOCK || $7->commandList.last()->type != Command::RETURN))
+            currentParsedNet->addError(CPNet::SEMANTIC, "Missing return from function");
         delete $4;
         delete $2;
         delete(currentLocalSymbolTable);
@@ -218,41 +227,99 @@ commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHIL
     | IF '(' expression ')' commandND ELSE commandND { $$ = branchCommand(Command::IFELSE, $3, $5); $$->command2 = $7; }
     | DO commandND WHILE '(' expression ')' { $$ = branchCommand(Command::DOWHILE, $5, $2); }
     | expression ';' { $$ = new Command(Command::EXPR); $$->expression = $1; }
-    | RETURN expression ';' { $$ = new Command(Command::RETURN); $$->expression = $2; }
+    | RETURN expression ';' { $$ = new Command(Command::RETURN); $$->expression = convert(currentReturnType, $2); }
     | '{' { currentLocalSymbolTable->increaseScope(); } commandList { currentLocalSymbolTable->decreaseScope(); } '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$3; delete $3; }
     ;
 
-expression:   ID '=' expression {
-        SymbolTable::Symbol symbol = currentLocalSymbolTable->findSymbol(*$1));
-        $$ = unaryOp(Expression::ASSIGN, $3);
-        $$->id = *$1;
-        delete $1;
-    }
-    | expression '&' expression {$$ = binaryOp(Expression::AND, $1, $3);}
-    | expression '|' expression {$$ = binaryOp(Expression::OR,  $1, $3);}
-    | expression LEQ expression {$$ = binaryOp(Expression::LEQ, $1, $3);}
-    | expression GEQ expression {$$ = binaryOp(Expression::GEQ, $1, $3);}
-    | expression EQ  expression {$$ = binaryOp(Expression::EQ,  $1, $3);}
-    | expression NEQ expression {$$ = binaryOp(Expression::NEQ, $1, $3);}
-    | expression '>' expression {$$ = binaryOp(Expression::GT,  $1, $3);}
-    | expression '<' expression {$$ = binaryOp(Expression::LT,  $1, $3);}
-    | expression '+' expression {$$ = binaryOp(Expression::PLUS, $1, $3);}
-    | expression '-' expression {$$ = binaryOp(Expression::MINUS, $1, $3);}
-    | expression '*' expression {$$ = binaryOp(Expression::MUL, $1, $3);}
-    | expression '/' expression {$$ = binaryOp(Expression::DIV, $1, $3);}
-    | expression '%' expression {$$ = binaryOp(Expression::MOD, $1, $3);}
-    | expression '^' expression {$$ = binaryOp(Expression::MULTISET, $1, $3);}
+expression:
+    expression '&' expression {$$ = binaryOp(Data::BOOL, Expression::AND, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
+    | expression '|' expression {$$ = binaryOp(Data::BOOL, Expression::OR, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
+    | expression LEQ expression {$$ = binaryOp(Data::BOOL, Expression::LEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression GEQ expression {$$ = binaryOp(Data::BOOL, Expression::GEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression EQ  expression {$$ = binaryOp(Data::BOOL, Expression::EQ, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression NEQ expression {$$ = binaryOp(Data::BOOL, Expression::NEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '>' expression {$$ = binaryOp(Data::BOOL, Expression::GT, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '<' expression {$$ = binaryOp(Data::BOOL, Expression::LT, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '+' expression {$$ = plus($1, $3);}
+    | expression '-' expression {$$ = binaryOp(Data::INT, Expression::MINUS, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '*' expression {$$ = binaryOp(Data::INT, Expression::MUL, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '/' expression {$$ = binaryOp(Data::INT, Expression::DIV, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '%' expression {$$ = binaryOp(Data::INT, Expression::MOD, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '^' expression {$$ = multiset($1, $3); }
     | '(' expression ')'            {$$ = $2;}
-    | '!' expression                {$$ = unaryOp(Expression::NOT, $2);}
-    | '-' expression %prec UMINUS   {$$ = unaryOp(Expression::UMINUS, $2);}
-    | ID '(' expressionList ')'     {
-        $$ = new Expression(Expression::FN);
+    | '!' expression                {$$ = unaryOp(Data::BOOL, Expression::NOT, convert(Data::BOOL, $2));}
+    | '-' expression %prec UMINUS   {$$ = unaryOp(Data::INT, Expression::UMINUS, convert(Data::INT, $2));}
+    | '(' DATATYPE ')' expression %prec UMINUS   {$$ = convert($2, $4);}
+    | DATA  {
+        $$ = new Expression(Expression::DATA);
+        $$->data = $1;
+        $$->dataType = $1->type;
+    }
+    | ID {
+        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
+        $$ = new Expression(Expression::VAR);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$->dataType = Data::INT;
+        }
+        else
+        {
+            if(symbol->type == SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
+            $$->dataType = symbol->dataType;
+        }
         $$->id = *$1;
         delete $1;
-        $$->expressionList = $3;
     }
-    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1; }
-    | ID {$$ = new Expression(Expression::VAR); $$->id = *$1; delete $1; }
+    | ID '=' expression {
+        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$ = unaryOp(Data::INT, Expression::ASSIGN, $3);
+        }
+        else
+        {
+            if(symbol->type == SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
+            $$ = unaryOp(symbol->dataType, Expression::ASSIGN, convert(symbol->dataType, $3));
+        }
+        $$->id = *$1;
+        delete $1;
+    }
+    | ID '(' expressionList ')' {
+        $$ = new Expression(Expression::FN);
+        $$->expressionList = new ExpressionList();
+        SymbolTable::Symbol *symbol = currentGlobalSymbolTable->findSymbol(*$1);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$->dataType = Data::INT;
+            qDeleteAll(*$3);
+        }
+        else if(symbol->type == SymbolTable::VAR)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a variable, cannot use as a function");
+            $$->dataType = symbol->dataType;
+            qDeleteAll(*$3);
+        }
+        else
+        {
+            $$->dataType = symbol->dataType;
+            $$->id = *$1;
+            if($3->size() != symbol->parameterList.size())
+                currentParsedNet->addError(CPNet::SEMANTIC, "Parameter count for " + *$1 + " does not match");
+            int i;
+            for(i = 0; i < qMin($3->size(), symbol->parameterList.size()); i++)
+                $$->expressionList->append(convert(symbol->parameterList.at(i).first, $3->at(i)));
+            for(;i < $3->size();i++) //delete unused exprs.
+                delete $3->at(i);
+        }
+        $$->id = *$1;
+        delete $1;
+        delete $3; // DO NOT qDeleteAll -> exprs. used after being converted
+    }
     ;
 
 expressionList: /* empty */ { $$ = new ExpressionList(); }
@@ -267,24 +334,44 @@ marking: /* empty */ { $$ = NULL; }
     | markingNE {$$ = $1;}
     ;
 
-markingNE: DATA '^' DATA {
-        Expression *e1 = new Expression(Expression::DATA); e1->data = $1;
-        Expression *e2 = new Expression(Expression::DATA); e2->data = $3;
-        $$ = binaryOp(Expression::MULTISET, e1, e2);
+markingNE: markingItem
+    | markingNE '+' markingItem { $$ = plus($1, $3); }
+    ;
+markingItem: DATA '^' DATA {
+        Expression *e1 = new Expression(Expression::DATA); e1->data = $1; e1->dataType = $1->type;
+        Expression *e2 = new Expression(Expression::DATA); e2->data = $3; e2->dataType = $3->type;
+        $$ = multiset(e1, e2);
     }
-    | markingNE '+' DATA '^' DATA {
-        Expression *e1 = new Expression(Expression::DATA); e1->data = $3;
-        Expression *e2 = new Expression(Expression::DATA); e2->data = $5;
-        $$ = binaryOp(Expression::PLUS, $1, binaryOp(Expression::MULTISET, e1, e2)); }
+
+preset: presetItem
+    | preset '+' presetItem { $$ = plus($1, $3); }
     ;
 
-preset: idOrData '^' idOrData { $$ = binaryOp(Expression::MULTISET, $1, $3); }
-    | preset '+' idOrData '^' idOrData { $$ = binaryOp(Expression::PLUS, $1, binaryOp(Expression::MULTISET, $3, $5)); }
-    | DATA  {$$ = new Expression(Expression::DATA); $$->data = $1;}
+presetItem: idOrData '^' idOrData { $$ = multiset($1, $3); }
     ;
 
-idOrData: DATA  {$$ = new Expression(Expression::DATA); $$->data = $1; }
-    | ID {$$ = new Expression(Expression::VAR); $$->id = *$1; delete $1; }
+idOrData: DATA  {
+        $$ = new Expression(Expression::DATA);
+        $$->data = $1;
+        $$->dataType = $1->type;
+    }
+    | ID {
+        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
+        $$ = new Expression(Expression::VAR);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$->dataType = Data::INT;
+        }
+        else
+        {
+            if(symbol->type == SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
+            $$->dataType = symbol->dataType;
+        }
+        $$->id = *$1;
+        delete $1;
+    }
     ;
 
 %%
@@ -297,20 +384,65 @@ Command *branchCommand(Command::Type type, Expression *e, Command *c)
     return com;
 }
 
-Expression *binaryOp(Expression::Type type, Expression *e1, Expression *e2)
+Expression *binaryOp(Data::Type dataType, Expression::Type type, Expression *e1, Expression *e2)
 {
     Expression *e = new Expression(type);
+    e->dataType = dataType;
     e->left = e1;
     e->right = e2;
     return e;
 }
-Expression *unaryOp(Expression::Type type, Expression *e1)
+Expression *unaryOp(Data::Type dataType, Expression::Type type, Expression *e1)
 {
     Expression *e = new Expression(type);
+    e->dataType = dataType;
     e->left = e1;
     return e;
 }
 
+Expression *convert(Data::Type type, Expression *e)
+{
+    if(e->dataType == type)
+        return e;
+    if(isSimpleType(e->dataType) && isSimpleType(type))
+    {
+        Expression *expr = unaryOp(type, Expression::CONVERT, e);
+        return expr;
+    }
+    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in expression");
+    return e;
+}
 
+bool isSimpleType(Data::Type type)
+{
+    return type == Data::UNIT || type == Data::BOOL || type == Data::INT;
+}
 
+Expression *plus(Expression *e1, Expression *e2)
+{
+    if(isSimpleType(e1->dataType) && isSimpleType(e2->dataType))
+        return binaryOp(Data::INT, Expression::PLUS, convert(Data::INT, e1), convert(Data::INT, e2));
+    if(e1->dataType == e2->dataType)
+        return binaryOp(e1->dataType, Expression::PLUS, e1, e2);
 
+    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in + expression, multitypes do not match");
+    return binaryOp(e1->dataType, Expression::PLUS, e1, e2);
+}
+
+Expression *multiset(Expression *e1, Expression *e2)
+{
+    e1 = convert(Data::INT, e1);
+    switch(e2->dataType)
+    {
+    case Data::UNIT:
+        return binaryOp(Data::MULTIUNIT, Expression::MULTISET, e1, e2);
+    case Data::BOOL:
+        return binaryOp(Data::MULTIBOOL, Expression::MULTISET, e1, e2);
+    case Data::INT:
+        return binaryOp(Data::MULTIINT, Expression::MULTISET, e1, e2);
+    default:
+        currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in ^ expression, right operand must be simple type");
+        return binaryOp(e2->dataType, Expression::MULTISET, e1, e2);
+    }
+    return NULL;
+}

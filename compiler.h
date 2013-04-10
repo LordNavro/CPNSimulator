@@ -61,13 +61,17 @@
     /* symbol tables */
     extern SymbolTable *currentGlobalSymbolTable;
     extern SymbolTable *currentLocalSymbolTable;
+    extern SymbolTable *currentSymbolTable;
+    /* for function returns */
+    extern Data::Type currentReturnType;
 
     /* Expressions */
     class Expression
     {
     public:
         enum Type {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
-                      PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA};
+                   PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA,
+                   CONVERT};
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
