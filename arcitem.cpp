@@ -1,5 +1,6 @@
 #include "arcitem.h"
 #define PI 3.141592653589
+#define SEL_WIDTH 5
 
 ArcItem::ArcItem(QGraphicsItem *from, QGraphicsItem *to, QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsLineItem(parent, scene)
@@ -23,10 +24,19 @@ QPainterPath ArcItem::shape() const
 {
     QPainterPath path = QGraphicsLineItem::shape();
     path.addPolygon(arrowHead);
+    QLineF l1 = line(), l2 = line();
+    qreal normal = ::asin(line().dx() / line().length());
+    if (line().dy() >= 0)
+        normal = 2 * PI - normal;
+    l1.translate(::cos(normal) * SEL_WIDTH, ::sin(normal) * SEL_WIDTH);
+    l2.translate(-::cos(normal) * SEL_WIDTH, -::sin(normal) * SEL_WIDTH);
+    QPolygonF polygon;
+    polygon << l1.p1() << l1.p2() << l2.p2() << l2.p1();
+    path.addPolygon(polygon);
     return path;
 }
 
-void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
     if(from->collidesWithItem(to))
         return;
@@ -49,11 +59,14 @@ void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     if (isSelected())
     {
         painter->setPen(QPen(Qt::DashLine));
-        QLineF myLine = line();
-        myLine.translate(0, 4.0);
-        painter->drawLine(myLine);
-        myLine.translate(0,-8.0);
-        painter->drawLine(myLine);
+        QLineF l1 = line(), l2 = line();
+        qreal normal = ::asin(line().dx() / line().length());
+        if (line().dy() >= 0)
+            normal = 2 * PI - normal;
+        l1.translate(::cos(normal) * SEL_WIDTH, ::sin(normal) * SEL_WIDTH);
+        painter->drawLine(l1);
+        l2.translate(-::cos(normal) * SEL_WIDTH, -::sin(normal) * SEL_WIDTH);
+        painter->drawLine(l2);
     }
 }
 
