@@ -38,6 +38,7 @@ QPainterPath ArcItem::shape() const
 
 void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
+
     if(from->collidesWithItem(to))
         return;
 

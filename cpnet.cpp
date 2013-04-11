@@ -150,6 +150,7 @@ void CPNet::semanticAnalysis()
             dataType = Data::MULTIBOOL;
             break;
         case Place::INT:
+        default:
             dataType = Data::MULTIINT;
             break;
         }
@@ -173,6 +174,7 @@ void CPNet::semanticAnalysis()
             dataType = Data::MULTIBOOL;
             break;
         case Place::INT:
+        default:
             dataType = Data::MULTIINT;
             break;
         }

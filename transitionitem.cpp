@@ -11,7 +11,7 @@ TransitionItem::TransitionItem() :
 
 QVariant TransitionItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
-    if(change == QGraphicsItem::ItemPositionChange)
+    if(change == QGraphicsItem::ItemPositionChange || change == QGraphicsItem::ItemScenePositionHasChanged || change == QGraphicsItem::ItemVisibleChange)
     {
         foreach(ArcItem *arcItem, arcItems)
             arcItem->geometryChanged();

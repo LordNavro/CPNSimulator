@@ -282,6 +282,8 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
 
         arcItem->arc = arc;
         scene->addItem(arcItem);
+        scene->getPlaceItem(arc->place)->arcItems.append(arcItem);
+        scene->getTransitionItem(arc->transition)->arcItems.append(arcItem);
     }
     slotSelectionChanged();
 }
