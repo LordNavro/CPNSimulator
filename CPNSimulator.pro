@@ -39,7 +39,10 @@ SOURCES += main.cpp\
     editorplaceitem.cpp \
     arcitem.cpp \
     placeitem.cpp \
-    transitionitem.cpp
+    transitionitem.cpp \
+    simulatorarcitem.cpp \
+    simulatorplaceitem.cpp \
+    simulatortransitionitem.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -62,7 +65,10 @@ HEADERS  += mainwindow.h \
     editorarcitem.h \
     arcitem.h \
     placeitem.h \
-    transitionitem.h
+    transitionitem.h \
+    simulatorarcitem.h \
+    simulatorplaceitem.h \
+    simulatortransitionitem.h
 
 RESOURCES += \
     icons.qrc
