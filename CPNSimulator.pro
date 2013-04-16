@@ -23,40 +23,46 @@ SOURCES += main.cpp\
     transition.cpp \
     arc.cpp \
     cpnet.cpp \
-    sheettabwidget.cpp \
     cpneteditor.cpp \
     arcform.cpp \
     placeform.cpp \
     transitionform.cpp \
     cpnetform.cpp \
     cpnetscene.cpp \
-    placeitem.cpp \
-    transitionitem.cpp \
-    arcitem.cpp \
     inscriptionedit.cpp \
     inscriptionhighlighter.cpp \
     compiler.cpp \
-    symboltable.cpp
+    symboltable.cpp \
+    cpnetsimulator.cpp \
+    editorarcitem.cpp \
+    editortransitionitem.cpp \
+    editorplaceitem.cpp \
+    arcitem.cpp \
+    placeitem.cpp \
+    transitionitem.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
     transition.h \
     arc.h \
     cpnet.h \
-    sheettabwidget.h \
     cpneteditor.h \
     arcform.h \
     placeform.h \
     transitionform.h \
     cpnetform.h \
     cpnetscene.h \
-    placeitem.h \
-    transitionitem.h \
-    arcitem.h \
     inscriptionedit.h \
     inscriptionhighlighter.h \
     compiler.h \
-    symboltable.h
+    symboltable.h \
+    cpnetsimulator.h \
+    editortransitionitem.h \
+    editorplaceitem.h \
+    editorarcitem.h \
+    arcitem.h \
+    placeitem.h \
+    transitionitem.h
 
 RESOURCES += \
     icons.qrc

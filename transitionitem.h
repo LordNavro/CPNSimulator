@@ -1,9 +1,9 @@
 #ifndef TRANSITIONITEM_H
 #define TRANSITIONITEM_H
 
-#include <QGraphicsRectItem>
+#include <QtGui>
 #include "transition.h"
-#include <arcitem.h>
+#include "arcitem.h"
 
 class TransitionItem : public QGraphicsRectItem
 {
@@ -11,7 +11,7 @@ public:
     enum { Type = UserType + 20 };
 
     explicit TransitionItem();
-    
+
     Transition *transition;
     QList<ArcItem *>arcItems;
 
@@ -20,7 +20,7 @@ public:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 signals:
-    
+
 public slots:
     
 };

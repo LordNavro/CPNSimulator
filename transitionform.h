@@ -2,14 +2,14 @@
 #define TRANSITIONFORM_H
 
 #include <QtGui>
-#include "transitionitem.h"
+#include "editortransitionitem.h"
 #include "inscriptionedit.h"
 
 class TransitionForm : public QWidget
 {
     Q_OBJECT
 private:
-    TransitionItem *transitionItem;
+    EditorTransitionItem *transitionItem;
 public:
     explicit TransitionForm(QWidget *parent = 0);
 
@@ -17,7 +17,7 @@ public:
     QLineEdit *lineName;
     InscriptionEdit *inscriptionGuard;
     
-    void setTransitionItem(TransitionItem *transitionItem);
+    void setTransitionItem(EditorTransitionItem *transitionItem);
 signals:
 
 public slots:

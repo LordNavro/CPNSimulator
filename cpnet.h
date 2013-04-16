@@ -40,6 +40,8 @@ public:
     };
 
     explicit CPNet(QObject *parent = 0);
+    ~CPNet();
+
 
     QString name;
     QString declaration;

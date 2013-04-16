@@ -2,21 +2,21 @@
 #define ARCFORM_H
 
 #include <QtGui>
-#include "arcitem.h"
+#include "editorarcitem.h"
 #include "inscriptionedit.h"
 
 class ArcForm : public QWidget
 {
     Q_OBJECT
 private:
-    ArcItem *arcItem;
+    EditorArcItem *arcItem;
 public:
     explicit ArcForm(QWidget *parent = 0);
     
     QFormLayout *layout;
     InscriptionEdit *inscriptionExpression;
 
-    void setArcItem(ArcItem *arcItem);
+    void setArcItem(EditorArcItem *arcItem);
 signals:
 
 public slots:

@@ -3,9 +3,9 @@
 
 #include <QtGui>
 #include "cpnet.h"
-#include "placeitem.h"
-#include "transitionitem.h"
-#include "arcitem.h"
+#include "editorplaceitem.h"
+#include "editortransitionitem.h"
+#include "editorarcitem.h"
 #include "cpnetform.h"
 #include "placeform.h"
 #include "transitionform.h"
@@ -15,14 +15,14 @@ class CPNetScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit CPNetScene(QObject *parent = 0);
+    explicit CPNetScene(CPNet *net, QObject *parent = 0);
 
     typedef enum{SELECT, PLACE, TRANSITION, ARC, DELETE} Tool;
 
     QString fileName;
     QString name;
     Tool currentTool;
-    CPNet net;
+    CPNet *net;
 
     QGraphicsLineItem *line;
 
@@ -40,11 +40,11 @@ public:
     void addTransition(QGraphicsSceneMouseEvent *mouseEvent);
     void addArc(QPointF from, QPointF to);
     void deleteItem(QGraphicsSceneMouseEvent *mouseEvent);
-    void deleteArc(ArcItem *arcItem);
+    void deleteArc(EditorArcItem *arcItem);
 
-    PlaceItem *getPlaceItem(Place *place);
-    TransitionItem *getTransitionItem(Transition *transition);
-    ArcItem *getArcItem(Arc *arc);
+    EditorPlaceItem *getPlaceItem(Place *place);
+    EditorTransitionItem *getTransitionItem(Transition *transition);
+    EditorArcItem *getArcItem(Arc *arc);
 
 signals:
     

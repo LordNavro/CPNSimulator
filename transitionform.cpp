@@ -14,7 +14,7 @@ TransitionForm::TransitionForm(QWidget *parent) :
     layout->addRow(tr("&Guard"), inscriptionGuard);
 }
 
-void TransitionForm::setTransitionItem(TransitionItem *transitionItem)
+void TransitionForm::setTransitionItem(EditorTransitionItem *transitionItem)
 {
     this->transitionItem = transitionItem;
     lineName->setText(transitionItem->transition->name);

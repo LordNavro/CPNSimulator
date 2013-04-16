@@ -1,11 +1,11 @@
 #include "cpneteditor.h"
 #include <QtXml/QDomDocument>
 
-CPNetEditor::CPNetEditor(QWidget *parent) :
-    QWidget(parent)
+CPNetEditor::CPNetEditor(CPNet* net, QWidget *parent) :
+    QWidget(parent), net(net)
 {
     view = new QGraphicsView(this);
-    scene = new CPNetScene(this);
+    scene = new CPNetScene(net, this);
     view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     view->setScene(scene);
     connect(scene, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()));
@@ -43,7 +43,6 @@ CPNetEditor::CPNetEditor(QWidget *parent) :
 
 void CPNetEditor::compile()
 {
-    CPNet *net = &scene->net;
     net->syntaxAnalysis();
     net->semanticAnalysis();
     if(net->errorList.isEmpty())
@@ -125,7 +124,6 @@ void CPNetEditor::compile()
 
 QDomDocument CPNetEditor::netToXml()
 {
-    CPNet *net = &scene->net;
     QDomDocument xml("ColouredPetriNet");
     /* net */
     QDomElement root = xml.createElement("cpnet");
@@ -141,7 +139,7 @@ QDomDocument CPNetEditor::netToXml()
     foreach(Place *place, net->places)
     {
         QDomElement placeElem = xml.createElement("place");
-        PlaceItem *placeItem = scene->getPlaceItem(place);
+        EditorPlaceItem *placeItem = scene->getPlaceItem(place);
         QDomElement initial = xml.createElement("initialMarking");
         QDomElement current = xml.createElement("currentMarking");
         QDomCDATASection initialData = xml.createCDATASection(place->initialMarking);
@@ -165,7 +163,7 @@ QDomDocument CPNetEditor::netToXml()
     foreach(Transition *transition, net->transitions)
     {
         QDomElement transitionElem = xml.createElement("transition");
-        TransitionItem *transitionItem = scene->getTransitionItem(transition);
+        EditorTransitionItem *transitionItem = scene->getTransitionItem(transition);
         transitions.appendChild(transitionElem);
         QDomElement guard = xml.createElement("guard");
         QDomCDATASection guardData = xml.createCDATASection(transition->guard);
@@ -206,7 +204,6 @@ QDomDocument CPNetEditor::netToXml()
 void CPNetEditor::xmlToNet(QDomDocument xml)
 {
     /* clear current net */
-    CPNet *net = &scene->net;
     qDeleteAll(net->places);
     qDeleteAll(net->transitions);
     qDeleteAll(net->arcs);
@@ -227,7 +224,7 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     {
         QDomElement placeElem = places.childNodes().at(i).toElement();
         Place *place = new Place(this);
-        PlaceItem *placeItem = new PlaceItem();
+        EditorPlaceItem *placeItem = new EditorPlaceItem();
         placeItem->place = place;
         net->places.append(place);
         placeItem->setX(placeElem.attribute("x").toDouble());
@@ -253,7 +250,7 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     {
         QDomElement transitionElem = transitions.childNodes().at(i).toElement();
         Transition *transition = new Transition(this);
-        TransitionItem *transitionItem = new TransitionItem();
+        EditorTransitionItem *transitionItem = new EditorTransitionItem();
         transitionItem->transition = transition;
         net->transitions.append(transition);
         transitionItem->setX(transitionElem.attribute("x").toDouble());
@@ -274,11 +271,11 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
         arc->place = net->places[arcElem.attribute("placeId").toInt()];
         arc->transition = net->transitions[arcElem.attribute("transitionId").toInt()];
         arc->isPreset = arcElem.attribute("isPreset").toInt();
-        ArcItem *arcItem;
+        EditorArcItem *arcItem;
         if(arc->isPreset)
-            arcItem = new ArcItem(scene->getPlaceItem(arc->place), scene->getTransitionItem(arc->transition));
+            arcItem = new EditorArcItem(scene->getPlaceItem(arc->place), scene->getTransitionItem(arc->transition));
         else
-            arcItem = new ArcItem(scene->getTransitionItem(arc->transition), scene->getPlaceItem(arc->place));
+            arcItem = new EditorArcItem(scene->getTransitionItem(arc->transition), scene->getPlaceItem(arc->place));
 
         arcItem->arc = arc;
         scene->addItem(arcItem);
@@ -286,6 +283,16 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
         scene->getTransitionItem(arc->transition)->arcItems.append(arcItem);
     }
     slotSelectionChanged();
+}
+
+void CPNetEditor::setNet(CPNet *net)
+{
+    this->net = this->scene->net = net;
+}
+
+CPNet *CPNetEditor::getNet()
+{
+    return net;
 }
 
 void CPNetEditor::slotSelectionChanged()
@@ -297,22 +304,22 @@ void CPNetEditor::slotSelectionChanged()
     QList<QGraphicsItem *> selected = scene->selectedItems();
     if(selected.count() != 1)
     {
-        formNet->setNet(&scene->net);
+        formNet->setNet(net);
         formNet->show();
         return;
     }
     QGraphicsItem *item = selected.first();
-    if(PlaceItem *placeItem = qgraphicsitem_cast<PlaceItem *>(item))
+    if(EditorPlaceItem *placeItem = qgraphicsitem_cast<EditorPlaceItem *>(item))
     {
         formPlace->setPlaceItem(placeItem);
         formPlace->show();
     }
-    else if(TransitionItem *transitionItem = qgraphicsitem_cast<TransitionItem *>(item))
+    else if(EditorTransitionItem *transitionItem = qgraphicsitem_cast<EditorTransitionItem *>(item))
     {
         formTransition->setTransitionItem(transitionItem);
         formTransition->show();
     }
-    else if(ArcItem *arcItem = qgraphicsitem_cast<ArcItem *>(item))
+    else if(EditorArcItem *arcItem = qgraphicsitem_cast<EditorArcItem *>(item))
     {
         formArc->setArcItem(arcItem);
         formArc->show();
@@ -321,7 +328,6 @@ void CPNetEditor::slotSelectionChanged()
 
 void CPNetEditor::slotCellClicked(int x, int /*y*/)
 {
-    CPNet *net = &scene->net;
     if(x >= net->errorList.length())
         return;
     foreach(QGraphicsItem *item, scene->items())
@@ -338,17 +344,17 @@ void CPNetEditor::slotCellClicked(int x, int /*y*/)
             i = formPlace->inscriptionCurrentMarking;
         else
             i = formPlace->inscriptionInitialMarking;
-        if(PlaceItem *placeItem = scene->getPlaceItem(error.reference.place))
+        if(EditorPlaceItem *placeItem = scene->getPlaceItem(error.reference.place))
             placeItem->setSelected(true);
         break;
     case CPNet::TRANSITION:
         i = formTransition->inscriptionGuard;
-        if(TransitionItem *transitionItem = scene->getTransitionItem(error.reference.transition))
+        if(EditorTransitionItem *transitionItem = scene->getTransitionItem(error.reference.transition))
             transitionItem->setSelected(true);
         break;
     case CPNet::ARC:
         i = formArc->inscriptionExpression;
-        if(ArcItem *arcItem = scene->getArcItem(error.reference.arc))
+        if(EditorArcItem *arcItem = scene->getArcItem(error.reference.arc))
             arcItem->setSelected(true);
         break;
     }

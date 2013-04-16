@@ -8,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     createToolBars();
     createMenuBars();
 
-    tabWidget = new SheetTabWidget(this);
+    tabWidget = new QTabWidget(this);
+    tabWidget->setTabsClosable(true);
     connect(tabWidget, SIGNAL(tabCloseRequested(int)), this, SLOT(slotTabCloseRequest(int)));
     this->setCentralWidget(tabWidget);
 
@@ -20,6 +21,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    while(tabWidget->currentIndex() != -1)
+        slotClose();
 }
 
 void MainWindow::createActions()
@@ -112,7 +115,13 @@ void MainWindow::createMenuBars()
 
 void MainWindow::slotNew()
 {
-    CPNetEditor *e = new CPNetEditor(this);
+    CPNet *net = new CPNet();
+    CPNetEditor *e = new CPNetEditor(net, this);
+    CPNetSimulator *s = new CPNetSimulator(net, this);
+    nets.append(net);
+    editors.append(e);
+    simulators.append(s);
+
     tabWidget->addTab(e, "New net");
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
     actionSelect->trigger();
@@ -123,8 +132,6 @@ void MainWindow::slotLoad()
     QString fileName = QFileDialog::getOpenFileName(this, tr("Load Coloured Petri Net"), QString(), "Coloured Petri Net (*.cpn)");
     if(fileName == "")
         return;
-    CPNetEditor *e = new CPNetEditor(this);
-    e->fileName = fileName;
 
     QFile file(fileName);
     file.open(QIODevice::ReadOnly);
@@ -135,6 +142,15 @@ void MainWindow::slotLoad()
     }
     QDomDocument xml("ColouredPetriNet");
     xml.setContent(file.readAll());
+
+
+    CPNet *net = new CPNet();
+    CPNetEditor *e = new CPNetEditor(net, this);
+    CPNetSimulator *s = new CPNetSimulator(net, this);
+    nets.append(net);
+    editors.append(e);
+    simulators.append(s);
+    e->fileName = fileName;
     e->xmlToNet(xml);
 
     tabWidget->addTab(e, e->fileName);
@@ -162,7 +178,7 @@ void MainWindow::slotSave()
     ts << e->netToXml().toString();
     file.close();
 
-    QMessageBox::information(this, tr("Save net"), tr("Net %1 successfully saved as %2").arg(e->scene->net.name, e->fileName));
+    QMessageBox::information(this, tr("Save net"), tr("Net %1 successfully saved as %2").arg(e->getNet()->name, e->fileName));
 }
 
 void MainWindow::slotSaveAs()
@@ -180,7 +196,9 @@ void MainWindow::slotSaveAs()
 
 void MainWindow::slotClose()
 {
-    delete tabWidget->currentWidget();
+    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
+    delete e->getNet();
+    delete e;
     tabWidget->removeTab(tabWidget->currentIndex());
 }
 

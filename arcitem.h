@@ -34,5 +34,4 @@ signals:
 public slots:
     void geometryChanged();
 };
-
 #endif // ARCITEM_H

@@ -13,7 +13,7 @@ ArcForm::ArcForm(QWidget *parent) :
     this->setLayout(layout);
 }
 
-void ArcForm::setArcItem(ArcItem *arcItem)
+void ArcForm::setArcItem(EditorArcItem *arcItem)
 {
     this->arcItem = arcItem;
     inscriptionExpression->setText(arcItem->arc->expression);

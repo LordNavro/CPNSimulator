@@ -2,17 +2,17 @@
 #define PLACEFORM_H
 
 #include <QtGui>
-#include "placeitem.h"
+#include "editorplaceitem.h"
 #include "inscriptionedit.h"
 
 class PlaceForm : public QWidget
 {
     Q_OBJECT
 private:
-    PlaceItem *placeItem;
+    EditorPlaceItem *placeItem;
 public:
     explicit PlaceForm(QWidget *parent = 0);
-    void setPlaceItem(PlaceItem *placeItem);
+    void setPlaceItem(EditorPlaceItem *placeItem);
 
     QFormLayout *layout;
     QLineEdit *lineName;

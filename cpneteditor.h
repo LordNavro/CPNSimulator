@@ -14,8 +14,10 @@
 class CPNetEditor : public QWidget
 {
     Q_OBJECT
+protected:
+    CPNet *net;
 public:
-    explicit CPNetEditor(QWidget *parent = 0);
+    explicit CPNetEditor(CPNet* net, QWidget *parent = 0);
 
     CPNetScene *scene;
     QGraphicsView *view;
@@ -33,6 +35,9 @@ public:
     void compile(void);
     QDomDocument netToXml();
     void xmlToNet(QDomDocument xml);
+
+    void setNet(CPNet *net);
+    CPNet *getNet();
 
 signals:
 

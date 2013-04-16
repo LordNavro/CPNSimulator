@@ -24,7 +24,7 @@ PlaceForm::PlaceForm(QWidget *parent) :
 
 }
 
-void PlaceForm::setPlaceItem(PlaceItem *placeItem)
+void PlaceForm::setPlaceItem(EditorPlaceItem *placeItem)
 {
     this->placeItem = placeItem;
     lineName->setText(placeItem->place->name);

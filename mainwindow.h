@@ -2,8 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
-#include "sheettabwidget.h"
 #include "cpneteditor.h"
+#include "cpnetsimulator.h"
 
 //icons: http://www.iconfinder.com/search/?q=iconset%3Afatcow+control
 
@@ -45,7 +45,11 @@ private:
     QMenu *menuSimulation;
     QMenu *menuAbout;
 
-    SheetTabWidget *tabWidget;
+    QTabWidget *tabWidget;
+
+    QList<CPNetEditor *> editors;
+    QList<CPNetSimulator *> simulators;
+    QList<CPNet *> nets;
 
     void createActions(void);
     void createToolBars(void);

@@ -11,7 +11,7 @@ public:
     enum { Type = UserType + 10 };
 
     explicit PlaceItem();
-    
+
     Place *place;
     QList<ArcItem *>arcItems;
 
@@ -19,9 +19,9 @@ public:
 
     QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value);
 signals:
-    
+
 public slots:
-    
+
 };
 
 #endif // PLACEITEM_H

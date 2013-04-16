@@ -14,6 +14,20 @@ CPNet::CPNet(QObject *parent) :
 {
 }
 
+CPNet::~CPNet()
+{
+    qDeleteAll(arcs);
+    qDeleteAll(places);
+    qDeleteAll(transitions);
+    if(parsedDeclaration)
+    {
+        qDeleteAll(*parsedDeclaration);
+        delete parsedDeclaration;
+    }
+    if(globalSymbolTable)
+        delete globalSymbolTable;
+}
+
 void CPNet::addError(CPNet::ErrorType type, QString message)
 {
     errorList.append(Error(type, currentParsedItem, currentParsedReference, currentParsedInscription, yylineno, message));
