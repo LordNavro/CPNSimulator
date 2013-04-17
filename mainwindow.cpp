@@ -117,7 +117,7 @@ void MainWindow::slotNew()
 {
     CPNet *net = new CPNet();
     CPNetEditor *e = new CPNetEditor(net, this);
-    CPNetSimulator *s = new CPNetSimulator(net, this);
+    CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
     editors.append(e);
     simulators.append(s);
@@ -146,7 +146,7 @@ void MainWindow::slotLoad()
 
     CPNet *net = new CPNet();
     CPNetEditor *e = new CPNetEditor(net, this);
-    CPNetSimulator *s = new CPNetSimulator(net, this);
+    CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
     editors.append(e);
     simulators.append(s);
@@ -196,13 +196,17 @@ void MainWindow::slotSaveAs()
 
 void MainWindow::slotClose()
 {
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
-    delete e->getNet();
-    delete e;
-    tabWidget->removeTab(tabWidget->currentIndex());
+    int i = tabWidget->currentIndex();
+    delete simulators.at(i);
+    delete editors.at(i);
+    delete nets.at(i);
+    simulators.removeAt(i);
+    editors.removeAt(i);
+    nets.removeAt(i);
+    tabWidget->removeTab(i);
 }
 
-void MainWindow::setCurrentTool(CPNetScene::Tool tool)
+void MainWindow::setCurrentTool(EditorScene::Tool tool)
 {
 
     if(tabWidget->currentIndex() == -1)
@@ -213,27 +217,27 @@ void MainWindow::setCurrentTool(CPNetScene::Tool tool)
 
 void MainWindow::slotSelect()
 {
-    setCurrentTool(CPNetScene::SELECT);
+    setCurrentTool(EditorScene::SELECT);
 }
 
 void MainWindow::slotPlace()
 {
-    setCurrentTool(CPNetScene::PLACE);
+    setCurrentTool(EditorScene::PLACE);
 }
 
 void MainWindow::slotTransition()
 {
-    setCurrentTool(CPNetScene::TRANSITION);
+    setCurrentTool(EditorScene::TRANSITION);
 }
 
 void MainWindow::slotArc()
 {
-    setCurrentTool(CPNetScene::ARC);
+    setCurrentTool(EditorScene::ARC);
 }
 
 void MainWindow::slotDelete()
 {
-    setCurrentTool(CPNetScene::DELETE);
+    setCurrentTool(EditorScene::DELETE);
 }
 
 void MainWindow::slotAbout()

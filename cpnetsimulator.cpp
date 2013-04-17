@@ -3,7 +3,7 @@
 CPNetSimulator::CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent) :
     QWidget(parent), net(net), editor(editor)
 {
-    scene = new QGraphicsScene(this);
+    scene = new SimulatorScene(net, this);
     view = new QGraphicsView(scene, this);
 
     layout = new QGridLayout(this);
@@ -14,8 +14,27 @@ CPNetSimulator::CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent)
 void CPNetSimulator::loadNetGraph()
 {
     qDeleteAll(scene->items());
-    foreach(QGraphicsItem *item, editor->scene->items())
+    foreach(Place *place, net->places)
+    {
+        EditorPlaceItem *epi = editor->scene->getPlaceItem(place);
+        SimulatorPlaceItem *spi = new SimulatorPlaceItem(epi);
+        scene->addItem(spi);
+    }
+    foreach(Transition *transition, net->transitions)
+    {
+        EditorTransitionItem *eti = editor->scene->getTransitionItem(transition);
+        SimulatorTransitionItem *sti = new SimulatorTransitionItem(eti);
+        scene->addItem(sti);
+    }
+    foreach(Arc *arc, net->arcs)
     {
 
+        QGraphicsItem *from = scene->getPlaceItem(arc->place);
+        QGraphicsItem *to = scene->getTransitionItem(arc->transition);
+
+        if(!arc->isPreset)
+            qSwap(from, to);
+        SimulatorArcItem *sai = new SimulatorArcItem(from, to);
+        scene->addItem(sai);
     }
 }

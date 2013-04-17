@@ -5,7 +5,7 @@ CPNetEditor::CPNetEditor(CPNet* net, QWidget *parent) :
     QWidget(parent), net(net)
 {
     view = new QGraphicsView(this);
-    scene = new CPNetScene(net, this);
+    scene = new EditorScene(net, this);
     view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     view->setScene(scene);
     connect(scene, SIGNAL(selectionChanged()), this, SLOT(slotSelectionChanged()));
@@ -51,6 +51,7 @@ void CPNetEditor::compile()
         QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
         item->setFlags(item->flags() ^ Qt::ItemIsEditable);
         table->setItem(0, 0, item);
+        emit signalStartSimulation();
         return;
     }
 

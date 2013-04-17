@@ -2,12 +2,14 @@
 #define SIMULATORPLACEITEM_H
 
 #include "placeitem.h"
+#include "editorplaceitem.h"
 
 class SimulatorPlaceItem : public PlaceItem
 {
-    enum { Type = UserType + 11 };
-
+public:
+    enum { Type = UserType + 12 };
     explicit SimulatorPlaceItem();
+    explicit SimulatorPlaceItem(EditorPlaceItem *pi);
 
     int type() const{ return Type; }
 };

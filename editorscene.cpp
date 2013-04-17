@@ -1,31 +1,31 @@
-#include "cpnetscene.h"
+#include "editorscene.h"
 
-CPNetScene::CPNetScene(CPNet *net, QObject *parent) :
+EditorScene::EditorScene(CPNet *net, QObject *parent) :
     QGraphicsScene(parent), net(net)
 {
     line = NULL;
     addLine(0,0,1,1,QPen(Qt::white));
 }
 
-void CPNetScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if (mouseEvent->button() != Qt::LeftButton)
         return;
     switch(currentTool)
     {
-    case CPNetScene::SELECT:
+    case EditorScene::SELECT:
         QGraphicsScene::mousePressEvent(mouseEvent);
         break;
-    case CPNetScene::PLACE:
+    case EditorScene::PLACE:
         addPlace(mouseEvent);
         break;
-    case CPNetScene::TRANSITION:
+    case EditorScene::TRANSITION:
         addTransition(mouseEvent);
         break;
-    case CPNetScene::ARC:
+    case EditorScene::ARC:
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()), NULL, this);
         break;
-    case CPNetScene::DELETE:
+    case EditorScene::DELETE:
         deleteItem(mouseEvent);
         break;
     default:
@@ -33,7 +33,7 @@ void CPNetScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void CPNetScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if(currentTool == ARC && line != NULL)
     {
@@ -45,7 +45,7 @@ void CPNetScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void CPNetScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     if(currentTool == ARC && line != NULL)
     {
@@ -60,7 +60,7 @@ void CPNetScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
-void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
 {
     Place *place;
     EditorPlaceItem *placeItem;
@@ -74,7 +74,7 @@ void CPNetScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
     update();
 }
 
-void CPNetScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
 {
     Transition *transition;
     EditorTransitionItem *transitionItem;
@@ -88,7 +88,7 @@ void CPNetScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
     update();
 }
 
-void CPNetScene::addArc(QPointF from, QPointF to)
+void EditorScene::addArc(QPointF from, QPointF to)
 {
     QList<QGraphicsItem *> startItems = items(from);
     if(startItems.count() && startItems.first() == line)
@@ -144,7 +144,7 @@ void CPNetScene::addArc(QPointF from, QPointF to)
 
 }
 
-void CPNetScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QList<QGraphicsItem *> affectedItems = items(mouseEvent->scenePos());
     if(affectedItems.isEmpty())
@@ -178,7 +178,7 @@ void CPNetScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
 
 }
 
-void CPNetScene::deleteArc(EditorArcItem *arcItem)
+void EditorScene::deleteArc(EditorArcItem *arcItem)
 {
     EditorPlaceItem *placeItem;
     EditorTransitionItem *transitionItem;
@@ -199,7 +199,7 @@ void CPNetScene::deleteArc(EditorArcItem *arcItem)
     delete arcItem;
 }
 
-EditorPlaceItem *CPNetScene::getPlaceItem(Place *place)
+EditorPlaceItem *EditorScene::getPlaceItem(Place *place)
 {
     foreach(QGraphicsItem *item, items())
         if(EditorPlaceItem *placeItem = qgraphicsitem_cast<EditorPlaceItem *>(item))
@@ -208,7 +208,7 @@ EditorPlaceItem *CPNetScene::getPlaceItem(Place *place)
     return NULL;
 }
 
-EditorTransitionItem *CPNetScene::getTransitionItem(Transition *transition)
+EditorTransitionItem *EditorScene::getTransitionItem(Transition *transition)
 {
     foreach(QGraphicsItem *item, items())
         if(EditorTransitionItem *transitionItem = qgraphicsitem_cast<EditorTransitionItem *>(item))
@@ -217,7 +217,7 @@ EditorTransitionItem *CPNetScene::getTransitionItem(Transition *transition)
     return NULL;
 }
 
-EditorArcItem *CPNetScene::getArcItem(Arc *arc)
+EditorArcItem *EditorScene::getArcItem(Arc *arc)
 {
     foreach(QGraphicsItem *item, items())
         if(EditorArcItem *arcItem = qgraphicsitem_cast<EditorArcItem *>(item))

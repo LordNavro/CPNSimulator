@@ -28,7 +28,6 @@ SOURCES += main.cpp\
     placeform.cpp \
     transitionform.cpp \
     cpnetform.cpp \
-    cpnetscene.cpp \
     inscriptionedit.cpp \
     inscriptionhighlighter.cpp \
     compiler.cpp \
@@ -42,7 +41,9 @@ SOURCES += main.cpp\
     transitionitem.cpp \
     simulatorarcitem.cpp \
     simulatorplaceitem.cpp \
-    simulatortransitionitem.cpp
+    simulatortransitionitem.cpp \
+    editorscene.cpp \
+    simulatorscene.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -54,7 +55,6 @@ HEADERS  += mainwindow.h \
     placeform.h \
     transitionform.h \
     cpnetform.h \
-    cpnetscene.h \
     inscriptionedit.h \
     inscriptionhighlighter.h \
     compiler.h \
@@ -68,7 +68,9 @@ HEADERS  += mainwindow.h \
     transitionitem.h \
     simulatorarcitem.h \
     simulatorplaceitem.h \
-    simulatortransitionitem.h
+    simulatortransitionitem.h \
+    editorscene.h \
+    simulatorscene.h
 
 RESOURCES += \
     icons.qrc

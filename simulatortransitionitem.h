@@ -1,13 +1,16 @@
 #ifndef SIMULATORTRANSITIONITEM_H
 #define SIMULATORTRANSITIONITEM_H
 
-#include "transitionitem.h"
+#include "editortransitionitem.h"
+
 
 class SimulatorTransitionItem : public TransitionItem
 {
-    enum { Type = UserType + 22 };
 public:
-    SimulatorTransitionItem();
+    enum { Type = UserType + 22 };
+
+    explicit SimulatorTransitionItem();
+    explicit SimulatorTransitionItem(EditorTransitionItem *eti);
 
     int type() const{ return Type; }
 };

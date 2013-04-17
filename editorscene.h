@@ -1,5 +1,5 @@
-#ifndef CPNETSCENE_H
-#define CPNETSCENE_H
+#ifndef EDITORSCENE_H
+#define EDITORSCENE_H
 
 #include <QtGui>
 #include "cpnet.h"
@@ -11,26 +11,18 @@
 #include "transitionform.h"
 #include "arcform.h"
 
-class CPNetScene : public QGraphicsScene
+class EditorScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    explicit CPNetScene(CPNet *net, QObject *parent = 0);
+    explicit EditorScene(CPNet *net, QObject *parent = 0);
 
     typedef enum{SELECT, PLACE, TRANSITION, ARC, DELETE} Tool;
 
-    QString fileName;
-    QString name;
     Tool currentTool;
     CPNet *net;
 
     QGraphicsLineItem *line;
-
-    CPNetForm *netForm;
-    PlaceForm *placeForm;
-    TransitionForm *transitionForm;
-    ArcForm *arcForm;
-
 
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -51,4 +43,4 @@ signals:
 public slots:
 };
 
-#endif // CPNETSCENE_H
+#endif // EDITORSCENE_H

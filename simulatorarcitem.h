@@ -5,8 +5,8 @@
 
 class SimulatorArcItem : public ArcItem
 {
+public:
     enum { Type = UserType + 32 };
-
     explicit SimulatorArcItem(QGraphicsItem *from, QGraphicsItem *to, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
 
     int type() const{ return Type; }

@@ -3,7 +3,7 @@
 
 #include <QtGui>
 #include "cpnet.h"
-#include "cpnetscene.h"
+#include "editorscene.h"
 #include "cpnetform.h"
 #include "placeform.h"
 #include "transitionform.h"
@@ -19,7 +19,7 @@ protected:
 public:
     explicit CPNetEditor(CPNet* net, QWidget *parent = 0);
 
-    CPNetScene *scene;
+    EditorScene *scene;
     QGraphicsView *view;
     QTableWidget *table;
 
@@ -40,7 +40,7 @@ public:
     CPNet *getNet();
 
 signals:
-
+    void signalStartSimulation();
 public slots:
     void slotSelectionChanged();
     void slotCellClicked(int x, int y);

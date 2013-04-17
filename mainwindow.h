@@ -55,7 +55,7 @@ private:
     void createToolBars(void);
     void createMenuBars(void);
 
-    void setCurrentTool(CPNetScene::Tool tool);
+    void setCurrentTool(EditorScene::Tool tool);
 
 public slots:
     void slotNew();
