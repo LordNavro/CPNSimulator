@@ -32,7 +32,7 @@ public:
 
     QString fileName;
 
-    void compile(void);
+    void setCompilationOutput(void);
     QDomDocument netToXml();
     void xmlToNet(QDomDocument xml);
 
@@ -40,7 +40,6 @@ public:
     CPNet *getNet();
 
 signals:
-    void signalStartSimulation();
 public slots:
     void slotSelectionChanged();
     void slotCellClicked(int x, int y);

@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("CPNSimulator");
     setWindowIcon(QIcon(style()->standardIcon(QStyle::SP_CommandLink)));
+    refreshActions();
 }
 
 MainWindow::~MainWindow()
@@ -39,6 +40,8 @@ void MainWindow::createActions()
     connect(actionLoad, SIGNAL(triggered()), this, SLOT(slotLoad()));
     connect(actionClose, SIGNAL(triggered()), this, SLOT(slotClose()));
 
+    actionsEditor << actionSave << actionSaveAs << actionClose;
+
     actionGroupTool = new QActionGroup(this);
     actionSelect = new QAction(QIcon(":icons/icons/cursor.ico"), tr("Select"), actionGroupTool);
     actionPlace = new QAction(QIcon(":icons/icons/place.ico"), tr("New place"), actionGroupTool);
@@ -58,13 +61,28 @@ void MainWindow::createActions()
     connect(actionArc, SIGNAL(triggered()), this, SLOT(slotArc()));
     connect(actionDelete, SIGNAL(triggered()), this, SLOT(slotDelete()));
 
+    actionsEditor << actionSelect << actionPlace << actionTransition << actionArc << actionDelete;
+
     actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About program"), this);
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
 
     actionCompile = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Compile"), this);
+    actionEdit = new QAction(QIcon(style()->standardIcon(QStyle::SP_DesktopIcon)), tr("Edit net"), this);
+    actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("Step"), this);
+    actionStop = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaStop)), tr("To init marking"), this);
+    actionFastForward = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSeekForward)), tr("Fast forward"), this);
 
     connect(actionCompile, SIGNAL(triggered()), this, SLOT(slotCompile()));
+    connect(actionEdit, SIGNAL(triggered()), this, SLOT(slotEdit()));
+    connect(actionStep, SIGNAL(triggered()), this, SLOT(slotStep()));
+    connect(actionStop, SIGNAL(triggered()), this, SLOT(slotStop()));
+    connect(actionFastForward, SIGNAL(triggered()), this, SLOT(slotFastForward()));
+
+    actionsEditor << actionCompile;
+    actionsSimulator << actionEdit << actionStep << actionStop << actionFastForward;
+
+
 }
 
 void MainWindow::createToolBars()
@@ -87,14 +105,18 @@ void MainWindow::createToolBars()
     toolBarTools->addAction(actionDelete);
 
     toolBarSimulation->addAction(actionCompile);
+    toolBarSimulation->addAction(actionEdit);
+    toolBarSimulation->addAction(actionStep);
+    toolBarSimulation->addAction(actionStop);
+    toolBarSimulation->addAction(actionFastForward);
 }
 
 void MainWindow::createMenuBars()
 {
     menuFile = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_FileIcon)), tr("File"));
     menuTool = menuBar()->addMenu(QIcon(":/icons/icons/hammer.ico"), tr("Tool"));
-    menuAbout = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About"));
     menuSimulation = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Simulation"));
+    menuAbout = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About"));
 
     menuFile->addAction(actionNew);
     menuFile->addAction(actionLoad);
@@ -108,9 +130,13 @@ void MainWindow::createMenuBars()
     menuTool->addAction(actionArc);
     menuTool->addAction(actionDelete);
 
-    menuAbout->addAction(actionAbout);
-
     menuSimulation->addAction(actionCompile);
+    menuSimulation->addAction(actionEdit);
+    menuSimulation->addAction(actionStep);
+    menuSimulation->addAction(actionStop);
+    menuSimulation->addAction(actionFastForward);
+
+    menuAbout->addAction(actionAbout);
 }
 
 void MainWindow::slotNew()
@@ -119,12 +145,13 @@ void MainWindow::slotNew()
     CPNetEditor *e = new CPNetEditor(net, this);
     CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
-    editors.append(e);
-    simulators.append(s);
+    QStackedWidget *sw = new QStackedWidget;
+    sw->addWidget(e);
+    sw->addWidget(s);
 
-    tabWidget->addTab(e, "New net");
+    tabWidget->addTab(sw, "New net");
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
-    actionSelect->trigger();
+    //refreshActions();
 }
 
 void MainWindow::slotLoad()
@@ -148,21 +175,20 @@ void MainWindow::slotLoad()
     CPNetEditor *e = new CPNetEditor(net, this);
     CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
-    editors.append(e);
-    simulators.append(s);
+    QStackedWidget *sw = new QStackedWidget;
+    sw->addWidget(e);
+    sw->addWidget(s);
     e->fileName = fileName;
     e->xmlToNet(xml);
 
-    tabWidget->addTab(e, e->fileName);
+    tabWidget->addTab(sw, e->fileName);
     tabWidget->setCurrentIndex(tabWidget->count() - 1);
-    actionSelect->trigger();
+    //refreshActions();
 }
 
 void MainWindow::slotSave()
 {
-    if(!tabWidget->currentWidget())
-        return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
+    CPNetEditor *e = currentEditor();
     if(e->fileName == "")
     {
         slotSaveAs();
@@ -183,12 +209,10 @@ void MainWindow::slotSave()
 
 void MainWindow::slotSaveAs()
 {
-    if(!tabWidget->currentWidget())
-        return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Coloured Petri Net"), QString(), "Coloured Petri Net (*.cpn)");
     if(fileName == "")
         return;
+    CPNetEditor *e = currentEditor();
     e->fileName = fileName;
     tabWidget->setTabText(tabWidget->currentIndex(), e->fileName);
     slotSave();
@@ -197,22 +221,58 @@ void MainWindow::slotSaveAs()
 void MainWindow::slotClose()
 {
     int i = tabWidget->currentIndex();
-    delete simulators.at(i);
-    delete editors.at(i);
     delete nets.at(i);
-    simulators.removeAt(i);
-    editors.removeAt(i);
     nets.removeAt(i);
+    delete tabWidget->widget(i);
     tabWidget->removeTab(i);
+    refreshActions();
 }
 
 void MainWindow::setCurrentTool(EditorScene::Tool tool)
 {
+    if(tabWidget->currentIndex() == -1)
+        return;
+    CPNetEditor *e = currentEditor();
+    e->scene->currentTool = tool;
+}
+
+QStackedWidget *MainWindow::currentStackedWidget()
+{
+    return qobject_cast<QStackedWidget *>(tabWidget->currentWidget());
+}
+
+CPNetEditor *MainWindow::currentEditor()
+{
+    return qobject_cast<CPNetEditor *>(currentStackedWidget()->widget(0));
+}
+
+CPNetSimulator *MainWindow::currentSimulator()
+{
+    return qobject_cast<CPNetSimulator *>(currentStackedWidget()->widget(1));
+}
+
+void MainWindow::refreshActions()
+{
+    foreach(QAction *action, actionsSimulator)
+        action->setDisabled(true);
+    foreach(QAction *action, actionsEditor)
+        action->setDisabled(true);
 
     if(tabWidget->currentIndex() == -1)
         return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
-    e->scene->currentTool = tool;
+
+    QStackedWidget *sw = currentStackedWidget();
+    if(sw->currentIndex() == 0)
+    {
+        foreach(QAction *action, actionsEditor)
+            action->setDisabled(false);
+        actionSelect->trigger();
+    }
+    else
+    {
+        foreach(QAction *action, actionsSimulator)
+            action->setDisabled(false);
+    }
 }
 
 void MainWindow::slotSelect()
@@ -248,13 +308,39 @@ void MainWindow::slotCompile()
 {
     if(!tabWidget->currentWidget())
         return;
-    CPNetEditor *e = qobject_cast<CPNetEditor *>(tabWidget->currentWidget());
-    e->compile();
+    CPNetEditor *e = currentEditor();
+    int i = tabWidget->currentIndex();
+    CPNet *net = nets.at(i);
+    net->syntaxAnalysis();
+    net->semanticAnalysis();
+    e->setCompilationOutput();
+    if(!net->errorList.isEmpty())
+        return;
+
+    CPNetSimulator *s = currentSimulator();
+    s->loadNetGraph();
+    currentStackedWidget()->setCurrentIndex(1);
+    refreshActions();
 }
 
-void MainWindow::slotSimulate()
+void MainWindow::slotEdit()
+{
+    currentStackedWidget()->setCurrentIndex(0);
+    refreshActions();
+}
+
+void MainWindow::slotStep()
 {
 }
+
+void MainWindow::slotStop()
+{
+}
+
+void MainWindow::slotFastForward()
+{
+}
+
 
 void MainWindow::slotTabCloseRequest(int index)
 {
@@ -265,5 +351,5 @@ void MainWindow::slotTabCloseRequest(int index)
 
 void MainWindow::slotTabChanged(int /*i*/)
 {
-    actionSelect->trigger();
+    refreshActions();
 }

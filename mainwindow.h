@@ -34,7 +34,13 @@ private:
     QAction *actionAbout;
 
     QAction *actionCompile;
-    QAction *actionSimulate;
+    QAction *actionEdit;
+    QAction *actionStep;
+    QAction *actionStop;
+    QAction *actionFastForward;
+
+    QList<QAction *> actionsEditor;
+    QList<QAction *> actionsSimulator;
 
     QToolBar *toolBarFile;
     QToolBar *toolBarTools;
@@ -47,15 +53,19 @@ private:
 
     QTabWidget *tabWidget;
 
-    QList<CPNetEditor *> editors;
-    QList<CPNetSimulator *> simulators;
     QList<CPNet *> nets;
+
 
     void createActions(void);
     void createToolBars(void);
     void createMenuBars(void);
 
     void setCurrentTool(EditorScene::Tool tool);
+
+    QStackedWidget *currentStackedWidget();
+    CPNetEditor *currentEditor();
+    CPNetSimulator *currentSimulator();
+    void refreshActions();
 
 public slots:
     void slotNew();
@@ -73,7 +83,10 @@ public slots:
     void slotAbout();
 
     void slotCompile();
-    void slotSimulate();
+    void slotEdit();
+    void slotStep();
+    void slotStop();
+    void slotFastForward();
 
     void slotTabCloseRequest(int index);
 

@@ -41,17 +41,14 @@ CPNetEditor::CPNetEditor(CPNet* net, QWidget *parent) :
     slotSelectionChanged();
 }
 
-void CPNetEditor::compile()
+void CPNetEditor::setCompilationOutput()
 {
-    net->syntaxAnalysis();
-    net->semanticAnalysis();
     if(net->errorList.isEmpty())
     {
         table->setRowCount(1);
         QTableWidgetItem *item = new QTableWidgetItem(tr("Compilation completed succesfully."));
         item->setFlags(item->flags() ^ Qt::ItemIsEditable);
         table->setItem(0, 0, item);
-        emit signalStartSimulation();
         return;
     }
 

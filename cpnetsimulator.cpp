@@ -35,6 +35,7 @@ void CPNetSimulator::loadNetGraph()
         if(!arc->isPreset)
             qSwap(from, to);
         SimulatorArcItem *sai = new SimulatorArcItem(from, to);
+        sai->arc = arc;
         scene->addItem(sai);
     }
 }
