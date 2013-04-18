@@ -12,6 +12,10 @@ public:
     explicit SimulatorTransitionItem();
     explicit SimulatorTransitionItem(EditorTransitionItem *eti);
 
+    QGraphicsProxyWidget *proxyCombo;
+    QComboBox *comboBinding;
+
+
     int type() const{ return Type; }
 };
 
