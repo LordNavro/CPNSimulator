@@ -28,7 +28,6 @@ void CPNetSimulator::loadNetGraph()
     }
     foreach(Arc *arc, net->arcs)
     {
-
         QGraphicsItem *from = scene->getPlaceItem(arc->place);
         QGraphicsItem *to = scene->getTransitionItem(arc->transition);
 

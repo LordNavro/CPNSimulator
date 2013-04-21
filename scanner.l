@@ -53,7 +53,8 @@ multiunit   {DEBUG("multiunit"); yylval.dataType = Data::MULTIUNIT; return DATAT
 multibool   {DEBUG("multibool"); yylval.dataType = Data::MULTIBOOL; return DATATYPE;}
 multiint    {DEBUG("multiint"); yylval.dataType = Data::MULTIINT; return DATATYPE;}
 
-unit        {DEBUG("unitdata"); yylval.data = new Data(Data::UNIT); return DATA;}
+unit        {DEBUG("unitdata"); yylval.data = new Data(Data::UNIT); yylval.data->value.b = true; return DATA;}
+nounit      {DEBUG("unitdata"); yylval.data = new Data(Data::UNIT); yylval.data->value.b = false; return DATA;}
 
 true        {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data->value.b = true; return DATA;}
 false       {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data->value.b = false; return DATA;}

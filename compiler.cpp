@@ -11,6 +11,27 @@ SymbolTable *currentLocalSymbolTable = NULL;
 SymbolTable *currentSymbolTable = NULL;
 Data::Type currentReturnType;
 
+Data::Data(const Data &data)
+    : type(data.type)
+{
+    if(type == Data::MULTIINT)
+        value.multiInt = new MultiInt(*data.value.multiInt);
+}
+
+Data &Data::operator=(const Data &data)
+{
+    if(this != &data)
+    {
+        if(type == Data::MULTIINT)
+            delete value.multiInt;
+        type = data.type;
+        if(type == Data::MULTIINT)
+            value.multiInt = new MultiInt(*data.value.multiInt);
+        else
+            value = data.value;
+    }
+    return *this;
+}
 
 Expression::~Expression()
 {

@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     simulatorplaceitem.cpp \
     simulatortransitionitem.cpp \
     editorscene.cpp \
-    simulatorscene.cpp
+    simulatorscene.cpp \
+    interpret.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -70,7 +71,8 @@ HEADERS  += mainwindow.h \
     simulatorplaceitem.h \
     simulatortransitionitem.h \
     editorscene.h \
-    simulatorscene.h
+    simulatorscene.h \
+    interpret.h
 
 RESOURCES += \
     icons.qrc

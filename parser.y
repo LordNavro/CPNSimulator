@@ -52,7 +52,7 @@
 %token LEQ GEQ EQ NEQ
 
 
-%left '='
+%right '='
 %left '&' '|'
 %left LEQ GEQ EQ NEQ '>' '<'
 %left '+' '-'
@@ -67,7 +67,7 @@
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
 %type <idList> idList
-%type <expression> expression
+%type <expression> expression expressionNA
 %type <expressionList> expressionList expressionListNE
 %type <declaration> declaration
 %type <declarationList> declarationList
@@ -84,7 +84,7 @@
 %%
 
 start: START_DECLARATION {currentSymbolTable = currentLocalSymbolTable;} declarationList { currentParsedDeclarationList = $3; }
-    | START_EXPRESSION {currentSymbolTable = currentGlobalSymbolTable;} expression { currentParsedExpression = $3; }
+    | START_EXPRESSION {currentSymbolTable = currentGlobalSymbolTable;} expressionNA { currentParsedExpression = $3; }
     | START_MARKING {currentSymbolTable = currentGlobalSymbolTable;} marking { currentParsedExpression = $3; }
     | START_PRESET {currentSymbolTable = currentGlobalSymbolTable;} preset { currentParsedExpression = $3; }
     | error { currentParsedDeclarationList = NULL; currentParsedExpression = NULL; }
@@ -231,7 +231,7 @@ commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHIL
     | '{' { currentLocalSymbolTable->increaseScope(); } commandList { currentLocalSymbolTable->decreaseScope(); } '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$3; delete $3; }
     ;
 
-expression:
+expressionNA:
     expression '&' expression {$$ = binaryOp(Data::BOOL, Expression::AND, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
     | expression '|' expression {$$ = binaryOp(Data::BOOL, Expression::OR, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
     | expression LEQ expression {$$ = binaryOp(Data::BOOL, Expression::LEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
@@ -272,22 +272,6 @@ expression:
         $$->id = *$1;
         delete $1;
     }
-    | ID '=' expression {
-        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
-        if(!symbol)
-        {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
-            $$ = unaryOp(Data::INT, Expression::ASSIGN, $3);
-        }
-        else
-        {
-            if(symbol->type == SymbolTable::FN)
-                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
-            $$ = unaryOp(symbol->dataType, Expression::ASSIGN, convert(symbol->dataType, $3));
-        }
-        $$->id = *$1;
-        delete $1;
-    }
     | ID '(' expressionList ')' {
         $$ = new Expression(Expression::FN);
         $$->expressionList = new ExpressionList();
@@ -319,6 +303,25 @@ expression:
         $$->id = *$1;
         delete $1;
         delete $3; // DO NOT qDeleteAll -> exprs. used after being converted
+    }
+    ;
+
+expression: expressionNA
+    | ID '=' expression {
+        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$ = unaryOp(Data::INT, Expression::ASSIGN, $3);
+        }
+        else
+        {
+            if(symbol->type == SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
+            $$ = unaryOp(symbol->dataType, Expression::ASSIGN, convert(symbol->dataType, $3));
+        }
+        $$->id = *$1;
+        delete $1;
     }
     ;
 

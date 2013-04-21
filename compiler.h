@@ -32,6 +32,8 @@
         enum Type{UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT};
 
         Data(Data::Type type) : type(type){if(type == Data::MULTIINT) value.multiInt = new MultiInt;}
+        Data(const Data &data);
+        Data &operator=(const Data &data);
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
         Data::Type type;
         Value value;
