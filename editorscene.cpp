@@ -62,10 +62,8 @@ void EditorScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void EditorScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    Place *place;
-    EditorPlaceItem *placeItem;
-    place = new Place(this);
-    placeItem = new EditorPlaceItem;
+    Place *place = new Place();
+    EditorPlaceItem *placeItem = new EditorPlaceItem;
     placeItem->place = place;
     addItem(placeItem);
     placeItem->setPos(mouseEvent->scenePos());

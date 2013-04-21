@@ -1,15 +1,14 @@
 #ifndef ARC_H
 #define ARC_H
 
-#include <QObject>
 #include "place.h"
 #include "transition.h"
 
-class Arc : public QObject
+class Arc
 {
-    Q_OBJECT
 public:
-    explicit Arc(QObject *parent = 0);
+    explicit Arc();
+    ~Arc();
     
     QString expression;
     Place *place;

@@ -221,7 +221,7 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     for(int i = 0; i < places.childNodes().size(); i++)
     {
         QDomElement placeElem = places.childNodes().at(i).toElement();
-        Place *place = new Place(this);
+        Place *place = new Place();
         EditorPlaceItem *placeItem = new EditorPlaceItem();
         placeItem->place = place;
         net->places.append(place);
@@ -247,7 +247,7 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     for(int i = 0; i < transitions.childNodes().size(); i++)
     {
         QDomElement transitionElem = transitions.childNodes().at(i).toElement();
-        Transition *transition = new Transition(this);
+        Transition *transition = new Transition();
         EditorTransitionItem *transitionItem = new EditorTransitionItem();
         transitionItem->transition = transition;
         net->transitions.append(transition);
@@ -263,7 +263,7 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
     for(int i = 0; i < arcs.childNodes().size(); i++)
     {
         QDomElement arcElem = arcs.childNodes().at(i).toElement();
-        Arc *arc = new Arc(this);
+        Arc *arc = new Arc();
         net->arcs.append(arc);
         arc->expression = arcElem.firstChildElement("expression").firstChild().toCDATASection().data();
         arc->place = net->places[arcElem.attribute("placeId").toInt()];

@@ -1,7 +1,17 @@
 #include "place.h"
 
-Place::Place(QObject *parent) :
-    QObject(parent), parsedInitialMarking(NULL), parsedCurrentMarking(NULL)
+Place::Place() :
+    parsedInitialMarking(NULL), parsedCurrentMarking(NULL), currentMarkingValue(NULL)
 {
     colourSet = UNIT;
+}
+
+Place::~Place()
+{
+    if(parsedInitialMarking)
+        delete parsedInitialMarking;
+    if(parsedCurrentMarking)
+        delete parsedCurrentMarking;
+    if(currentMarkingValue)
+        delete currentMarkingValue;
 }

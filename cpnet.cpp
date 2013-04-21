@@ -82,7 +82,7 @@ void CPNet::syntaxAnalysis()
 
         if(transition->parsedGuard)
             delete transition->parsedGuard;
-        parseQString(transition->guard, START_EXPRESSION);
+        parseQString(transition->guard, START_GUARD);
         transition->parsedGuard = currentParsedExpression;
     }
 

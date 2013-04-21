@@ -15,7 +15,6 @@ public:
     QGraphicsProxyWidget *proxyCombo;
     QComboBox *comboBinding;
 
-
     int type() const{ return Type; }
 };
 

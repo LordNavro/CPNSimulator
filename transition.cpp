@@ -1,6 +1,12 @@
 #include "transition.h"
 
-Transition::Transition(QObject *parent) :
-    QObject(parent), parsedGuard(NULL)
+Transition::Transition() :
+    parsedGuard(NULL)
 {
+}
+
+Transition::~Transition()
+{
+    if(parsedGuard)
+        delete parsedGuard;
 }

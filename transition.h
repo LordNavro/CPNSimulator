@@ -1,16 +1,15 @@
 #ifndef TRANSITION_H
 #define TRANSITION_H
 
-#include <QObject>
 #include "compiler.h"
 
 class CPNet;
 
-class Transition : public QObject
+class Transition
 {
-    Q_OBJECT
 public:
-    explicit Transition(QObject *parent = 0);
+    explicit Transition();
+    ~Transition();
     
     QString name;
     QString guard;

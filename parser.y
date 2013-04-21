@@ -43,7 +43,7 @@
     DeclarationList *declarationList;
 }
 
-%token START_EXPRESSION START_DECLARATION START_MARKING START_PRESET
+%token START_EXPRESSION START_DECLARATION START_MARKING START_PRESET START_GUARD
 %token IF ELSE WHILE DO SWITCH CASE RETURN
 %token UNIT BOOL INT MULTIUNIT MULTIBOOL MULTIINT
 %token ID
@@ -85,6 +85,8 @@
 
 start: START_DECLARATION {currentSymbolTable = currentLocalSymbolTable;} declarationList { currentParsedDeclarationList = $3; }
     | START_EXPRESSION {currentSymbolTable = currentGlobalSymbolTable;} expressionNA { currentParsedExpression = $3; }
+    | START_GUARD {currentSymbolTable = currentGlobalSymbolTable;} expressionNA { currentParsedExpression = $3; }
+    | START_GUARD /* empty */ { currentParsedExpression = NULL; }
     | START_MARKING {currentSymbolTable = currentGlobalSymbolTable;} marking { currentParsedExpression = $3; }
     | START_PRESET {currentSymbolTable = currentGlobalSymbolTable;} preset { currentParsedExpression = $3; }
     | error { currentParsedDeclarationList = NULL; currentParsedExpression = NULL; }

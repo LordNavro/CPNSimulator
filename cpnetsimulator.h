@@ -23,6 +23,10 @@ public:
 
     void loadNetGraph();
 
+    void toInitialMarking();
+
+    void findBindings();
+
 signals:
     
 public slots:

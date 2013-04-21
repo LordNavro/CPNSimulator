@@ -6,8 +6,13 @@ SimulatorPlaceItem::SimulatorPlaceItem() :
 }
 
 SimulatorPlaceItem::SimulatorPlaceItem(EditorPlaceItem *pi)
+    : PlaceItem()
 {
     setRect(pi->rect());
     setPos(pi->pos());
     place = pi->place;
+}
+
+SimulatorPlaceItem::~SimulatorPlaceItem()
+{
 }

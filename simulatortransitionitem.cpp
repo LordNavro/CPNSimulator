@@ -13,7 +13,6 @@ SimulatorTransitionItem::SimulatorTransitionItem(EditorTransitionItem *eti)
     setPos(eti->pos());
     transition = eti->transition;
     comboBinding = new QComboBox;
-    comboBinding->addItem("test");
     proxyCombo = new QGraphicsProxyWidget(this);
     proxyCombo->setWidget(comboBinding);
 }

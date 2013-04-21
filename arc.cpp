@@ -1,6 +1,12 @@
 #include "arc.h"
 
-Arc::Arc(QObject *parent) :
-    QObject(parent), parsedExpression(NULL)
+Arc::Arc() :
+    parsedExpression(NULL)
 {
+}
+
+Arc::~Arc()
+{
+    if(parsedExpression)
+        delete parsedExpression;
 }
