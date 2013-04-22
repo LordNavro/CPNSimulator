@@ -3,6 +3,7 @@
 
 #include "place.h"
 #include "transition.h"
+#include "interpret.h"
 
 class Arc
 {
@@ -16,6 +17,7 @@ public:
     bool isPreset;
 
     Expression *parsedExpression;
+    QList<Binding> findBindings();
 
 signals:
     

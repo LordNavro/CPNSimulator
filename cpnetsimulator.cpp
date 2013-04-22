@@ -85,4 +85,14 @@ void CPNetSimulator::toInitialMarking()
 
 void CPNetSimulator::findBindings()
 {
+    foreach(Transition *transition, net->transitions)
+    {
+        QList<QList<Binding> > bindings;
+        foreach(Arc *arc, net->arcs)
+        {
+            if(!arc->isPreset || arc->transition != transition)
+                continue;
+            bindings.append(arc->findBindings());
+        }
+    }
 }
