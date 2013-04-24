@@ -1,4 +1,5 @@
 #include "interpret.h"
+#include <QStringList>
 
 Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
 {
@@ -208,6 +209,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
         }
     }
     Q_ASSERT(false);
+    return Data(Data::UNIT); //compile-killer
 }
 
 InterCode *generate3AC(Command *command)
@@ -320,6 +322,7 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable)
         }
     }
     Q_ASSERT(false);
+    return Data(Data::UNIT); //compile-killer
 }
 
 
@@ -334,4 +337,17 @@ InterCode *InterCode::last()
 InterCode *InterCode::append(InterCode *ic)
 {
     return last()->next = ic;
+}
+
+
+QString Binding::toString()
+{
+    QStringList values;
+    foreach(BindingElement binding, *this)
+    {
+        values << binding.id() + " = " + binding.data().toString();
+    }
+    if(values.isEmpty())
+        return "<only constants>";
+    return values.join(", ");
 }

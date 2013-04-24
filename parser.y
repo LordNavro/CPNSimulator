@@ -62,12 +62,12 @@
 
 %type <data> DATA
 %type <expression> marking markingNE markingItem
-%type <expression> preset presetItem idOrData
+%type <expression> preset
 %type <id> ID
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
 %type <idList> idList
-%type <expression> expression expressionNA
+%type <expression> expression expressionNA expressionId expressionData
 %type <expressionList> expressionList expressionListNE
 %type <declaration> declaration
 %type <declarationList> declarationList
@@ -252,28 +252,8 @@ expressionNA:
     | '!' expression                {$$ = unaryOp(Data::BOOL, Expression::NOT, convert(Data::BOOL, $2));}
     | '-' expression %prec UMINUS   {$$ = unaryOp(Data::INT, Expression::UMINUS, convert(Data::INT, $2));}
     | '(' DATATYPE ')' expression %prec UMINUS   {$$ = convert($2, $4);}
-    | DATA  {
-        $$ = new Expression(Expression::DATA);
-        $$->data = $1;
-        $$->dataType = $1->type;
-    }
-    | ID {
-        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
-        $$ = new Expression(Expression::VAR);
-        if(!symbol)
-        {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
-            $$->dataType = Data::INT;
-        }
-        else
-        {
-            if(symbol->type == SymbolTable::FN)
-                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
-            $$->dataType = symbol->dataType;
-        }
-        $$->id = *$1;
-        delete $1;
-    }
+    | expressionId
+    | expressionData
     | ID '(' expressionList ')' {
         $$ = new Expression(Expression::FN);
         $$->expressionList = new ExpressionList();
@@ -327,6 +307,32 @@ expression: expressionNA
     }
     ;
 
+expressionData:DATA  {
+        $$ = new Expression(Expression::DATA);
+        $$->data = $1;
+        $$->dataType = $1->type;
+    }
+    ;
+
+expressionId: ID {
+        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
+        $$ = new Expression(Expression::VAR);
+        if(!symbol)
+        {
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            $$->dataType = Data::INT;
+        }
+        else
+        {
+            if(symbol->type == SymbolTable::FN)
+                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
+            $$->dataType = symbol->dataType;
+        }
+        $$->id = *$1;
+        delete $1;
+    }
+    ;
+
 expressionList: /* empty */ { $$ = new ExpressionList(); }
     | expressionListNE { $$ = $1; }
     ;
@@ -347,37 +353,30 @@ markingItem: DATA '^' DATA {
         Expression *e2 = new Expression(Expression::DATA); e2->data = $3; e2->dataType = $3->type;
         $$ = multiset(e1, e2);
     }
-
-preset: presetItem
-    | preset '+' presetItem { $$ = plus($1, $3); }
     ;
 
-presetItem: idOrData '^' idOrData { $$ = multiset($1, $3); }
-    ;
-
-idOrData: DATA  {
-        $$ = new Expression(Expression::DATA);
-        $$->data = $1;
-        $$->dataType = $1->type;
+preset: expressionId {
+        Expression *e = new Expression(Expression::DATA);
+        e->data = new Data(Data::INT);
+        e->dataType = Data::INT;
+        e->data->value.i = 1;
+        $$ = multiset(e, $1);
     }
-    | ID {
-        SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
-        $$ = new Expression(Expression::VAR);
-        if(!symbol)
-        {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
-            $$->dataType = Data::INT;
-        }
-        else
-        {
-            if(symbol->type == SymbolTable::FN)
-                currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
-            $$->dataType = symbol->dataType;
-        }
-        $$->id = *$1;
-        delete $1;
+    | expressionData {
+        Expression *e = new Expression(Expression::DATA);
+        e->data = new Data(Data::INT);
+        e->dataType = Data::INT;
+        e->data->value.i = 1;
+        $$ = multiset(e, $1);
+    }
+    | expressionData '^' expressionId {
+        $$ = multiset($1, $3);
+    }
+    | expressionData '^' expressionData {
+        $$ = multiset($1, $3);
     }
     ;
+
 
 %%
 
@@ -414,7 +413,8 @@ Expression *convert(Data::Type type, Expression *e)
         Expression *expr = unaryOp(type, Expression::CONVERT, e);
         return expr;
     }
-    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in expression");
+    char *keys[] = {"unit", "bool", "int", "multiunit", "multibool", "multiint"};
+    currentParsedNet->addError(CPNet::SEMANTIC, QString("Invalid conversion to ") + keys[type] + " in expression");
     return e;
 }
 

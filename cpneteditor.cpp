@@ -232,8 +232,10 @@ void CPNetEditor::xmlToNet(QDomDocument xml)
         {
         case 0:
             place->colourSet = Place::UNIT;
+            break;
         case 1:
             place->colourSet = Place::BOOL;
+            break;
         default:
             place->colourSet = Place::INT;
         }

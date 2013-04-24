@@ -1,6 +1,8 @@
 #include "symboltable.h"
 #include "compiler.h"
 #include "parser.parser.hpp"
+#include <QStringList>
+#include "QtGui"
 
 int startSymbol;
 
@@ -11,11 +13,26 @@ SymbolTable *currentLocalSymbolTable = NULL;
 SymbolTable *currentSymbolTable = NULL;
 Data::Type currentReturnType;
 
+Data::Data(Data::Type type): type(type)
+{
+    if(type == Data::MULTIINT)
+        value.multiInt = new MultiInt;
+    else if(type == Data::MULTIBOOL)
+        value.multiBool.f = value.multiBool.t = 0;
+}
+
 Data::Data(const Data &data)
     : type(data.type)
 {
     if(type == Data::MULTIINT)
         value.multiInt = new MultiInt(*data.value.multiInt);
+    else if(type == Data::MULTIBOOL)
+    {
+        value.multiBool.t = data.value.multiBool.t;
+        value.multiBool.f = data.value.multiBool.f;
+    }
+    else
+        value = data.value;
 }
 
 Data &Data::operator=(const Data &data)
@@ -27,10 +44,59 @@ Data &Data::operator=(const Data &data)
         type = data.type;
         if(type == Data::MULTIINT)
             value.multiInt = new MultiInt(*data.value.multiInt);
+        else if(type == Data::MULTIBOOL)
+        {
+            value.multiBool.t = data.value.multiBool.t;
+            value.multiBool.f = data.value.multiBool.f;
+        }
         else
             value = data.value;
     }
     return *this;
+}
+
+bool Data::operator ==(const Data &data)
+{
+    if(type != data.type)
+        return false;
+    if(type == Data::UNIT || type == Data::BOOL)
+        return value.b == data.value.b;
+    else if(type == Data::INT)
+        return value.i == data.value.i;
+    else if(type == Data::MULTIUNIT)
+        return value.multiUnit == data.value.multiUnit;
+    else if(type == Data::MULTIBOOL)
+        return value.multiBool.t == data.value.multiBool.t && value.multiBool.f == data.value.multiBool.f;
+    else if(type == Data::MULTIINT)
+        return *value.multiInt == *data.value.multiInt;
+    Q_ASSERT(false);
+    return false;
+}
+
+QString Data::toString()
+{
+    switch(type)
+    {
+    case Data::UNIT:
+        return value.b ? "unit" : "nounit";
+    case Data::BOOL:
+        return value.b ? "true" : "false";
+    case Data::INT:
+        return QString::number(value.i);
+    case Data::MULTIUNIT:
+        return "(" + QString::number(value.multiUnit) + " ^ unit)";
+    case Data::MULTIBOOL:
+        return "(" + QString::number(value.multiBool.t) + " ^ true + " + QString::number(value.multiBool.f) + " ^ false)";
+    case Data::MULTIINT:
+        break;
+    }
+    //handle multiint
+    QStringList values;
+    for(MultiInt::iterator i = value.multiInt->begin(); i != value.multiInt->end(); i++)
+        values.append(QString::number(i.value()) + " ^ " + QString::number(i.key()));
+    if(values.isEmpty())
+        return "";
+    return "(" + values.join(" + ") + ")";
 }
 
 Expression::~Expression()

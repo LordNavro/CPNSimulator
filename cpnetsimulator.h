@@ -15,6 +15,8 @@ protected:
     QGraphicsView *view;
     QGridLayout *layout;
 
+    QList<Binding> mergeBindings(QList<Binding> possibleBindings, QList<QList<Binding> > arcBindings);
+
 public:
     explicit CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent = 0);
 

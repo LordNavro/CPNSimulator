@@ -85,14 +85,66 @@ void CPNetSimulator::toInitialMarking()
 
 void CPNetSimulator::findBindings()
 {
+    //Black magic bars our way. But the will of a templar is stronger!
     foreach(Transition *transition, net->transitions)
     {
-        QList<QList<Binding> > bindings;
+        QList<Binding> possibleBindings;
+        possibleBindings.append(Binding());
+        QList<QList<Binding> > arcBindings;
         foreach(Arc *arc, net->arcs)
         {
             if(!arc->isPreset || arc->transition != transition)
                 continue;
-            bindings.append(arc->findBindings());
+            arcBindings.append(arc->findBindings());
         }
+        transition->possibeBindings = mergeBindings(possibleBindings, arcBindings);
+        scene->getTransitionItem(transition)->populateCombo();
     }
+}
+
+
+QList<Binding> CPNetSimulator::mergeBindings(QList<Binding> possibleBindings, QList<QList<Binding> > arcBindings)
+{
+    if(possibleBindings.isEmpty() || arcBindings.isEmpty())
+        return possibleBindings;
+    //take one arc binding
+    QList<Binding> arcBindingVariants = arcBindings.first();
+    arcBindings.removeFirst();
+    //prepare result list
+    QList<Binding> newPossibleBindings;
+    //try to merge all arc binding variants with all possible bindings, add them to result list if succeeded
+    foreach(Binding possibleBinding, possibleBindings)
+    {
+        //take all possible arc variants
+        foreach(Binding arcBindingVariant, arcBindingVariants)
+        {
+            Binding mergedBinding = possibleBinding;
+            bool collision = false;
+            //and with every binding element
+            foreach(BindingElement arcElem, arcBindingVariant)
+            {
+                //try to look its clone in the possible binding, remember if found or not
+                bool found = false;
+                foreach(BindingElement existingElem, mergedBinding)
+                {
+                    if(existingElem.id() != arcElem.id())
+                        continue;
+                    found = true;
+                    if(!(existingElem.data() == arcElem.data()))
+                        collision = true;
+                    break;
+                }
+                //just a shortcut
+                if(collision)
+                    break;
+                //ad the item to the merged binding as it is not present there
+                if(!found)
+                    mergedBinding.append(arcElem);
+            }
+            if(!collision)
+                newPossibleBindings.append(mergedBinding);
+        }
+
+    }
+    return mergeBindings(newPossibleBindings, arcBindings);
 }

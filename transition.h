@@ -2,6 +2,7 @@
 #define TRANSITION_H
 
 #include "compiler.h"
+#include "interpret.h"
 
 class CPNet;
 
@@ -15,6 +16,7 @@ public:
     QString guard;
 
     Expression *parsedGuard;
+    QList<Binding> possibeBindings;
 
 signals:
     

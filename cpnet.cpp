@@ -73,7 +73,7 @@ void CPNet::syntaxAnalysis()
         place->parsedCurrentMarking = currentParsedExpression;
     }
 
-    /* compile transiion guards */
+    /* compile transition guards */
     currentParsedItem = CPNet::TRANSITION;
     currentParsedInscription = CPNet::GUARD;
     foreach(Transition *transition, transitions)
@@ -169,8 +169,13 @@ void CPNet::semanticAnalysis()
             break;
         }
 
+
+        currentParsedReference = CPNet::ErrorReference(place);
+        currentParsedItem = CPNet::PLACE;
+        currentParsedInscription = CPNet::INITIAL;
         if(place->parsedInitialMarking)
             place->parsedInitialMarking = convert(dataType, place->parsedInitialMarking);
+        currentParsedInscription = CPNet::CURRENT;
         if(place->parsedCurrentMarking)
             place->parsedCurrentMarking = convert(dataType, place->parsedCurrentMarking);
     }
@@ -201,7 +206,12 @@ void CPNet::semanticAnalysis()
                     addError(CPNet::SEMANTIC, "Invalid type of arc expression");
             }
             else
+            {
+                currentParsedReference = CPNet::ErrorReference(arc);
+                currentParsedItem = CPNet::ARC;
+                currentParsedInscription = CPNet::EXPRESSION;
                 arc->parsedExpression = convert(dataType, arc->parsedExpression);
+            }
         }
     }
 

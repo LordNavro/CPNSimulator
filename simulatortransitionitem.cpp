@@ -17,3 +17,10 @@ SimulatorTransitionItem::SimulatorTransitionItem(EditorTransitionItem *eti)
     proxyCombo->setWidget(comboBinding);
 }
 
+void SimulatorTransitionItem::populateCombo()
+{
+    comboBinding->clear();
+    foreach(Binding binding, transition->possibeBindings)
+        comboBinding->addItem(binding.toString());
+}
+
