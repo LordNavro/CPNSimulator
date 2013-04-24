@@ -4,7 +4,7 @@
 #include <QtGui>
 #include "arc.h"
 
-class ArcItem : public QGraphicsLineItem
+class ArcItem : public QGraphicsItem
 {
 public:
     enum { Type = UserType + 30 };
@@ -15,7 +15,13 @@ public:
 
     QGraphicsItem *from;
     QGraphicsItem *to;
+    QPointF pointStart;
+    QPointF pointEnd;
 
+    QPainterPath pathCurve;
+    QLineF line;
+    QPolygonF polygonHead;
+    QPainterPath pathShape;
 
     int type() const{ return Type; }
 
@@ -23,10 +29,14 @@ public:
     QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    QPolygonF arrowHead;
+    qreal angle();
+
+    //QPolygonF arrowHead;
 
 private:
-    void computeLineCoords();
+    void computePath();
+    void computePolygon();
+    void computeShape();
     QPointF placeIntersect(QGraphicsItem *place, QLineF line);
     QPointF transitionIntersect(QGraphicsItem *transition, QLineF line);
 signals:

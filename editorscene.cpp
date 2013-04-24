@@ -99,6 +99,14 @@ void EditorScene::addArc(QPointF from, QPointF to)
         return;
 
     QGraphicsItem *startItem = startItems.first(), *endItem = endItems.first();
+    //eliminate duplicate arrows
+    foreach(QGraphicsItem *item, items())
+    {
+        EditorArcItem *arcItem = qgraphicsitem_cast<EditorArcItem *>(item);
+        if(arcItem && arcItem->from == startItem && arcItem->to == endItem)
+            return;
+    }
+
     if(EditorPlaceItem *placeItem = qgraphicsitem_cast<EditorPlaceItem *>(startItem))
     {
         if(EditorTransitionItem *transitionItem = qgraphicsitem_cast<EditorTransitionItem *>(endItem))

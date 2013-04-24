@@ -26,7 +26,6 @@ void PlaceItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarkingValue->toString());
     else
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarking);
-
 }
 
 

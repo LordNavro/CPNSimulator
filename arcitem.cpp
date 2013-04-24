@@ -1,84 +1,91 @@
 #include "arcitem.h"
 #define PI 3.141592653589
-#define SEL_WIDTH 5
+#define SEL_WIDTH 10
+#define BEZ_WIDTH 50
 
 ArcItem::ArcItem(QGraphicsItem *from, QGraphicsItem *to, QGraphicsItem *parent, QGraphicsScene *scene)
-    : QGraphicsLineItem(parent, scene)
+    : QGraphicsItem(parent, scene), from(from), to(to)
 {
-    this->from = from;
-    this->to = to;
-    this->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    setFlag(QGraphicsItem::ItemHasNoContents, false);
 }
 
 QRectF ArcItem::boundingRect() const
 {
-    qreal extra = (pen().width() + 20) / 2.0;
-
-    return QRectF(line().p1(), QSizeF(line().p2().x() - line().p1().x(),
-                                      line().p2().y() - line().p1().y()))
-        .normalized()
-        .adjusted(-extra, -extra, extra, extra);
+    return shape().boundingRect().normalized().adjusted(-10,-10,10,10);
 }
 
 QPainterPath ArcItem::shape() const
 {
-    QPainterPath path = QGraphicsLineItem::shape();
-    path.addPolygon(arrowHead);
-    QLineF l1 = line(), l2 = line();
-    qreal normal = ::asin(line().dx() / line().length());
-    if (line().dy() >= 0)
-        normal = 2 * PI - normal;
-    l1.translate(::cos(normal) * SEL_WIDTH, ::sin(normal) * SEL_WIDTH);
-    l2.translate(-::cos(normal) * SEL_WIDTH, -::sin(normal) * SEL_WIDTH);
-    QPolygonF polygon;
-    polygon << l1.p1() << l1.p2() << l2.p2() << l2.p1();
-    path.addPolygon(polygon);
-    return path;
+    return pathShape;
 }
 
 void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
+    qDebug() << qrand() << "repainting called";
 
     if(from->collidesWithItem(to))
         return;
+    painter->drawPath(pathCurve);
+    painter->drawPolygon(polygonHead);
 
-    computeLineCoords();
-
-    double angle = ::acos(line().dx() / line().length());
-    if (line().dy() >= 0)
-        angle = 2 * PI - angle;
-
-    qreal arrowSize = 20;
-    QPointF arrowP1 = line().p1() + QPointF(sin(angle + PI / 3) * arrowSize, cos(angle + PI / 3) * arrowSize);
-    QPointF arrowP2 = line().p1() + QPointF(sin(angle + PI - PI / 3) * arrowSize, cos(angle + PI - PI / 3) * arrowSize);
-
-    arrowHead.clear();
-    arrowHead << line().p1() << arrowP1 << arrowP2;
-
-    painter->drawLine(line());
-    painter->drawPolygon(arrowHead);
     if (isSelected())
     {
         painter->setPen(QPen(Qt::DashLine));
-        QLineF l1 = line(), l2 = line();
-        qreal normal = ::asin(line().dx() / line().length());
-        if (line().dy() >= 0)
-            normal = 2 * PI - normal;
-        l1.translate(::cos(normal) * SEL_WIDTH, ::sin(normal) * SEL_WIDTH);
-        painter->drawLine(l1);
-        l2.translate(-::cos(normal) * SEL_WIDTH, -::sin(normal) * SEL_WIDTH);
-        painter->drawLine(l2);
+        painter->drawPath(shape());
     }
 }
 
-void ArcItem::computeLineCoords()
+qreal ArcItem::angle()
 {
+    return line.angle() / 360 * 2 * PI;
+}
+
+void ArcItem::computePath()
+{
+
     QLineF centerLine(from->pos(), to->pos());
     if(arc->isPreset)
-        setLine(QLineF(transitionIntersect(to, centerLine), placeIntersect(from, centerLine)));
+    {
+        pointStart = placeIntersect(from, centerLine);
+        pointEnd = transitionIntersect(to, centerLine);
+    }
     else
-        setLine(QLineF(placeIntersect(to, centerLine), transitionIntersect(from, centerLine)));
+    {
+        pointStart = transitionIntersect(from, centerLine);
+        pointEnd = placeIntersect(to, centerLine);
+    }
+    line.setPoints(pointStart, pointEnd);
+    pathCurve = QPainterPath(pointStart);
+    QPointF center = line.pointAt(0.5);
+    center += QPointF(line.normalVector().p2() - line.p1()) / line.length() * BEZ_WIDTH;
+    pathCurve.quadTo(center,line.p2());
+}
 
+void ArcItem::computePolygon()
+{
+    qreal arrowSize = 20;
+    qreal skew = ::atan(BEZ_WIDTH /line.length());
+    QPointF arrowP1 = line.p2() - QPointF(sin(angle() - skew + PI / 3) * arrowSize, cos(angle() - skew + PI / 3) * arrowSize);
+    QPointF arrowP2 = line.p2() - QPointF(sin(angle() - skew + PI - PI / 3) * arrowSize, cos(angle() - skew + PI - PI / 3) * arrowSize);
+    polygonHead.clear();
+    polygonHead << line.p2() << arrowP1 << arrowP2;
+}
+
+void ArcItem::computeShape()
+{
+    QPainterPath path(line.p1());
+    QPointF offset = (line.normalVector().p2() - line.p1()) / line.length() * SEL_WIDTH / 2;
+    path.lineTo(line.p1() + offset);
+    QPointF center = line.pointAt(0.5);
+    center += QPointF(line.normalVector().p2() - line.p1()) / line.length() * BEZ_WIDTH;
+    path.quadTo(center + offset, line.p2() + offset);
+    path.lineTo(line.p2() - offset);
+    path.quadTo(center - offset, line.p1() - offset);
+    path.lineTo(line.p1());
+    path.closeSubpath();
+    path.addPolygon(polygonHead);
+
+    pathShape = path;
 }
 
 QPointF ArcItem::placeIntersect(QGraphicsItem *place, QLineF line)
@@ -110,6 +117,9 @@ QPointF ArcItem::transitionIntersect(QGraphicsItem *transition, QLineF line)
 
 void ArcItem::geometryChanged()
 {
-    QLineF line(mapFromItem(from, 0, 0), mapFromItem(to, 0, 0));
-    setLine(line);
+    qDebug() << qrand() << "updated";
+    computePath();
+    computePolygon();
+    computeShape();
+    scene()->update();
 }
