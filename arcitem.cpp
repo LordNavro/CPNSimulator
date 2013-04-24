@@ -16,13 +16,13 @@ QRectF ArcItem::boundingRect() const
 
 QPainterPath ArcItem::shape() const
 {
-    return pathShape;
+    QPainterPathStroker stroker;
+    stroker.setWidth(2);
+    return stroker.createStroke(pathShape) + pathShape;
 }
 
 void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
-    qDebug() << qrand() << "repainting called";
-
     if(from->collidesWithItem(to))
         return;
     painter->drawPath(pathCurve);
@@ -117,9 +117,8 @@ QPointF ArcItem::transitionIntersect(QGraphicsItem *transition, QLineF line)
 
 void ArcItem::geometryChanged()
 {
-    qDebug() << qrand() << "updated";
     computePath();
     computePolygon();
     computeShape();
-    scene()->update();
+    update();
 }
