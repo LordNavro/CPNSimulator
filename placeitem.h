@@ -18,6 +18,8 @@ public:
     int type() const{ return Type; }
 
     QVariant itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value);
+
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 signals:
 
 public slots:

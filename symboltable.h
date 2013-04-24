@@ -4,6 +4,9 @@
 #include "compiler.h"
 #include "QMap"
 
+/* forward declaration */
+class Binding;
+
 class SymbolTable
 {
 public:
@@ -27,6 +30,8 @@ public:
 
     SymbolTable::Symbol *findSymbol(QString id);
     bool addSymbol(QString id, SymbolTable::Symbol *symbol);
+
+    void bindVariables(Binding binding);
 
     void increaseScope();
     void decreaseScope();

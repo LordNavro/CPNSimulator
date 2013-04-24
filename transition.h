@@ -16,7 +16,7 @@ public:
     QString guard;
 
     Expression *parsedGuard;
-    QList<Binding> possibeBindings;
+    QList<Binding> possibleBindings;
 
 signals:
     

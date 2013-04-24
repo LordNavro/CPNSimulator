@@ -8,7 +8,6 @@ class SimulatorPlaceItem : public PlaceItem
 {
 public:
     enum { Type = UserType + 12 };
-    explicit SimulatorPlaceItem();
     explicit SimulatorPlaceItem(EditorPlaceItem *pi);
     ~SimulatorPlaceItem();
 

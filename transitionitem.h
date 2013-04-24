@@ -19,6 +19,8 @@ public:
 
     QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
 signals:
 
 public slots:

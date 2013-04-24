@@ -12,6 +12,7 @@ SymbolTable *currentGlobalSymbolTable = NULL;
 SymbolTable *currentLocalSymbolTable = NULL;
 SymbolTable *currentSymbolTable = NULL;
 Data::Type currentReturnType;
+bool currentAssignmentAllowed = true;
 
 Data::Data(Data::Type type): type(type)
 {

@@ -9,11 +9,12 @@ class SimulatorTransitionItem : public TransitionItem
 public:
     enum { Type = UserType + 22 };
 
-    explicit SimulatorTransitionItem();
     explicit SimulatorTransitionItem(EditorTransitionItem *eti);
 
-    QGraphicsProxyWidget *proxyCombo;
+    QGraphicsProxyWidget *proxyBinding;
+    QGraphicsProxyWidget *proxyFire;
     QComboBox *comboBinding;
+    QPushButton *buttonFire;
 
     void populateCombo();
 

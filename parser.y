@@ -49,11 +49,11 @@
 %token ID
 %token DATATYPE
 %token DATA
-%token LEQ GEQ EQ NEQ
+%token LEQ GEQ EQ NEQ AND OR
 
 
 %right '='
-%left '&' '|'
+%left AND OR
 %left LEQ GEQ EQ NEQ '>' '<'
 %left '+' '-'
 %left '*' '/' '%'
@@ -67,7 +67,7 @@
 %type <dataType> DATATYPE
 %type <parameterList> parameterList parameterListNE
 %type <idList> idList
-%type <expression> expression expressionNA expressionId expressionData
+%type <expression> expression expressionId expressionData
 %type <expressionList> expressionList expressionListNE
 %type <declaration> declaration
 %type <declarationList> declarationList
@@ -83,12 +83,18 @@
 
 %%
 
-start: START_DECLARATION {currentSymbolTable = currentLocalSymbolTable;} declarationList { currentParsedDeclarationList = $3; }
-    | START_EXPRESSION {currentSymbolTable = currentGlobalSymbolTable;} expressionNA { currentParsedExpression = $3; }
-    | START_GUARD {currentSymbolTable = currentGlobalSymbolTable;} expressionNA { currentParsedExpression = $3; }
-    | START_GUARD /* empty */ { currentParsedExpression = NULL; }
-    | START_MARKING {currentSymbolTable = currentGlobalSymbolTable;} marking { currentParsedExpression = $3; }
-    | START_PRESET {currentSymbolTable = currentGlobalSymbolTable;} preset { currentParsedExpression = $3; }
+start: START_DECLARATION { currentAssignmentAllowed = true; currentSymbolTable = currentLocalSymbolTable; }
+        declarationList { currentParsedDeclarationList = $3; }
+    | START_EXPRESSION { currentAssignmentAllowed = false; currentSymbolTable = currentGlobalSymbolTable; }
+        expression { currentParsedExpression = $3; }
+    | START_GUARD { currentAssignmentAllowed = false; currentSymbolTable = currentGlobalSymbolTable; }
+        expression { currentParsedExpression = $3; }
+    | START_GUARD
+        /* empty */ { currentParsedExpression = NULL; }
+    | START_MARKING { currentSymbolTable = currentGlobalSymbolTable;}
+        marking { currentParsedExpression = $3; }
+    | START_PRESET { currentSymbolTable = currentGlobalSymbolTable;}
+        preset { currentParsedExpression = $3; }
     | error { currentParsedDeclarationList = NULL; currentParsedExpression = NULL; }
     ;
 
@@ -233,9 +239,9 @@ commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHIL
     | '{' { currentLocalSymbolTable->increaseScope(); } commandList { currentLocalSymbolTable->decreaseScope(); } '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$3; delete $3; }
     ;
 
-expressionNA:
-    expression '&' expression {$$ = binaryOp(Data::BOOL, Expression::AND, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
-    | expression '|' expression {$$ = binaryOp(Data::BOOL, Expression::OR, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
+expression:
+    expression AND expression {$$ = binaryOp(Data::BOOL, Expression::AND, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
+    | expression OR expression {$$ = binaryOp(Data::BOOL, Expression::OR, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
     | expression LEQ expression {$$ = binaryOp(Data::BOOL, Expression::LEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression GEQ expression {$$ = binaryOp(Data::BOOL, Expression::GEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression EQ  expression {$$ = binaryOp(Data::BOOL, Expression::EQ, convert(Data::INT, $1), convert(Data::INT, $3));}
@@ -286,9 +292,6 @@ expressionNA:
         delete $1;
         delete $3; // DO NOT qDeleteAll -> exprs. used after being converted
     }
-    ;
-
-expression: expressionNA
     | ID '=' expression {
         SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
         if(!symbol)
@@ -302,6 +305,8 @@ expression: expressionNA
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
             $$ = unaryOp(symbol->dataType, Expression::ASSIGN, convert(symbol->dataType, $3));
         }
+        if(!currentAssignmentAllowed)
+            currentParsedNet->addError(CPNet::SEMANTIC, "Assignment operator is not allowed in this type of inscription");
         $$->id = *$1;
         delete $1;
     }

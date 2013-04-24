@@ -68,6 +68,8 @@
     extern SymbolTable *currentSymbolTable;
     /* for function returns */
     extern Data::Type currentReturnType;
+    /* to disable assignments in transition guards and postset arc expressions */
+    extern bool currentAssignmentAllowed;
 
     /* Expressions */
     class Expression

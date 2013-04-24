@@ -1,4 +1,5 @@
 #include "symboltable.h"
+#include "interpret.h"
 
 SymbolTable::SymbolTable()
 {
@@ -23,6 +24,21 @@ bool SymbolTable::addSymbol(QString id, Symbol *symbol)
     return true;
 }
 
+void SymbolTable::bindVariables(Binding binding)
+{
+    foreach(BindingElement elem, binding)
+    {
+        SymbolTable::Symbol *s = findSymbol(elem.id());
+        if(!s || s->type == SymbolTable::FN)
+            qDebug() << "Invalid symbol" << elem.id() << " to be bound in table";
+        else
+        {
+            delete s->data;
+            s->data = new Data(elem.data());
+        }
+    }
+}
+
 void SymbolTable::increaseScope()
 {
     stack.append(SymbolTable::Table());
@@ -33,7 +49,6 @@ void SymbolTable::decreaseScope()
     qDeleteAll(stack.last());
     stack.removeLast();
 }
-
 
 SymbolTable::Symbol::~Symbol()
 {

@@ -214,7 +214,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
 
 InterCode *generate3AC(Command *command)
 {
-    InterCode *start;
+    InterCode *start = NULL;
     if(command->type == Command::IF)
     {
         start = new InterCode(InterCode::BRANCHIFN, command);

@@ -54,6 +54,8 @@ void CPNetSimulator::loadNetGraph()
         SimulatorArcItem *sai = new SimulatorArcItem(from, to);
         sai->arc = arc;
         scene->addItem(sai);
+        scene->getPlaceItem(arc->place)->arcItems.append(sai);
+        scene->getTransitionItem(arc->transition)->arcItems.append(sai);
     }
     findBindings();
 }
@@ -91,13 +93,29 @@ void CPNetSimulator::findBindings()
         QList<Binding> possibleBindings;
         possibleBindings.append(Binding());
         QList<QList<Binding> > arcBindings;
+        //collect arc bindings for all preset arcs
         foreach(Arc *arc, net->arcs)
         {
             if(!arc->isPreset || arc->transition != transition)
                 continue;
             arcBindings.append(arc->findBindings());
         }
-        transition->possibeBindings = mergeBindings(possibleBindings, arcBindings);
+        transition->possibleBindings.clear();
+        QList<Binding> mergedBindings = mergeBindings(possibleBindings, arcBindings);
+        //check guards if needed
+        foreach(Binding b, mergedBindings)
+        {
+            net->globalSymbolTable->bindVariables(b);
+            if(!transition->parsedGuard)
+                transition->possibleBindings << b;
+            else
+            {
+                bool value = eval(transition->parsedGuard, net->globalSymbolTable, net->globalSymbolTable).value.b;
+                if(value)
+                    transition->possibleBindings << b;
+            }
+        }
+
         scene->getTransitionItem(transition)->populateCombo();
     }
 }
