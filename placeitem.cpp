@@ -15,7 +15,7 @@ QVariant PlaceItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
         foreach(ArcItem *arcItem, arcItems)
             arcItem->geometryChanged();
     }
-    return value;
+    return QGraphicsEllipseItem::itemChange(change, value);
 }
 
 void PlaceItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

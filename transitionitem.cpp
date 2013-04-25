@@ -15,7 +15,7 @@ QVariant TransitionItem::itemChange(QGraphicsItem::GraphicsItemChange change, co
         foreach(ArcItem *arcItem, arcItems)
             arcItem->geometryChanged();
     }
-    return value;
+    return QGraphicsRectItem::itemChange(change, value);
 }
 
 void TransitionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

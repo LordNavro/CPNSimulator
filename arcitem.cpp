@@ -31,7 +31,7 @@ void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*
     if (isSelected())
     {
         painter->setPen(QPen(Qt::DashLine));
-        painter->drawPath(shape());
+        painter->drawPath(pathShape);
     }
 }
 
@@ -64,7 +64,7 @@ void ArcItem::computePath()
 void ArcItem::computePolygon()
 {
     qreal arrowSize = 20;
-    qreal skew = ::atan(BEZ_WIDTH /line.length());
+    qreal skew = ::atan(BEZ_WIDTH /line.length() *2);
     QPointF arrowP1 = line.p2() - QPointF(sin(angle() - skew + PI / 3) * arrowSize, cos(angle() - skew + PI / 3) * arrowSize);
     QPointF arrowP2 = line.p2() - QPointF(sin(angle() - skew + PI - PI / 3) * arrowSize, cos(angle() - skew + PI - PI / 3) * arrowSize);
     polygonHead.clear();
@@ -117,8 +117,8 @@ QPointF ArcItem::transitionIntersect(QGraphicsItem *transition, QLineF line)
 
 void ArcItem::geometryChanged()
 {
+    prepareGeometryChange();
     computePath();
     computePolygon();
     computeShape();
-    update();
 }
