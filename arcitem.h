@@ -22,6 +22,7 @@ public:
     QLineF line;
     QPolygonF polygonHead;
     QPainterPath pathShape;
+    QRectF rectText;
 
     int type() const{ return Type; }
 

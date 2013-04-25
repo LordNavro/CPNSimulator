@@ -81,6 +81,7 @@ void CPNetSimulator::toInitialMarking()
             case Place::INT:
                 place->currentMarkingValue = new Data(Data::MULTIINT);
             }
+        scene->getPlaceItem(place)->update();
     }
     findBindings();
 }
@@ -115,9 +116,12 @@ void CPNetSimulator::findBindings()
                     transition->possibleBindings << b;
             }
         }
-
         scene->getTransitionItem(transition)->populateCombo();
     }
+}
+
+void CPNetSimulator::fireEvents(int count)
+{
 }
 
 

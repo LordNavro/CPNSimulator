@@ -331,14 +331,20 @@ void MainWindow::slotEdit()
 
 void MainWindow::slotStep()
 {
+    currentSimulator()->fireEvents(1);
 }
 
 void MainWindow::slotStop()
 {
+    currentSimulator()->toInitialMarking();
 }
 
 void MainWindow::slotFastForward()
 {
+    bool ok;
+    int count = QInputDialog::getInt(this, tr("Fast fwd"), tr("Number of events fired"), 20, 1, 1000, 10, &ok);
+    if(ok)
+        currentSimulator()->fireEvents(count);
 }
 
 

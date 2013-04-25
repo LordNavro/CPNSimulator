@@ -26,7 +26,7 @@ void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()), NULL, this);
         break;
     case EditorScene::DELETE:
-        deleteItem(mouseEvent);
+        deleteOnPos(mouseEvent);
         break;
     default:
         break;
@@ -57,6 +57,19 @@ void EditorScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
     else
     {
         QGraphicsScene::mouseReleaseEvent(mouseEvent);
+    }
+}
+
+void EditorScene::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Delete)
+    {
+        foreach(QGraphicsItem *item, selectedItems())
+            deleteItem(item);
+    }
+    else
+    {
+        QGraphicsScene::keyPressEvent(event);
     }
 }
 
@@ -150,12 +163,17 @@ void EditorScene::addArc(QPointF from, QPointF to)
 
 }
 
-void EditorScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
+void EditorScene::deleteOnPos(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QList<QGraphicsItem *> affectedItems = items(mouseEvent->scenePos());
     if(affectedItems.isEmpty())
         return;
     QGraphicsItem *item = affectedItems.first();
+    deleteItem(item);
+}
+
+void EditorScene::deleteItem(QGraphicsItem *item)
+{
     if(EditorPlaceItem *placeItem = qgraphicsitem_cast<EditorPlaceItem *>(item))
     {
         foreach(ArcItem *arcItem, placeItem->arcItems)
@@ -181,7 +199,6 @@ void EditorScene::deleteItem(QGraphicsSceneMouseEvent *mouseEvent)
         deleteArc(arcItem);
         update();
     }
-
 }
 
 void EditorScene::deleteArc(EditorArcItem *arcItem)

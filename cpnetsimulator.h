@@ -29,6 +29,8 @@ public:
 
     void findBindings();
 
+    void fireEvents(int count);
+
 signals:
     
 public slots:

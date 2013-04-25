@@ -27,11 +27,13 @@ public:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void keyPressEvent(QKeyEvent *event);
 
     void addPlace(QGraphicsSceneMouseEvent *mouseEvent);
     void addTransition(QGraphicsSceneMouseEvent *mouseEvent);
     void addArc(QPointF from, QPointF to);
-    void deleteItem(QGraphicsSceneMouseEvent *mouseEvent);
+    void deleteOnPos(QGraphicsSceneMouseEvent *mouseEvent);
+    void deleteItem(QGraphicsItem *item);
     void deleteArc(EditorArcItem *arcItem);
 
     EditorPlaceItem *getPlaceItem(Place *place);

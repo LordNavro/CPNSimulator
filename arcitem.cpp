@@ -11,14 +11,16 @@ ArcItem::ArcItem(QGraphicsItem *from, QGraphicsItem *to, QGraphicsItem *parent, 
 
 QRectF ArcItem::boundingRect() const
 {
-    return shape().boundingRect().normalized().adjusted(-10,-10,10,10);
+    return shape().boundingRect().normalized();
 }
 
 QPainterPath ArcItem::shape() const
 {
     QPainterPathStroker stroker;
     stroker.setWidth(2);
-    return stroker.createStroke(pathShape) + pathShape;
+    QPainterPath s = stroker.createStroke(pathShape) + pathShape;
+    s.addRect(rectText);
+    return s;
 }
 
 void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
@@ -27,6 +29,12 @@ void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*
         return;
     painter->drawPath(pathCurve);
     painter->drawPolygon(polygonHead);
+
+    QPointF center = line.pointAt(0.5);
+    center += QPointF(line.normalVector().p2() - line.p1()) / line.length() * BEZ_WIDTH;
+    QTextOption o;
+    o.setAlignment(Qt::AlignCenter);
+    painter->drawText(rectText, this->arc->expression, o);
 
     if (isSelected())
     {
@@ -58,6 +66,7 @@ void ArcItem::computePath()
     pathCurve = QPainterPath(pointStart);
     QPointF center = line.pointAt(0.5);
     center += QPointF(line.normalVector().p2() - line.p1()) / line.length() * BEZ_WIDTH;
+    rectText = QRectF(center - QPointF(40,10), QSize(80,20));
     pathCurve.quadTo(center,line.p2());
 }
 
