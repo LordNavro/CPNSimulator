@@ -85,9 +85,9 @@ QString Data::toString()
     case Data::INT:
         return QString::number(value.i);
     case Data::MULTIUNIT:
-        return "(" + QString::number(value.multiUnit) + " ^ unit)";
+        return QString::number(value.multiUnit) + " ^ unit";
     case Data::MULTIBOOL:
-        return "(" + QString::number(value.multiBool.t) + " ^ true + " + QString::number(value.multiBool.f) + " ^ false)";
+        return QString::number(value.multiBool.t) + " ^ true + " + QString::number(value.multiBool.f) + " ^ false";
     case Data::MULTIINT:
         break;
     }
@@ -97,7 +97,7 @@ QString Data::toString()
         values.append(QString::number(i.value()) + " ^ " + QString::number(i.key()));
     if(values.isEmpty())
         return "";
-    return "(" + values.join(" + ") + ")";
+    return values.join(" + ");
 }
 
 Expression::~Expression()

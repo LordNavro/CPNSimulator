@@ -42,6 +42,7 @@ void CPNetSimulator::loadNetGraph()
     {
         EditorTransitionItem *eti = editor->scene->getTransitionItem(transition);
         SimulatorTransitionItem *sti = new SimulatorTransitionItem(eti);
+        connect(sti, SIGNAL(signalFire(SimulatorTransitionItem*)), this, SLOT(slotFire(SimulatorTransitionItem *)));
         scene->addItem(sti);
     }
     foreach(Arc *arc, net->arcs)
@@ -122,6 +123,37 @@ void CPNetSimulator::findBindings()
 
 void CPNetSimulator::fireEvents(int count)
 {
+    for(int i = 0; i < count; i++)
+    {
+        QList<SimulatorTransitionItem *> available;
+        foreach(QGraphicsItem *item, scene->items())
+        {
+            if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
+                if(sti->transition->possibleBindings.count())
+                    available.append(sti);
+        }
+        if(available.isEmpty())
+            break;
+        SimulatorTransitionItem *sti = available.at(CPNetSimulator::randInt(0, available.count() -1));
+        sti->comboBinding->setCurrentIndex(CPNetSimulator::randInt(0, sti->comboBinding->count() - 1));
+        slotFire(sti);
+    }
+}
+
+void CPNetSimulator::slotFire(SimulatorTransitionItem *sti)
+{
+    Binding binding = sti->transition->possibleBindings.at(sti->comboBinding->currentIndex());
+    net->globalSymbolTable->bindVariables(binding);
+    foreach(ArcItem *arcItem, sti->arcItems)
+    {
+        if(arcItem->arc->isPreset)
+            arcItem->arc->place->subtract(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable));
+        else
+            arcItem->arc->place->add(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable));
+    }
+
+    findBindings();
+    scene->update();
 }
 
 
@@ -169,4 +201,10 @@ QList<Binding> CPNetSimulator::mergeBindings(QList<Binding> possibleBindings, QL
 
     }
     return mergeBindings(newPossibleBindings, arcBindings);
+}
+
+
+int CPNetSimulator::randInt(int low, int high)
+{
+    return qrand() % ((high + 1) - low) + low;
 }

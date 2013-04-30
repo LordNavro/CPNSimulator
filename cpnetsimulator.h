@@ -10,6 +10,7 @@ class CPNetSimulator : public QWidget
     Q_OBJECT
 
 protected:
+    static int randInt(int low, int high);
 
     SimulatorScene *scene;
     QGraphicsView *view;
@@ -34,7 +35,7 @@ public:
 signals:
     
 public slots:
-    
+    void slotFire(SimulatorTransitionItem *sti);
 };
 
 #endif // CPNETSIMULATOR_H

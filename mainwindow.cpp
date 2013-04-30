@@ -326,6 +326,11 @@ void MainWindow::slotCompile()
 void MainWindow::slotEdit()
 {
     currentStackedWidget()->setCurrentIndex(0);
+    foreach(Place *place, nets.at(tabWidget->currentIndex())->places)
+    {
+        place->currentMarking = place->currentMarkingValue->toString();
+    }
+
     refreshActions();
 }
 

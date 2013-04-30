@@ -4,8 +4,9 @@
 #include "editortransitionitem.h"
 
 
-class SimulatorTransitionItem : public TransitionItem
+class SimulatorTransitionItem : public QObject, public TransitionItem
 {
+    Q_OBJECT
 public:
     enum { Type = UserType + 22 };
 
@@ -19,6 +20,11 @@ public:
     void populateCombo();
 
     int type() const{ return Type; }
+
+public slots:
+    void slotFire();
+signals:
+    void signalFire(SimulatorTransitionItem *item);
 };
 
 #endif // SIMULATORTRANSITIONITEM_H

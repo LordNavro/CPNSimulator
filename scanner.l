@@ -70,7 +70,7 @@ false       {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data-
 "&&"                {DEBUG("and"); return AND;}
 "||"                {DEBUG("or"); return OR;}
 
-[-+*/!^=,{}()%;]  {DEBUG("implicit"); return yytext[0];}
+[-+*/!^=,{}<>()%;]  {DEBUG("implicit"); return yytext[0];}
 
 .               {DEBUG("unknown"); currentParsedNet->addError(CPNet::LEXICAL, QString("Unknown symbol ") + yytext);}
 

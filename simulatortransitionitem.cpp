@@ -1,7 +1,7 @@
 #include "simulatortransitionitem.h"
 
 
-SimulatorTransitionItem::SimulatorTransitionItem(EditorTransitionItem *eti)
+SimulatorTransitionItem::SimulatorTransitionItem(EditorTransitionItem *eti) : QObject()
 {
     setRect(eti->rect());
     setPos(eti->pos());
@@ -17,6 +17,7 @@ SimulatorTransitionItem::SimulatorTransitionItem(EditorTransitionItem *eti)
     buttonFire = new QPushButton("Fire");
     proxyFire->setWidget(buttonFire);
     proxyFire->setPos(42, -40);
+    connect(buttonFire, SIGNAL(clicked()), this, SLOT(slotFire()));
 }
 
 void SimulatorTransitionItem::populateCombo()
@@ -34,5 +35,10 @@ void SimulatorTransitionItem::populateCombo()
         comboBinding->setVisible(true);
         buttonFire->setVisible(true);
     }
+}
+
+void SimulatorTransitionItem::slotFire()
+{
+    emit signalFire(this);
 }
 
