@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "cpneteditor.h"
 #include "simulatorscene.h"
+#include "computer.h"
 
 class CPNetSimulator : public QWidget
 {
@@ -18,11 +19,17 @@ protected:
 
     QList<Binding> mergeBindings(QList<Binding> possibleBindings, QList<QList<Binding> > arcBindings);
 
+    int transitionsToFire;
+
 public:
     explicit CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent = 0);
 
     CPNet *net;
     CPNetEditor *editor;
+    Computer threadComputer;
+    QWidget *overlay;
+    QLabel *labelComputationDescription;
+    QPushButton *buttonCancelComputation;
 
     void loadNetGraph();
 
@@ -30,12 +37,18 @@ public:
 
     void findBindings();
 
-    void fireEvents(int count);
+    void fireTransitions(int count);
+
+    void showOverlay(QString message);
+    void hideOverlay();
 
 signals:
     
 public slots:
     void slotFire(SimulatorTransitionItem *sti);
+    void slotCancelComputation();
+    void slotComputerCompleted();
+    void slotComputerFailed(QString message);
 };
 
 #endif // CPNETSIMULATOR_H

@@ -1,4 +1,5 @@
 #include "arc.h"
+#include "computer.h"
 
 Arc::Arc() :
     parsedExpression(NULL)
@@ -11,10 +12,10 @@ Arc::~Arc()
         delete parsedExpression;
 }
 
-QList<Binding> Arc::findBindings()
+QList<Binding> Arc::findBindings(Computer *computer)
 {
     QList<Binding> bindings;
-    int left = eval(parsedExpression->left, NULL, NULL).value.i; // no tables needed - no ID's allowed
+    int left = eval(parsedExpression->left, NULL, NULL, computer).value.i; // no tables needed - no ID's allowed
     if(parsedExpression->right->type == Expression::DATA)
     {
         if(place->colourSet == Place::UNIT)

@@ -19,13 +19,14 @@
     };
 
     class InterCode;
+    class Computer;
 
     class InterCode{
     public:
         enum Type {LABEL, INCSCOPE, DECSCOPE, DECL, EVAL, BRANCH, BRANCHIF, BRANCHIFN, RETURN};
         Type type;
 
-        InterCode(Type type, Command *command = NULL) : type(type), command(command), label(NULL){}
+        InterCode(Type type, Command *command = NULL) : type(type), command(command), label(NULL), next(NULL){}
         ~InterCode(){if(next != NULL) delete next;}
         Command *command;
         InterCode *label;
@@ -37,10 +38,10 @@
 
 
 
-    Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable);
+    Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer);
 
     InterCode *generate3AC(Command *command);
 
-    Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable);
+    Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Computer *computer);
 
 #endif // INTERPRET_H

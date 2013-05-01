@@ -1,8 +1,11 @@
 #include "interpret.h"
 #include <QStringList>
+#include "computer.h"
 
-Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
+Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer)
 {
+    if(computer->cancelRequest)
+        throw(QString("Stop request recieved, terminating evaluation."));
     if(expression->type == Expression::DATA)
         return *expression->data;
     else if(expression->type == Expression::VAR)
@@ -14,14 +17,14 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
         for(int i = 0; i < expression->expressionList->count(); i++)
         {
             SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
-            symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable));
+            symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable, computer));
             tempVarTable->addSymbol(fn->parameterList.at(i).second, symbol);
         }
-        Data ret = execute(fn->command, funTable, tempVarTable);
+        Data ret = execute(fn->command, funTable, tempVarTable, computer);
         delete tempVarTable;
         return ret;
     }
-    Data left = eval(expression->left, funTable, varTable);
+    Data left = eval(expression->left, funTable, varTable, computer);
     if(expression->type == Expression::ASSIGN)
     {
         SymbolTable::Symbol *s = varTable->findSymbol(expression->id);
@@ -69,7 +72,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
             return ret;
         }
     }
-    Data right = eval(expression->right, funTable, varTable);
+    Data right = eval(expression->right, funTable, varTable, computer);
     if(expression->type == Expression::AND)
     {
         Data ret(Data::BOOL);
@@ -132,12 +135,16 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable)
     }
     else if(expression->type == Expression::DIV)
     {
+        if(right.value.i == 0)
+            throw(QString("Runtime error: division by zero"));
         Data ret(Data::INT);
         ret.value.i = left.value.i / right.value.i;
         return ret;
     }
     else if(expression->type == Expression::MOD)
     {
+        if(right.value.i == 0)
+            throw(QString("Runtime error: division by zero"));
         Data ret(Data::INT);
         ret.value.i = left.value.i % right.value.i;
         return ret;
@@ -266,12 +273,18 @@ InterCode *generate3AC(Command *command)
     return start;
 }
 
-Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable)
+Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Computer *computer)
 {
     InterCode *icStart = generate3AC(command);
     InterCode *icCurrent = icStart;
     while(icCurrent != NULL)
     {
+        if(computer->cancelRequest)
+        {
+            delete icStart;
+            throw(QString("Stop request recieved, terminating execution."));
+        }
+
         if(icCurrent->type == InterCode::LABEL)
         {
             icCurrent = icCurrent->next;
@@ -299,8 +312,8 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable)
         }
         else if(icCurrent->type == InterCode::EVAL)
         {
+            eval(icCurrent->command->expression, funTable, varTable, computer);
             icCurrent = icCurrent->next;
-            eval(icCurrent->command->expression, funTable, varTable);
         }
         else if(icCurrent->type == InterCode::BRANCH)
         {
@@ -308,15 +321,15 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable)
         }
         else if(icCurrent->type == InterCode::BRANCHIF)
         {
-            icCurrent = eval(icCurrent->command->expression, funTable, varTable).value.b ? icCurrent->label : icCurrent->next;
+            icCurrent = eval(icCurrent->command->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
         }
         else if(icCurrent->type == InterCode::BRANCHIFN)
         {
-            icCurrent = eval(icCurrent->command->expression, funTable, varTable).value.b ? icCurrent->next : icCurrent->label;
+            icCurrent = eval(icCurrent->command->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
         }
         else if(icCurrent->type == InterCode::RETURN)
         {
-            Data data = eval(icCurrent->command->expression, funTable, varTable);
+            Data data = eval(icCurrent->command->expression, funTable, varTable, computer);
             delete icStart;
             return data;
         }
@@ -348,6 +361,6 @@ QString Binding::toString()
         values << binding.id() + " = " + binding.data().toString();
     }
     if(values.isEmpty())
-        return "<only constants>";
+        return "<constants>";
     return values.join(", ");
 }

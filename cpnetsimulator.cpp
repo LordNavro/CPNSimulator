@@ -2,14 +2,39 @@
 #include "interpret.h"
 
 CPNetSimulator::CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent) :
-    QWidget(parent), net(net), editor(editor)
+    QWidget(parent), net(net), editor(editor), threadComputer(net, this), transitionsToFire(0)
 {
     scene = new SimulatorScene(net, this);
     view = new QGraphicsView(scene, this);
 
+    overlay = new QWidget(this);
+    overlay->hide();
+    overlay->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    overlay->setAutoFillBackground(true);
+    QPalette p(overlay->palette());
+    p.setColor(overlay->backgroundRole(), QColor(255,255,255,200));
+    overlay->setPalette(p);
+    buttonCancelComputation = new QPushButton(tr("&Cancel operation"), overlay);
+    labelComputationDescription = new QLabel(this);
+    labelComputationDescription->setAlignment(Qt::AlignCenter);
+    labelComputationDescription->setAutoFillBackground(true);
+    QPalette p2(labelComputationDescription->palette());
+    p2.setColor(labelComputationDescription->backgroundRole(), QColor(255,255,255,255));
+    labelComputationDescription->setPalette(p2);
+    connect(buttonCancelComputation, SIGNAL(clicked()), this, SLOT(slotCancelComputation()));
+
+    QGridLayout *l = new QGridLayout(overlay);
+    l->addWidget(labelComputationDescription, 0, 0,1,1,Qt::AlignHCenter | Qt::AlignBottom);
+    l->addWidget(buttonCancelComputation, 1, 0,1,1,Qt::AlignHCenter | Qt::AlignTop);
+    overlay->setLayout(l);
+
     layout = new QGridLayout(this);
     layout->addWidget(view, 0, 0);
+    layout->addWidget(overlay, 0, 0);
     this->setLayout(layout);
+
+    connect(&threadComputer, SIGNAL(signalCompleted()), this, SLOT(slotComputerCompleted()));
+    connect(&threadComputer, SIGNAL(signalFailed(QString)), this, SLOT(slotComputerFailed(QString)));
 }
 
 void CPNetSimulator::loadNetGraph()
@@ -23,7 +48,7 @@ void CPNetSimulator::loadNetGraph()
         if(spi->place->currentMarkingValue)
             delete spi->place->currentMarkingValue;
         if(spi->place->parsedCurrentMarking)
-            spi->place->currentMarkingValue = new Data(eval(spi->place->parsedCurrentMarking, NULL, NULL));
+            spi->place->currentMarkingValue = new Data(eval(spi->place->parsedCurrentMarking, NULL, NULL, &threadComputer));
         else
             switch(spi->place->colourSet)
             {
@@ -63,12 +88,17 @@ void CPNetSimulator::loadNetGraph()
 
 void CPNetSimulator::toInitialMarking()
 {
+    if(threadComputer.isRunning())
+    {
+        QMessageBox::information(this, tr("Cannot change to initial marking"), tr("Cannot change to initial marking while computations still running"));
+        return;
+    }
     foreach(Place *place, net->places)
     {
         if(place->currentMarkingValue)
             delete place->currentMarkingValue;
         if(place->parsedInitialMarking)
-           place->currentMarkingValue = new Data(eval(place->parsedInitialMarking, NULL, NULL));
+           place->currentMarkingValue = new Data(eval(place->parsedInitialMarking, NULL, NULL, &threadComputer));
         else
             switch(place->colourSet)
             {
@@ -89,120 +119,107 @@ void CPNetSimulator::toInitialMarking()
 
 void CPNetSimulator::findBindings()
 {
-    //Black magic bars our way. But the will of a templar is stronger!
-    foreach(Transition *transition, net->transitions)
+    if(threadComputer.isRunning())
     {
-        QList<Binding> possibleBindings;
-        possibleBindings.append(Binding());
-        QList<QList<Binding> > arcBindings;
-        //collect arc bindings for all preset arcs
-        foreach(Arc *arc, net->arcs)
-        {
-            if(!arc->isPreset || arc->transition != transition)
-                continue;
-            arcBindings.append(arc->findBindings());
-        }
-        transition->possibleBindings.clear();
-        QList<Binding> mergedBindings = mergeBindings(possibleBindings, arcBindings);
-        //check guards if needed
-        foreach(Binding b, mergedBindings)
-        {
-            net->globalSymbolTable->bindVariables(b);
-            if(!transition->parsedGuard)
-                transition->possibleBindings << b;
-            else
-            {
-                bool value = eval(transition->parsedGuard, net->globalSymbolTable, net->globalSymbolTable).value.b;
-                if(value)
-                    transition->possibleBindings << b;
-            }
-        }
-        scene->getTransitionItem(transition)->populateCombo();
+        QMessageBox::information(this, tr("Cannot find binding"), tr("Cannot find binding while computations still running"));
+        return;
     }
+    threadComputer.mode = Computer::FindBinding;
+    showOverlay(tr("Finding binding"));
+    threadComputer.start();
 }
 
-void CPNetSimulator::fireEvents(int count)
+void CPNetSimulator::fireTransitions(int count)
 {
-    for(int i = 0; i < count; i++)
+    if(threadComputer.isRunning())
     {
-        QList<SimulatorTransitionItem *> available;
-        foreach(QGraphicsItem *item, scene->items())
-        {
-            if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
-                if(sti->transition->possibleBindings.count())
-                    available.append(sti);
-        }
-        if(available.isEmpty())
-            break;
-        SimulatorTransitionItem *sti = available.at(CPNetSimulator::randInt(0, available.count() -1));
-        sti->comboBinding->setCurrentIndex(CPNetSimulator::randInt(0, sti->comboBinding->count() - 1));
-        slotFire(sti);
+        QMessageBox::information(this, tr("Cannot fire transitions"), tr("Cannot fire any more transitions while computations still running"));
+        return;
     }
+    transitionsToFire = count;
+    QList<SimulatorTransitionItem *> available;
+    foreach(QGraphicsItem *item, scene->items())
+    {
+        if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
+            if(sti->transition->possibleBindings.count())
+                available.append(sti);
+    }
+    if(available.isEmpty())
+        return;
+    SimulatorTransitionItem *sti = available.at(CPNetSimulator::randInt(0, available.count() -1));
+    sti->comboBinding->setCurrentIndex(CPNetSimulator::randInt(0, sti->comboBinding->count() - 1));
+    slotFire(sti);
+}
+
+void CPNetSimulator::showOverlay(QString message)
+{
+    labelComputationDescription->setText(message);
+    overlay->show();
+    //view->hide();
+}
+
+void CPNetSimulator::hideOverlay()
+{
+    overlay->hide();
+    //view->show();
 }
 
 void CPNetSimulator::slotFire(SimulatorTransitionItem *sti)
 {
-    Binding binding = sti->transition->possibleBindings.at(sti->comboBinding->currentIndex());
-    net->globalSymbolTable->bindVariables(binding);
-    foreach(ArcItem *arcItem, sti->arcItems)
+    if(threadComputer.isRunning())
     {
-        if(arcItem->arc->isPreset)
-            arcItem->arc->place->subtract(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable));
-        else
-            arcItem->arc->place->add(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable));
+        QMessageBox::information(this, tr("Cannot fire transitions"), tr("Cannot fire any more transitions while computations still running"));
+        return;
     }
 
-    findBindings();
-    scene->update();
+    threadComputer.mode = Computer::FireTransition;
+    threadComputer.sti = sti;
+    showOverlay(tr("Firing transition"));
+    threadComputer.start();
 }
 
-
-QList<Binding> CPNetSimulator::mergeBindings(QList<Binding> possibleBindings, QList<QList<Binding> > arcBindings)
+void CPNetSimulator::slotCancelComputation()
 {
-    if(possibleBindings.isEmpty() || arcBindings.isEmpty())
-        return possibleBindings;
-    //take one arc binding
-    QList<Binding> arcBindingVariants = arcBindings.first();
-    arcBindings.removeFirst();
-    //prepare result list
-    QList<Binding> newPossibleBindings;
-    //try to merge all arc binding variants with all possible bindings, add them to result list if succeeded
-    foreach(Binding possibleBinding, possibleBindings)
-    {
-        //take all possible arc variants
-        foreach(Binding arcBindingVariant, arcBindingVariants)
-        {
-            Binding mergedBinding = possibleBinding;
-            bool collision = false;
-            //and with every binding element
-            foreach(BindingElement arcElem, arcBindingVariant)
-            {
-                //try to look its clone in the possible binding, remember if found or not
-                bool found = false;
-                foreach(BindingElement existingElem, mergedBinding)
-                {
-                    if(existingElem.id() != arcElem.id())
-                        continue;
-                    found = true;
-                    if(!(existingElem.data() == arcElem.data()))
-                        collision = true;
-                    break;
-                }
-                //just a shortcut
-                if(collision)
-                    break;
-                //ad the item to the merged binding as it is not present there
-                if(!found)
-                    mergedBinding.append(arcElem);
-            }
-            if(!collision)
-                newPossibleBindings.append(mergedBinding);
-        }
-
-    }
-    return mergeBindings(newPossibleBindings, arcBindings);
+    threadComputer.cancelRequest = true;
 }
 
+void CPNetSimulator::slotComputerCompleted()
+{
+    hideOverlay();
+    if(threadComputer.mode == Computer::FireTransition)
+    {
+        findBindings();
+    }
+    else
+    {
+        foreach(QGraphicsItem *item, scene->items())
+        {
+            if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
+                sti->populateCombo();
+        }
+        if(--transitionsToFire > 0)
+            fireTransitions(transitionsToFire);
+    }
+}
+
+void CPNetSimulator::slotComputerFailed(QString message)
+{
+    QMessageBox::critical(this, tr("Computation failed"), message);
+    if(threadComputer.mode == Computer::FireTransition)
+        findBindings();
+    else
+    {
+        foreach(QGraphicsItem *item, scene->items())
+        {
+            if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
+            {
+                sti->transition->possibleBindings.clear();
+                sti->populateCombo();
+            }
+        }
+    }
+    hideOverlay();
+}
 
 int CPNetSimulator::randInt(int low, int high)
 {

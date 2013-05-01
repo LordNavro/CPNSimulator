@@ -38,6 +38,7 @@ private:
     QAction *actionStep;
     QAction *actionStop;
     QAction *actionFastForward;
+    QAction *actionFindBinding;
 
     QList<QAction *> actionsEditor;
     QList<QAction *> actionsSimulator;
@@ -55,7 +56,6 @@ private:
 
     QList<CPNet *> nets;
 
-
     void createActions(void);
     void createToolBars(void);
     void createMenuBars(void);
@@ -66,6 +66,9 @@ private:
     CPNetEditor *currentEditor();
     CPNetSimulator *currentSimulator();
     void refreshActions();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 
 public slots:
     void slotNew();
@@ -87,6 +90,7 @@ public slots:
     void slotStep();
     void slotStop();
     void slotFastForward();
+    void slotFindBinding();
 
     void slotTabCloseRequest(int index);
 

@@ -72,15 +72,17 @@ void MainWindow::createActions()
     actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("Step"), this);
     actionStop = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaStop)), tr("To init marking"), this);
     actionFastForward = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSeekForward)), tr("Fast forward"), this);
+    actionFindBinding = new QAction(QIcon(style()->standardIcon(QStyle::SP_BrowserReload)), tr("Find binding"), this);
 
     connect(actionCompile, SIGNAL(triggered()), this, SLOT(slotCompile()));
     connect(actionEdit, SIGNAL(triggered()), this, SLOT(slotEdit()));
     connect(actionStep, SIGNAL(triggered()), this, SLOT(slotStep()));
     connect(actionStop, SIGNAL(triggered()), this, SLOT(slotStop()));
     connect(actionFastForward, SIGNAL(triggered()), this, SLOT(slotFastForward()));
+    connect(actionFindBinding, SIGNAL(triggered()), this, SLOT(slotFindBinding()));
 
     actionsEditor << actionCompile;
-    actionsSimulator << actionEdit << actionStep << actionStop << actionFastForward;
+    actionsSimulator << actionEdit << actionStep << actionStop << actionFastForward << actionFindBinding;
 
 
 }
@@ -109,6 +111,7 @@ void MainWindow::createToolBars()
     toolBarSimulation->addAction(actionStep);
     toolBarSimulation->addAction(actionStop);
     toolBarSimulation->addAction(actionFastForward);
+    toolBarSimulation->addAction(actionFindBinding);
 }
 
 void MainWindow::createMenuBars()
@@ -135,6 +138,7 @@ void MainWindow::createMenuBars()
     menuSimulation->addAction(actionStep);
     menuSimulation->addAction(actionStop);
     menuSimulation->addAction(actionFastForward);
+    menuSimulation->addAction(actionFindBinding);
 
     menuAbout->addAction(actionAbout);
 }
@@ -220,6 +224,11 @@ void MainWindow::slotSaveAs()
 
 void MainWindow::slotClose()
 {
+    if(currentSimulator()->threadComputer.isRunning())
+    {
+        QMessageBox::information(this, tr("Cannot close tab"), tr("Cannot close tab while computations still running"));
+        return;
+    }
     int i = tabWidget->currentIndex();
     delete nets.at(i);
     nets.removeAt(i);
@@ -275,6 +284,21 @@ void MainWindow::refreshActions()
     }
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    for(int i = 0; i < tabWidget->count(); i++)
+    {
+        tabWidget->setCurrentIndex(i);
+        if(currentSimulator()->threadComputer.isRunning())
+        {
+            event->ignore();
+            QMessageBox::critical(this, tr("Closing failed"), tr("Cannot close app while computations are still running"));
+            return;
+        }
+        event->accept();
+    }
+}
+
 void MainWindow::slotSelect()
 {
     setCurrentTool(EditorScene::SELECT);
@@ -325,6 +349,11 @@ void MainWindow::slotCompile()
 
 void MainWindow::slotEdit()
 {
+    if(currentSimulator()->threadComputer.isRunning())
+    {
+        QMessageBox::information(this, tr("Cannot change to edit mode"), tr("Cannot change to edit mode while computations still running"));
+        return;
+    }
     currentStackedWidget()->setCurrentIndex(0);
     foreach(Place *place, nets.at(tabWidget->currentIndex())->places)
     {
@@ -336,7 +365,7 @@ void MainWindow::slotEdit()
 
 void MainWindow::slotStep()
 {
-    currentSimulator()->fireEvents(1);
+    currentSimulator()->fireTransitions(1);
 }
 
 void MainWindow::slotStop()
@@ -347,9 +376,14 @@ void MainWindow::slotStop()
 void MainWindow::slotFastForward()
 {
     bool ok;
-    int count = QInputDialog::getInt(this, tr("Fast fwd"), tr("Number of events fired"), 20, 1, 1000, 10, &ok);
+    int count = QInputDialog::getInt(this, tr("Fast fwd"), tr("Number of transitions fired"), 20, 1, 1000, 10, &ok);
     if(ok)
-        currentSimulator()->fireEvents(count);
+        currentSimulator()->fireTransitions(count);
+}
+
+void MainWindow::slotFindBinding()
+{
+    currentSimulator()->findBindings();
 }
 
 

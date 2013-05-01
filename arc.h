@@ -5,6 +5,8 @@
 #include "transition.h"
 #include "interpret.h"
 
+class Computer;
+
 class Arc
 {
 public:
@@ -17,7 +19,7 @@ public:
     bool isPreset;
 
     Expression *parsedExpression;
-    QList<Binding> findBindings();
+    QList<Binding> findBindings(Computer *computer);
 
 signals:
     

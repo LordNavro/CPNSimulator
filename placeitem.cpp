@@ -22,7 +22,7 @@ void PlaceItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
 {
     QGraphicsEllipseItem::paint(painter, option, widget);
     painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, place->name);
-    if(type() == SimulatorPlaceItem::Type)
+    if(type() == SimulatorPlaceItem::Type && place->currentMarkingValue)
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarkingValue->toString());
     else
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarking);
