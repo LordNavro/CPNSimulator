@@ -40,7 +40,7 @@ void MainWindow::createActions()
     connect(actionLoad, SIGNAL(triggered()), this, SLOT(slotLoad()));
     connect(actionClose, SIGNAL(triggered()), this, SLOT(slotClose()));
 
-    actionsEditor << actionSave << actionSaveAs << actionClose;
+    actionsEditor << actionSave << actionSaveAs;
 
     actionGroupTool = new QActionGroup(this);
     actionSelect = new QAction(QIcon(":icons/icons/cursor.ico"), tr("Select"), actionGroupTool);
@@ -116,10 +116,11 @@ void MainWindow::createToolBars()
 
 void MainWindow::createMenuBars()
 {
-    menuFile = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_FileIcon)), tr("File"));
-    menuTool = menuBar()->addMenu(QIcon(":/icons/icons/hammer.ico"), tr("Tool"));
-    menuSimulation = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Simulation"));
-    menuAbout = menuBar()->addMenu(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About"));
+    menuFile = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_FileIcon)),*/ tr("&File"));
+    menuTool = menuBar()->addMenu(/*QIcon(":/icons/icons/hammer.ico"),*/ tr("Tool"));
+    menuSimulation = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), */tr("&Simulation"));
+    menuAbout = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)),*/ tr("About"));
+
 
     menuFile->addAction(actionNew);
     menuFile->addAction(actionLoad);

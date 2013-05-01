@@ -144,10 +144,13 @@ void CPNet::semanticAnalysis()
     }
 
     /* Definition of declared functions */
-    foreach(Declaration *declaration, *parsedDeclaration)
+    if(parsedDeclaration)
     {
-        if(declaration->type == Declaration::FN && globalSymbolTable->findSymbol(declaration->id)->command == NULL)
-            errorList.append(Error(SEMANTIC, NET, ErrorReference(this), DECLARATION, 0, tr("Function %1 declared, but not defined").arg(declaration->id)));
+        foreach(Declaration *declaration, *parsedDeclaration)
+        {
+            if(declaration->type == Declaration::FN && globalSymbolTable->findSymbol(declaration->id)->command == NULL)
+                errorList.append(Error(SEMANTIC, NET, ErrorReference(this), DECLARATION, 0, tr("Function %1 declared, but not defined").arg(declaration->id)));
+        }
     }
 
 

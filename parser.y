@@ -418,7 +418,7 @@ Expression *convert(Data::Type type, Expression *e)
         Expression *expr = unaryOp(type, Expression::CONVERT, e);
         return expr;
     }
-    char *keys[] = {"unit", "bool", "int", "multiunit", "multibool", "multiint"};
+    char keys[][20] = {"unit", "bool", "int", "multiunit", "multibool", "multiint"};
     currentParsedNet->addError(CPNet::SEMANTIC, QString("Invalid conversion to ") + keys[type] + " in expression");
     return e;
 }

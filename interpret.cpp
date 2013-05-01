@@ -9,7 +9,15 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     if(expression->type == Expression::DATA)
         return *expression->data;
     else if(expression->type == Expression::VAR)
-        return *varTable->findSymbol(expression->id)->data;
+    {
+        SymbolTable::Symbol *s = varTable->findSymbol(expression->id);
+        if(s == NULL)
+            throw(QString("Runtime error: Usage of undefined variable " + expression->id));
+        Data* d = s->data;
+        if(d == NULL)
+            throw(QString("Runtime error: Usage of uninitialized variable " + expression->id));
+        return *d;
+    }
     else if(expression->type == Expression::FN)
     {
         SymbolTable::Symbol *fn = funTable->findSymbol(expression->id);
@@ -28,7 +36,10 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     if(expression->type == Expression::ASSIGN)
     {
         SymbolTable::Symbol *s = varTable->findSymbol(expression->id);
-        delete s->data;
+        if(!s)
+            throw(QString("Runtime error: Assignment to undefined variable " + expression->id));
+        if(s->data)
+            delete s->data;
         s->data = new Data(left);
         return left;
     }
@@ -302,13 +313,13 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
         }
         else if(icCurrent->type == InterCode::DECL)
         {
-            icCurrent = icCurrent->next;
             foreach(QString id, icCurrent->command->idList)
             {
                 SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
                 symbol->data = new Data(icCurrent->command->dataType);
                 varTable->addSymbol(id, symbol);
             }
+            icCurrent = icCurrent->next;
         }
         else if(icCurrent->type == InterCode::EVAL)
         {

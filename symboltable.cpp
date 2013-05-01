@@ -11,7 +11,9 @@ SymbolTable::Symbol *SymbolTable::findSymbol(QString id)
     for(int i = stack.count() - 1; i >= 0; i--)
     {
         if(stack.at(i).contains(id))
+        {
             return stack.at(i)[id];
+        }
     }
     return NULL;
 }

@@ -19,7 +19,6 @@ protected:
 
     QList<Binding> mergeBindings(QList<Binding> possibleBindings, QList<QList<Binding> > arcBindings);
 
-    int transitionsToFire;
 
 public:
     explicit CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent = 0);
@@ -30,6 +29,7 @@ public:
     QWidget *overlay;
     QLabel *labelComputationDescription;
     QPushButton *buttonCancelComputation;
+    int transitionsToFire;
 
     void loadNetGraph();
 
