@@ -32,6 +32,32 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
         delete tempVarTable;
         return ret;
     }
+    else if(expression->type == Expression::DPLUSPRE)
+    {
+        SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        symbol->data->value.i += 1;
+        return *symbol->data;
+    }
+    else if(expression->type == Expression::DPLUSPOST)
+    {
+        SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        Data ret(*symbol->data);
+        symbol->data->value.i += 1;
+        return ret;
+    }
+    else if(expression->type == Expression::DMINUSPRE)
+    {
+        SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        symbol->data->value.i -= 1;
+        return *symbol->data;
+    }
+    else if(expression->type == Expression::DMINUSPOST)
+    {
+        SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        Data ret(*symbol->data);
+        symbol->data->value.i -= 1;
+        return ret;
+    }
     Data left = eval(expression->left, funTable, varTable, computer);
     if(expression->type == Expression::ASSIGN)
     {
@@ -235,13 +261,13 @@ InterCode *generate3AC(Command *command)
     InterCode *start = NULL;
     if(command->type == Command::IF)
     {
-        start = new InterCode(InterCode::BRANCHIFN, command);
+        start = new InterCode(InterCode::BRANCHIFN, command->expression);
         start->append(generate3AC(command->command));
         start->label = start->append(new InterCode(InterCode::LABEL));
     }
     else if(command->type == Command::IFELSE)
     {
-        start = new InterCode(InterCode::BRANCHIFN, command);
+        start = new InterCode(InterCode::BRANCHIFN, command->expression);
         start->append(generate3AC(command->command));
         InterCode *toEnd = start->append(new InterCode(InterCode::BRANCH));
         start->label = start->append(new InterCode(InterCode::LABEL));
@@ -250,12 +276,12 @@ InterCode *generate3AC(Command *command)
     }
     else if(command->type == Command::EXPR)
     {
-        start = new InterCode(InterCode::EVAL, command);
+        start = new InterCode(InterCode::EVAL, command->expression);
     }
     else if(command->type == Command::WHILE)
     {
         start = new InterCode(InterCode::LABEL);
-        InterCode *branch = start->append(new InterCode(InterCode::BRANCHIFN, command));
+        InterCode *branch = start->append(new InterCode(InterCode::BRANCHIFN, command->expression));
         start->append(generate3AC(command->command));
         start->append(new InterCode(InterCode::BRANCH))->label = start;
         branch->label = start->append(new InterCode(InterCode::LABEL));
@@ -264,7 +290,7 @@ InterCode *generate3AC(Command *command)
     {
         start = new InterCode(InterCode::LABEL);
         start->append(generate3AC(command->command));
-        start->append(new InterCode(InterCode::BRANCHIF, command))->label = start;
+        start->append(new InterCode(InterCode::BRANCHIF, command->expression))->label = start;
     }
     else if(command->type == Command::BLOCK)
     {
@@ -275,11 +301,23 @@ InterCode *generate3AC(Command *command)
     }
     else if(command->type == Command::RETURN)
     {
-        start = new InterCode(InterCode::RETURN, command);
+        start = new InterCode(InterCode::RETURN, command->expression);
     }
     else if(command->type == Command::DECL)
     {
         start = new InterCode(InterCode::DECL, command);
+    }
+    else if(command->type == Command::FOR)
+    {
+        start = new InterCode(InterCode::EVAL, command->loopInit);
+        InterCode *branchToCond = start->append(new InterCode(InterCode::BRANCH));
+        InterCode *labelStart = start->append(new InterCode(InterCode::LABEL));
+        start->append(new InterCode(InterCode::EVAL, command->loopIteration));
+        branchToCond->label = start->append(new InterCode(InterCode::LABEL));
+        InterCode *branchEnd = start->append(new InterCode(InterCode::BRANCHIFN, command->expression));
+        start->append(generate3AC(command->command));
+        start->append(new InterCode(InterCode::BRANCH))->label = labelStart;
+        branchEnd->label = start->append(new InterCode(InterCode::LABEL));
     }
     return start;
 }
@@ -323,7 +361,7 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
         }
         else if(icCurrent->type == InterCode::EVAL)
         {
-            eval(icCurrent->command->expression, funTable, varTable, computer);
+            eval(icCurrent->expression, funTable, varTable, computer);
             icCurrent = icCurrent->next;
         }
         else if(icCurrent->type == InterCode::BRANCH)
@@ -332,15 +370,15 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
         }
         else if(icCurrent->type == InterCode::BRANCHIF)
         {
-            icCurrent = eval(icCurrent->command->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
+            icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
         }
         else if(icCurrent->type == InterCode::BRANCHIFN)
         {
-            icCurrent = eval(icCurrent->command->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
+            icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
         }
         else if(icCurrent->type == InterCode::RETURN)
         {
-            Data data = eval(icCurrent->command->expression, funTable, varTable, computer);
+            Data data = eval(icCurrent->expression, funTable, varTable, computer);
             delete icStart;
             return data;
         }

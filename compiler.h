@@ -77,7 +77,7 @@
     public:
         enum Type {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
                    PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA,
-                   CONVERT};
+                   CONVERT, DPLUSPRE, DPLUSPOST, DMINUSPRE, DMINUSPOST};
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
@@ -112,12 +112,14 @@
     class Command
     {
     public:
-        enum Type {IF, IFELSE, EXPR, WHILE, DOWHILE, BLOCK, RETURN, DECL};
+        enum Type {IF, IFELSE, EXPR, WHILE, DOWHILE, BLOCK, RETURN, DECL, FOR};
 
         Command(Command::Type type) : type(type){}
         ~Command();
         Command::Type type;
         Expression *expression;  //for branching, loops, return, simple expression
+        Expression *loopInit;    //for for cycles
+        Expression *loopIteration;    //for for cycles
         Data::Type dataType;  //for declarations
         IdList idList;  //for declarations
         CommandList commandList;   //for blocks

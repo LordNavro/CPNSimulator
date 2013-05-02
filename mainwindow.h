@@ -32,6 +32,7 @@ private:
     QAction *actionDelete;
 
     QAction *actionAbout;
+    QAction *actionHelp;
 
     QAction *actionCompile;
     QAction *actionEdit;
@@ -50,7 +51,7 @@ private:
     QMenu *menuFile;
     QMenu *menuTool;
     QMenu *menuSimulation;
-    QMenu *menuAbout;
+    QMenu *menuHelp;
 
     QTabWidget *tabWidget;
 
@@ -83,6 +84,7 @@ public slots:
     void slotArc();
     void slotDelete();
 
+    void slotHelp();
     void slotAbout();
 
     void slotCompile();

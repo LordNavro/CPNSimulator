@@ -63,6 +63,7 @@ void MainWindow::createActions()
 
     actionsEditor << actionSelect << actionPlace << actionTransition << actionArc << actionDelete;
 
+    actionHelp = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogHelpButton)), tr("Help"), this);
     actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About program"), this);
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
@@ -117,9 +118,9 @@ void MainWindow::createToolBars()
 void MainWindow::createMenuBars()
 {
     menuFile = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_FileIcon)),*/ tr("&File"));
-    menuTool = menuBar()->addMenu(/*QIcon(":/icons/icons/hammer.ico"),*/ tr("Tool"));
+    menuTool = menuBar()->addMenu(/*QIcon(":/icons/icons/hammer.ico"),*/ tr("&Tool"));
     menuSimulation = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), */tr("&Simulation"));
-    menuAbout = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)),*/ tr("About"));
+    menuHelp = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)),*/ tr("&Help"));
 
 
     menuFile->addAction(actionNew);
@@ -141,7 +142,8 @@ void MainWindow::createMenuBars()
     menuSimulation->addAction(actionFastForward);
     menuSimulation->addAction(actionFindBinding);
 
-    menuAbout->addAction(actionAbout);
+    menuHelp->addAction(actionHelp);
+    menuHelp->addAction(actionAbout);
 }
 
 void MainWindow::slotNew()
@@ -325,8 +327,13 @@ void MainWindow::slotDelete()
     setCurrentTool(EditorScene::DELETE);
 }
 
+void MainWindow::slotHelp()
+{
+}
 void MainWindow::slotAbout()
 {
+    QString text = tr("CPNSimulator version %1\nAuthor: %2\nContact: %3").arg("1.0, 2013", "Ondřej Navrátil", "xnavra23@stud.fit.vutbr.cz, nav.ondrej@gmail.com");
+    QMessageBox::information(this, tr("About CPNSimulator"), text);
 }
 
 void MainWindow::slotCompile()

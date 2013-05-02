@@ -134,6 +134,11 @@ Expression::~Expression()
         break;
     case Expression::VAR:
         break;
+    case Expression::DPLUSPRE:
+    case Expression::DPLUSPOST:
+    case Expression::DMINUSPRE:
+    case Expression::DMINUSPOST:
+        break;
     }
 }
 
@@ -169,6 +174,11 @@ Command::~Command()
         break;
     case Command::DECL:
         break;
+    case Command::FOR:
+        delete expression;
+        delete loopInit;
+        delete loopIteration;
+        delete command;
     }
 }
 

@@ -261,6 +261,10 @@ IdList CPNet::collectIds(Expression *expression)
         /*no action*/
         break;
     case Expression::VAR:
+    case Expression::DPLUSPRE:
+    case Expression::DPLUSPOST:
+    case Expression::DMINUSPRE:
+    case Expression::DMINUSPOST:
         result.append(expression->id);
         break;
     }

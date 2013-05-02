@@ -6,6 +6,7 @@
     Command *branchCommand(Command::Type type, Expression *e, Command *c);
     Expression *binaryOp(Data::Type dataType, Expression::Type type, Expression *e1, Expression *e2);
     Expression *unaryOp(Data::Type dataType, Expression::Type type, Expression *e1);
+    Expression *incDec(Expression::Type type, Id id);
     Expression *convert(Data::Type type, Expression *e);
     Expression *plus(Expression *e1, Expression *e2);
     Expression *multiset(Expression *e1, Expression *e2);
@@ -44,12 +45,12 @@
 }
 
 %token START_EXPRESSION START_DECLARATION START_MARKING START_PRESET START_GUARD
-%token IF ELSE WHILE DO SWITCH CASE RETURN
+%token IF ELSE WHILE DO SWITCH CASE RETURN FOR
 %token UNIT BOOL INT MULTIUNIT MULTIBOOL MULTIINT
 %token ID
 %token DATATYPE
 %token DATA
-%token LEQ GEQ EQ NEQ AND OR
+%token LEQ GEQ EQ NEQ AND OR DMINUS DPLUS
 
 
 %right '='
@@ -58,7 +59,7 @@
 %left '+' '-'
 %left '*' '/' '%'
 %left '^'
-%nonassoc '!' UMINUS
+%nonassoc '!' UMINUS DMINUS DPLUS
 
 %type <data> DATA
 %type <expression> marking markingNE markingItem
@@ -74,7 +75,7 @@
 %type <commandList> commandList
 %type <command> command commandND
 
-%destructor {delete $$;} <expression> <id> <data> <declaration> <command>
+%destructor {delete $$;} <expression> <id> <data> <declaration> <command> <idList> <parameterList>
 %destructor {qDeleteAll(*$$); delete $$;} <expressionList> <declarationList> <commandList>
 
 %error-verbose
@@ -237,6 +238,7 @@ commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHIL
     | expression ';' { $$ = new Command(Command::EXPR); $$->expression = $1; }
     | RETURN expression ';' { $$ = new Command(Command::RETURN); $$->expression = convert(currentReturnType, $2); }
     | '{' { currentLocalSymbolTable->increaseScope(); } commandList { currentLocalSymbolTable->decreaseScope(); } '}' { $$ = new Command(Command::BLOCK); $$->commandList = *$3; delete $3; }
+    | FOR '(' expression ';' expression ';' expression ')' command { $$ = branchCommand(Command::FOR, $5, $9); $$->loopInit = $3; $$->loopIteration = $7; }
     ;
 
 expression:
@@ -260,13 +262,17 @@ expression:
     | '(' DATATYPE ')' expression %prec UMINUS   {$$ = convert($2, $4);}
     | expressionId
     | expressionData
+    | DPLUS ID {$$ = incDec(Expression::DPLUSPRE, *$2); delete $2;}
+    | ID DPLUS {$$ = incDec(Expression::DPLUSPOST, *$1); delete $1;}
+    | DMINUS ID {$$ = incDec(Expression::DMINUSPRE, *$2); delete $2;}
+    | ID DMINUS {$$ = incDec(Expression::DMINUSPOST, *$1); delete $1;}
     | ID '(' expressionList ')' {
         $$ = new Expression(Expression::FN);
         $$->expressionList = new ExpressionList();
         SymbolTable::Symbol *symbol = currentGlobalSymbolTable->findSymbol(*$1);
         if(!symbol)
         {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " was not declared in this scope");
             $$->dataType = Data::INT;
             qDeleteAll(*$3);
         }
@@ -296,7 +302,7 @@ expression:
         SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(*$1);
         if(!symbol)
         {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " was not declared in this scope");
             $$ = unaryOp(Data::INT, Expression::ASSIGN, $3);
         }
         else
@@ -324,7 +330,7 @@ expressionId: ID {
         $$ = new Expression(Expression::VAR);
         if(!symbol)
         {
-            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " has not been declared in this scope");
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " was not declared in this scope");
             $$->dataType = Data::INT;
         }
         else
@@ -406,6 +412,29 @@ Expression *unaryOp(Data::Type dataType, Expression::Type type, Expression *e1)
     Expression *e = new Expression(type);
     e->dataType = dataType;
     e->left = e1;
+    return e;
+}
+
+Expression *incDec(Expression::Type type, Id id)
+{
+    SymbolTable::Symbol *symbol = currentSymbolTable->findSymbol(id);
+    if(!symbol)
+    {
+        currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " was not declared in this scope");
+    }
+    else
+    {
+        if(symbol->type == SymbolTable::FN)
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " is a function, cannot use as variable");
+        else if(symbol->dataType != Data::INT)
+            currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " is not an integer, cannot use ++/--");
+    }
+    if(!currentAssignmentAllowed)
+        currentParsedNet->addError(CPNet::SEMANTIC, "++/-- operators are not allowed in this type of inscription");
+
+    Expression *e = new Expression(type);
+    e->dataType = Data::INT;
+    e->id = id;
     return e;
 }
 

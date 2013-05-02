@@ -43,6 +43,7 @@ if      {DEBUG("if"); return IF;}
 else    {DEBUG("else"); return ELSE;}
 while   {DEBUG("while"); return WHILE;}
 do      {DEBUG("do"); return DO;}
+for     {DEBUG("for"); return FOR;}
 case    {DEBUG("case"); return CASE;}
 switch  {DEBUG("switch"); return SWITCH;}
 return  {DEBUG("return"); return RETURN;}
@@ -69,6 +70,8 @@ false       {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data-
 "!="                {DEBUG("neq"); return NEQ;}
 "&&"                {DEBUG("and"); return AND;}
 "||"                {DEBUG("or"); return OR;}
+"--"                {DEBUG("--"); return DMINUS;}
+"++"                {DEBUG("++"); return DPLUS;}
 
 [-+*/!^=,{}<>()%;]  {DEBUG("implicit"); return yytext[0];}
 
