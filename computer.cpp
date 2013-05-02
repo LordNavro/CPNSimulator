@@ -109,11 +109,17 @@ void Computer::fireTransition()
 {
     Binding binding = sti->transition->possibleBindings.at(sti->comboBinding->currentIndex());
     net->globalSymbolTable->bindVariables(binding);
+    QList<QPair<Place *, Data> > add, subtract;
     foreach(ArcItem *arcItem, sti->arcItems)
     {
         if(arcItem->arc->isPreset)
-            arcItem->arc->place->subtract(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this));
+            subtract.append(QPair<Place *, Data>(arcItem->arc->place, eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
         else
-            arcItem->arc->place->add(eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this));
+            add.append(QPair<Place *, Data>(arcItem->arc->place, eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
     }
+    QPair<Place*, Data> pair(NULL, Data(Data::UNIT));
+    foreach(pair, subtract)
+        pair.first->subtract(pair.second);
+    foreach(pair, add)
+        pair.first->add(pair.second);
 }

@@ -332,7 +332,7 @@ void MainWindow::slotHelp()
 }
 void MainWindow::slotAbout()
 {
-    QString text = tr("CPNSimulator version %1\nAuthor: %2\nContact: %3").arg("1.0, 2013", "Ondřej Navrátil", "xnavra23@stud.fit.vutbr.cz, nav.ondrej@gmail.com");
+    QString text = tr("CPNSimulator version %1\nAuthor: %2\nContact: %3").arg("1.0, 2013", "Ondrej Navratil", "xnavra23@stud.fit.vutbr.cz, nav.ondrej@gmail.com");
     QMessageBox::information(this, tr("About CPNSimulator"), text);
 }
 
