@@ -147,7 +147,8 @@ Declaration::~Declaration()
     switch(this->type)
     {
     case Declaration::FN:
-        delete command;
+        if(command)
+            delete command;
         break;
     case Declaration::VAR:
         break;

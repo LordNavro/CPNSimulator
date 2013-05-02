@@ -25,12 +25,31 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
         for(int i = 0; i < expression->expressionList->count(); i++)
         {
             SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
-            symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable, computer));
-            tempVarTable->addSymbol(fn->parameterList.at(i).second, symbol);
+            try{
+                symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable, computer));
+            }catch(QString s)
+            {
+                delete symbol;
+                delete tempVarTable;
+                throw;
+            }
+
+            if(!tempVarTable->addSymbol(fn->parameterList.at(i).second, symbol))
+            {
+                delete symbol;
+                delete tempVarTable;
+                throw(QString("Redefinition of symbol " + fn->parameterList.at(i).second));
+            }
         }
-        Data ret = execute(fn->command, funTable, tempVarTable, computer);
-        delete tempVarTable;
-        return ret;
+        try{
+            Data ret = execute(fn->command, funTable, tempVarTable, computer);
+            delete tempVarTable;
+            return ret;
+        }catch(QString s)
+        {
+            delete tempVarTable;
+            throw;
+        }
     }
     else if(expression->type == Expression::DPLUSPRE)
     {
@@ -326,63 +345,75 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
 {
     InterCode *icStart = generate3AC(command);
     InterCode *icCurrent = icStart;
-    while(icCurrent != NULL)
-    {
-        if(computer->cancelRequest)
+    try{
+        while(icCurrent != NULL)
         {
-            delete icStart;
-            throw(QString("Stop request recieved, terminating execution."));
-        }
-
-        if(icCurrent->type == InterCode::LABEL)
-        {
-            icCurrent = icCurrent->next;
-            continue;
-        }
-        else if(icCurrent->type == InterCode::INCSCOPE)
-        {
-            icCurrent = icCurrent->next;
-            varTable->increaseScope();
-        }
-        else if(icCurrent->type == InterCode::DECSCOPE)
-        {
-            icCurrent = icCurrent->next;
-            varTable->decreaseScope();
-        }
-        else if(icCurrent->type == InterCode::DECL)
-        {
-            foreach(QString id, icCurrent->command->idList)
+            if(computer->cancelRequest)
             {
-                SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
-                symbol->data = new Data(icCurrent->command->dataType);
-                varTable->addSymbol(id, symbol);
+                delete icStart;
+                throw(QString("Stop request recieved, terminating execution."));
             }
-            icCurrent = icCurrent->next;
-        }
-        else if(icCurrent->type == InterCode::EVAL)
-        {
-            eval(icCurrent->expression, funTable, varTable, computer);
-            icCurrent = icCurrent->next;
-        }
-        else if(icCurrent->type == InterCode::BRANCH)
-        {
-            icCurrent = icCurrent->label;
-        }
-        else if(icCurrent->type == InterCode::BRANCHIF)
-        {
-            icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
-        }
-        else if(icCurrent->type == InterCode::BRANCHIFN)
-        {
-            icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
-        }
-        else if(icCurrent->type == InterCode::RETURN)
-        {
-            Data data = eval(icCurrent->expression, funTable, varTable, computer);
-            delete icStart;
-            return data;
+
+            if(icCurrent->type == InterCode::LABEL)
+            {
+                icCurrent = icCurrent->next;
+                continue;
+            }
+            else if(icCurrent->type == InterCode::INCSCOPE)
+            {
+                icCurrent = icCurrent->next;
+                varTable->increaseScope();
+            }
+            else if(icCurrent->type == InterCode::DECSCOPE)
+            {
+                icCurrent = icCurrent->next;
+                varTable->decreaseScope();
+            }
+            else if(icCurrent->type == InterCode::DECL)
+            {
+                foreach(QString id, icCurrent->command->idList)
+                {
+                    SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
+                    symbol->data = new Data(icCurrent->command->dataType);
+                    if(!varTable->addSymbol(id, symbol))
+                    {
+                        delete symbol;
+                        throw(QString("Redeclaration of variable " + id));
+                    }
+                }
+                icCurrent = icCurrent->next;
+            }
+            else if(icCurrent->type == InterCode::EVAL)
+            {
+                eval(icCurrent->expression, funTable, varTable, computer);
+                icCurrent = icCurrent->next;
+            }
+            else if(icCurrent->type == InterCode::BRANCH)
+            {
+                icCurrent = icCurrent->label;
+            }
+            else if(icCurrent->type == InterCode::BRANCHIF)
+            {
+                icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
+            }
+            else if(icCurrent->type == InterCode::BRANCHIFN)
+            {
+                icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
+            }
+            else if(icCurrent->type == InterCode::RETURN)
+            {
+                Data data = eval(icCurrent->expression, funTable, varTable, computer);
+                delete icStart;
+                return data;
+            }
         }
     }
+    catch(QString s)
+    {
+        delete icStart;
+        throw;
+    }
+
     Q_ASSERT(false);
     return Data(Data::UNIT); //compile-killer
 }

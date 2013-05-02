@@ -11,8 +11,8 @@ class Computer : public QThread
     Q_OBJECT
 public:
     explicit Computer(CPNet *net, QObject *parent = 0);
-    bool cancelRequest;
     CPNet *net;
+    bool cancelRequest;
     SimulatorTransitionItem *sti;
     enum Mode{FindBinding, FireTransition};
     Mode mode;

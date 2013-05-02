@@ -121,7 +121,10 @@ declaration: DATATYPE idList ';' {
             symbol->dataType = $1;
             symbol->data = new Data($1);
             if(!currentGlobalSymbolTable->addSymbol(id, symbol))
+            {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " already declared/defined in this scope");
+                delete symbol;
+            }
         }
         delete $2;
     }
@@ -146,12 +149,21 @@ declaration: DATATYPE idList ';' {
         if(existing)
         {
             if(existing->type != SymbolTable::FN)
+            {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already declared as a variable");
+                delete $7;
+            }
             else if(existing->command)
+            {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already defined");
-            else if(existing->dataType != $1 || existing->parameterList != *$4)
-                currentParsedNet->addError(CPNet::SEMANTIC, "Definition of " + *$2 + " does not match declaration");
-            existing->command = $7;
+                delete $7;
+            }
+            else
+            {
+                if(existing->dataType != $1 || existing->parameterList != *$4)
+                    currentParsedNet->addError(CPNet::SEMANTIC, "Definition of " + *$2 + " does not match declaration");
+                existing->command = $7;
+            }
         }
         else
         {

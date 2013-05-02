@@ -1,7 +1,7 @@
 #include "computer.h"
 
 Computer::Computer(CPNet *net, QObject *parent) :
-    QThread(parent), net(net)
+    QThread(parent), net(net), cancelRequest(false)
 {
 }
 
