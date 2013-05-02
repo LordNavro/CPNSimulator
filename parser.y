@@ -45,7 +45,7 @@
 }
 
 %token START_EXPRESSION START_DECLARATION START_MARKING START_PRESET START_GUARD
-%token IF ELSE WHILE DO SWITCH CASE RETURN FOR
+%token IF ELSE WHILE DO RETURN FOR
 %token UNIT BOOL INT MULTIUNIT MULTIBOOL MULTIINT
 %token ID
 %token DATATYPE
@@ -60,6 +60,8 @@
 %left '*' '/' '%'
 %left '^'
 %nonassoc '!' UMINUS DMINUS DPLUS
+%nonassoc THEN
+%nonassoc ELSE
 
 %type <data> DATA
 %type <expression> marking markingNE markingItem
@@ -232,7 +234,7 @@ command: commandND
     ;
 
 commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHILE, $3, $5); }
-    | IF '(' expression ')' commandND { $$ = branchCommand(Command::IF, $3, $5); }
+    | IF '(' expression ')' commandND { $$ = branchCommand(Command::IF, $3, $5); } %prec THEN
     | IF '(' expression ')' commandND ELSE commandND { $$ = branchCommand(Command::IFELSE, $3, $5); $$->command2 = $7; }
     | DO commandND WHILE '(' expression ')' { $$ = branchCommand(Command::DOWHILE, $5, $2); }
     | expression ';' { $$ = new Command(Command::EXPR); $$->expression = $1; }

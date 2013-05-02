@@ -8,8 +8,8 @@ InscriptionHighlighter::InscriptionHighlighter(QTextDocument *parent) :
     QStringList keywords;
     keywords << "\\bunit\\b" << "\\bnounit\\b" << "\\bbool\\b" << "\\bint\\b"
              << "\\bmultiunit\\b" << "\\bmultibool\\b" << "\\bmultiint\\b"
-             << "\\bfor\\b"  << "\\bwhile\\b" << "\\bdo\\b" << "\\bswitch\\b"
-             << "\\bcase\\b" << "\\bdefault\\b" << "\\breturn\\b" << "\\bbreak\\b"
+             << "\\bfor\\b"  << "\\bwhile\\b" << "\\bdo\\b"
+             << "\\bdefault\\b" << "\\breturn\\b" << "\\bbreak\\b"
              << "\\bcontinue\\b" << "\\bif\\b" << "\\belse\\b";
     format.setFontWeight(QFont::Bold);
     format.setForeground(Qt::darkBlue);
