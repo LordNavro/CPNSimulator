@@ -74,6 +74,94 @@ bool Data::operator ==(const Data &data)
     return false;
 }
 
+Data Data::operator +(const Data &data)
+{
+    if(data.type == Data::INT)
+    {
+        Data ret(Data::INT);
+        ret.value.i = this->value.i + data.value.i;
+        return ret;
+    }
+    else if(data.type == Data::MULTIUNIT)
+    {
+        Data ret(Data::MULTIUNIT);
+        ret.value.multiUnit = this->value.multiUnit + data.value.multiUnit;
+        return ret;
+    }
+    else if(data.type == Data::MULTIBOOL)
+    {
+        Data ret(Data::MULTIBOOL);
+        ret.value.multiBool.t = this->value.multiBool.t + data.value.multiBool.t;
+        ret.value.multiBool.f = this->value.multiBool.f + data.value.multiBool.f;
+        return ret;
+    }
+    else if(data.type == Data::MULTIINT)
+    {
+        Data ret(Data::MULTIINT);
+        QMapIterator<int, int>i(*this->value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            ret.value.multiInt->insert(i.key(), i.value());
+        }
+        QMapIterator<int, int>j(*data.value.multiInt);
+        while(j.hasNext())
+        {
+            j.next();
+            (*ret.value.multiInt)[j.key()] += j.value();
+            if((*ret.value.multiInt)[j.key()] == 0)
+                (*ret.value.multiInt).remove(j.key());
+        }
+        return ret;
+    }
+    Q_ASSERT(false);
+    return Data();
+}
+
+Data Data::operator -(const Data &data)
+{
+    if(data.type == Data::INT)
+    {
+        Data ret(Data::INT);
+        ret.value.i = this->value.i - data.value.i;
+        return ret;
+    }
+    else if(data.type == Data::MULTIUNIT)
+    {
+        Data ret(Data::MULTIUNIT);
+        ret.value.multiUnit = this->value.multiUnit - data.value.multiUnit;
+        return ret;
+    }
+    else if(data.type == Data::MULTIBOOL)
+    {
+        Data ret(Data::MULTIBOOL);
+        ret.value.multiBool.t = this->value.multiBool.t - data.value.multiBool.t;
+        ret.value.multiBool.f = this->value.multiBool.f - data.value.multiBool.f;
+        return ret;
+    }
+    else if(data.type == Data::MULTIINT)
+    {
+        Data ret(Data::MULTIINT);
+        QMapIterator<int, int>i(*this->value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            ret.value.multiInt->insert(i.key(), i.value());
+        }
+        QMapIterator<int, int>j(*data.value.multiInt);
+        while(j.hasNext())
+        {
+            j.next();
+            (*ret.value.multiInt)[j.key()] -= j.value();
+            if((*ret.value.multiInt)[j.key()] == 0)
+                (*ret.value.multiInt).remove(j.key());
+        }
+        return ret;
+    }
+    Q_ASSERT(false);
+    return Data();
+}
+
 QString Data::toString()
 {
     switch(type)
@@ -102,7 +190,7 @@ QString Data::toString()
 
 Expression::~Expression()
 {
-    switch(this->type)
+    switch(type)
     {
     case Expression::MULTISET:
     case Expression::AND:
@@ -144,7 +232,7 @@ Expression::~Expression()
 
 Declaration::~Declaration()
 {
-    switch(this->type)
+    switch(type)
     {
     case Declaration::FN:
         if(command)
@@ -158,7 +246,7 @@ Declaration::~Declaration()
 
 Command::~Command()
 {
-    switch(this->type)
+    switch(type)
     {
     case Command::IFELSE:
         delete command2;

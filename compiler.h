@@ -31,10 +31,12 @@
     public:
         enum Type{UNIT, BOOL, INT, MULTIUNIT, MULTIBOOL, MULTIINT};
 
-        Data(Data::Type type);
+        Data(Data::Type type = Data::UNIT);
         Data(const Data &data);
-        Data &operator=(const Data &data);
-        bool operator==(const Data &data);
+        Data &operator =(const Data &data);
+        bool operator ==(const Data &data);
+        Data operator +(const Data &data);
+        Data operator -(const Data &data);
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
         QString toString();
         Data::Type type;

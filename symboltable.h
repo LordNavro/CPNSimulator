@@ -11,6 +11,7 @@ class SymbolTable
 {
 public:
     SymbolTable();
+    ~SymbolTable();
 
     enum SymbolType {VAR, FN};
     struct Symbol

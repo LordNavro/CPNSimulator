@@ -31,15 +31,17 @@ private:
     QAction *actionArc;
     QAction *actionDelete;
 
-    QAction *actionAbout;
-    QAction *actionHelp;
-
     QAction *actionCompile;
     QAction *actionEdit;
     QAction *actionStep;
     QAction *actionStop;
     QAction *actionFastForward;
     QAction *actionFindBinding;
+
+    QAction *actionGenerateStateSpace;
+
+    QAction *actionAbout;
+    QAction *actionHelp;
 
     QList<QAction *> actionsEditor;
     QList<QAction *> actionsSimulator;
@@ -51,6 +53,7 @@ private:
     QMenu *menuFile;
     QMenu *menuTool;
     QMenu *menuSimulation;
+    QMenu *menuAnalysis;
     QMenu *menuHelp;
 
     QTabWidget *tabWidget;
@@ -84,15 +87,17 @@ public slots:
     void slotArc();
     void slotDelete();
 
-    void slotHelp();
-    void slotAbout();
-
     void slotCompile();
     void slotEdit();
     void slotStep();
     void slotStop();
     void slotFastForward();
     void slotFindBinding();
+
+    void slotGenerateStateSpace();
+
+    void slotHelp();
+    void slotAbout();
 
     void slotTabCloseRequest(int index);
 

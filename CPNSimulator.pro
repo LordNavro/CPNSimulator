@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     editorscene.cpp \
     simulatorscene.cpp \
     interpret.cpp \
-    computer.cpp
+    computer.cpp \
+    analyzer.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     editorscene.h \
     simulatorscene.h \
     interpret.h \
-    computer.h
+    computer.h \
+    analyzer.h
 
 RESOURCES += \
     icons.qrc

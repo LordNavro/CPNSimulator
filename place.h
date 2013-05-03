@@ -22,9 +22,6 @@ public:
 
     Data *currentMarkingValue;
 
-    void subtract(Data data);
-    void add(Data data);
-
 signals:
     
 public slots:

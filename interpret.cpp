@@ -207,42 +207,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     }
     else if(expression->type == Expression::PLUS)
     {
-        if(left.type == Data::INT)
-        {
-            Data ret(Data::INT);
-            ret.value.i = left.value.i + right.value.i;
-            return ret;
-        }
-        else if(left.type == Data::MULTIUNIT)
-        {
-            Data ret(Data::MULTIUNIT);
-            ret.value.multiUnit = left.value.multiUnit + right.value.multiUnit;
-            return ret;
-        }
-        else if(left.type == Data::MULTIBOOL)
-        {
-            Data ret(Data::MULTIBOOL);
-            ret.value.multiBool.t = left.value.multiBool.t + right.value.multiBool.t;
-            ret.value.multiBool.f = left.value.multiBool.f + right.value.multiBool.f;
-            return ret;
-        }
-        else if(left.type == Data::MULTIINT)
-        {
-            Data ret(Data::MULTIINT);
-            QMapIterator<int, int>i(*left.value.multiInt);
-            while(i.hasNext())
-            {
-                i.next();
-                ret.value.multiInt->insert(i.key(), i.value());
-            }
-            QMapIterator<int, int>j(*right.value.multiInt);
-            while(j.hasNext())
-            {
-                j.next();
-                (*ret.value.multiInt)[j.key()] += j.value();
-            }
-            return ret;
-        }
+        return left + right;
     }
     else if(expression->type == Expression::MULTISET)
     {

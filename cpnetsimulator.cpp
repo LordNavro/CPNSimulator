@@ -196,6 +196,10 @@ void CPNetSimulator::slotComputerCompleted()
     {
         findBindings();
     }
+    else if(threadComputer.mode == Computer::GenerateStateSpace)
+    {
+
+    }
     else
     {
         foreach(QGraphicsItem *item, scene->items())
@@ -211,7 +215,7 @@ void CPNetSimulator::slotComputerCompleted()
 void CPNetSimulator::slotComputerFailed(QString message)
 {
     QMessageBox::critical(this, tr("Computation failed"), message);
-    if(threadComputer.mode == Computer::FireTransition)
+    if(threadComputer.mode == Computer::FireTransition || threadComputer.mode == Computer::GenerateStateSpace)
         findBindings();
     else
     {

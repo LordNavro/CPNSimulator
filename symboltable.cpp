@@ -6,6 +6,12 @@ SymbolTable::SymbolTable()
     increaseScope();
 }
 
+SymbolTable::~SymbolTable()
+{
+    while(!stack.isEmpty())
+        decreaseScope();
+}
+
 SymbolTable::Symbol *SymbolTable::findSymbol(QString id)
 {
     for(int i = stack.count() - 1; i >= 0; i--)

@@ -6,6 +6,7 @@
 #include "interpret.h"
 
 class Computer;
+class NetMarking;
 
 class Arc
 {
@@ -19,7 +20,7 @@ public:
     bool isPreset;
 
     Expression *parsedExpression;
-    QList<Binding> findBindings(Computer *computer);
+    QList<Binding> findBindings(Computer *computer, NetMarking marking);
 
 signals:
     

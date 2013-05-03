@@ -5,17 +5,38 @@ Computer::Computer(CPNet *net, QObject *parent) :
 {
 }
 
+Computer::~Computer()
+{
+}
+
 void Computer::run()
 {
     cancelRequest = false;
     try{
         if(mode == Computer::FindBinding)
         {
-            findBinding();
+            NetMarking marking;
+            foreach(Place *place, net->places)
+                marking[place] = *place->currentMarkingValue;
+            findBinding(marking);
         }
         else if(mode == Computer::FireTransition)
         {
-            fireTransition();
+            NetMarking marking;
+            foreach(Place *place, net->places)
+                marking[place] = *place->currentMarkingValue;
+
+            NetMarking newMarking = fireTransition(marking, sti->transition, sti->transition->possibleBindings.at(sti->comboBinding->currentIndex()));
+
+            foreach(Place *place, net->places)
+            {
+                delete place->currentMarkingValue;
+                place->currentMarkingValue = new Data(newMarking[place]);
+            }
+        }
+        else if(mode == Computer::GenerateStateSpace)
+        {
+            generateStateSpace();
         }
         emit signalCompleted();
     }
@@ -25,7 +46,7 @@ void Computer::run()
     }
 }
 
-void Computer::findBinding()
+void Computer::findBinding(NetMarking marking)
 {
     //Black magic bars our way. But the will of a templar is stronger!
     foreach(Transition *transition, net->transitions)
@@ -38,7 +59,7 @@ void Computer::findBinding()
         {
             if(!arc->isPreset || arc->transition != transition)
                 continue;
-            arcBindings.append(arc->findBindings(this));
+            arcBindings.append(arc->findBindings(this, marking));
         }
         transition->possibleBindings.clear();
         QList<Binding> mergedBindings = mergeBindings(possibleBindings, arcBindings);
@@ -55,7 +76,6 @@ void Computer::findBinding()
                     transition->possibleBindings << b;
             }
         }
-        //scene->getTransitionItem(transition)->populateCombo();
     }
 }
 
@@ -105,21 +125,27 @@ QList<Binding> Computer::mergeBindings(QList<Binding> possibleBindings, QList<QL
     return mergeBindings(newPossibleBindings, arcBindings);
 }
 
-void Computer::fireTransition()
+NetMarking Computer::fireTransition(NetMarking marking, Transition *transition, Binding binding)
 {
-    Binding binding = sti->transition->possibleBindings.at(sti->comboBinding->currentIndex());
     net->globalSymbolTable->bindVariables(binding);
     QList<QPair<Place *, Data> > add, subtract;
-    foreach(ArcItem *arcItem, sti->arcItems)
+    foreach(Arc *arc, net->arcs)
     {
-        if(arcItem->arc->isPreset)
-            subtract.append(QPair<Place *, Data>(arcItem->arc->place, eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
+        if(arc->transition != transition)
+            continue;
+        if(arc->isPreset)
+            subtract.append(QPair<Place *, Data>(arc->place, eval(arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
         else
-            add.append(QPair<Place *, Data>(arcItem->arc->place, eval(arcItem->arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
+            add.append(QPair<Place *, Data>(arc->place, eval(arc->parsedExpression, net->globalSymbolTable, net->globalSymbolTable, this)));
     }
     QPair<Place*, Data> pair(NULL, Data(Data::UNIT));
     foreach(pair, subtract)
-        pair.first->subtract(pair.second);
+        marking[pair.first] = marking[pair.first] - pair.second;
     foreach(pair, add)
-        pair.first->add(pair.second);
+        marking[pair.first] = marking[pair.first] + pair.second;
+    return marking;
+}
+
+void Computer::generateStateSpace()
+{
 }

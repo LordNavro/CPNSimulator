@@ -1,5 +1,6 @@
 #include "arc.h"
 #include "computer.h"
+#include "analyzer.h"
 
 Arc::Arc() :
     parsedExpression(NULL)
@@ -12,7 +13,7 @@ Arc::~Arc()
         delete parsedExpression;
 }
 
-QList<Binding> Arc::findBindings(Computer *computer)
+QList<Binding> Arc::findBindings(Computer *computer, NetMarking marking)
 {
     QList<Binding> bindings;
     int left = eval(parsedExpression->left, NULL, NULL, computer).value.i; // no tables needed - no ID's allowed
@@ -22,7 +23,7 @@ QList<Binding> Arc::findBindings(Computer *computer)
         {
             if(parsedExpression->right->data->value.b == true) //right == unit
             {
-                if(place->currentMarkingValue->value.multiUnit >= left)
+                if(marking[place].value.multiUnit >= left)
                     bindings.append(Binding());
             }
             else    //right == nounit
@@ -34,19 +35,19 @@ QList<Binding> Arc::findBindings(Computer *computer)
         {
             if(parsedExpression->right->data->value.b == true)
             {
-                if(place->currentMarkingValue->value.multiBool.t >= left)
+                if(marking[place].value.multiBool.t >= left)
                     bindings.append(Binding());
             }
             else
             {
-                if(place->currentMarkingValue->value.multiBool.f >= left)
+                if(marking[place].value.multiBool.f >= left)
                     bindings.append(Binding());
             }
         }
         else if(place->colourSet == Place::INT)
         {
             int right = parsedExpression->right->data->value.i;
-            if(place->currentMarkingValue->value.multiInt->value(right, 0) >= left)
+            if(marking[place].value.multiInt->value(right, 0) >= left)
                 bindings.append(Binding());
         }
     }
@@ -55,7 +56,7 @@ QList<Binding> Arc::findBindings(Computer *computer)
         //there is no variable of dataType unit
         if(place->colourSet == Place::BOOL)
         {
-            if(place->currentMarkingValue->value.multiBool.t >= left)
+            if(marking[place].value.multiBool.t >= left)
             {
                 Binding binding;
                 BindingElement element(parsedExpression->right->id, Data::BOOL);
@@ -64,7 +65,7 @@ QList<Binding> Arc::findBindings(Computer *computer)
                 bindings.append(binding);
             }
 
-            if(place->currentMarkingValue->value.multiBool.f >= left)
+            if(marking[place].value.multiBool.f >= left)
             {
                 Binding binding;
                 BindingElement element(parsedExpression->right->id, Data::BOOL);
@@ -76,7 +77,7 @@ QList<Binding> Arc::findBindings(Computer *computer)
         }
         else if(place->colourSet == Place::INT)
         {
-            QMapIterator<int, int>i(*place->currentMarkingValue->value.multiInt);
+            QMapIterator<int, int>i(*marking[place].value.multiInt);
             while(i.hasNext())
             {
                 i.next();

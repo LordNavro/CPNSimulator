@@ -21,6 +21,12 @@ CPNet::~CPNet()
     qDeleteAll(transitions);
     if(parsedDeclaration)
     {
+        //so that some commands dont get deleted twice
+        foreach(Declaration *d, *parsedDeclaration)
+        {
+            if(globalSymbolTable && d->type == Declaration::FN && globalSymbolTable->findSymbol(d->id))
+                globalSymbolTable->findSymbol(d->id)->command = NULL;
+        }
         qDeleteAll(*parsedDeclaration);
         delete parsedDeclaration;
     }

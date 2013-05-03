@@ -17,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     setWindowTitle("CPNSimulator");
     setWindowIcon(QIcon(style()->standardIcon(QStyle::SP_CommandLink)));
+    slotNew();
+    showMaximized();
     refreshActions();
 }
 
@@ -63,11 +65,6 @@ void MainWindow::createActions()
 
     actionsEditor << actionSelect << actionPlace << actionTransition << actionArc << actionDelete;
 
-    actionHelp = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogHelpButton)), tr("Help"), this);
-    actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("About program"), this);
-
-    connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
-
     actionCompile = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Compile"), this);
     actionEdit = new QAction(QIcon(style()->standardIcon(QStyle::SP_DesktopIcon)), tr("Edit net"), this);
     actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("Step"), this);
@@ -85,7 +82,16 @@ void MainWindow::createActions()
     actionsEditor << actionCompile;
     actionsSimulator << actionEdit << actionStep << actionStop << actionFastForward << actionFindBinding;
 
+    actionGenerateStateSpace = new QAction(QIcon(style()->standardIcon(QStyle::SP_CustomBase)), tr("&Generate state space"), this);
 
+    connect(actionGenerateStateSpace, SIGNAL(triggered()), this, SLOT(slotGenerateStateSpace()));
+
+    actionsSimulator << actionGenerateStateSpace;
+
+    actionHelp = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogHelpButton)), tr("&Help"), this);
+    actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("&About program"), this);
+
+    connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
 }
 
 void MainWindow::createToolBars()
@@ -120,8 +126,8 @@ void MainWindow::createMenuBars()
     menuFile = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_FileIcon)),*/ tr("&File"));
     menuTool = menuBar()->addMenu(/*QIcon(":/icons/icons/hammer.ico"),*/ tr("&Tool"));
     menuSimulation = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), */tr("&Simulation"));
+    menuAnalysis = menuBar()->addMenu(tr("&Analysis"));
     menuHelp = menuBar()->addMenu(/*QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)),*/ tr("&Help"));
-
 
     menuFile->addAction(actionNew);
     menuFile->addAction(actionLoad);
@@ -141,6 +147,8 @@ void MainWindow::createMenuBars()
     menuSimulation->addAction(actionStop);
     menuSimulation->addAction(actionFastForward);
     menuSimulation->addAction(actionFindBinding);
+
+    menuAnalysis->addAction(actionGenerateStateSpace);
 
     menuHelp->addAction(actionHelp);
     menuHelp->addAction(actionAbout);
@@ -327,15 +335,6 @@ void MainWindow::slotDelete()
     setCurrentTool(EditorScene::DELETE);
 }
 
-void MainWindow::slotHelp()
-{
-}
-void MainWindow::slotAbout()
-{
-    QString text = tr("CPNSimulator version %1\nAuthor: %2\nContact: %3").arg("1.0, 2013", "Ondrej Navratil", "xnavra23@stud.fit.vutbr.cz, nav.ondrej@gmail.com");
-    QMessageBox::information(this, tr("About CPNSimulator"), text);
-}
-
 void MainWindow::slotCompile()
 {
     if(!tabWidget->currentWidget())
@@ -394,6 +393,24 @@ void MainWindow::slotFindBinding()
     currentSimulator()->findBindings();
 }
 
+void MainWindow::slotGenerateStateSpace()
+{
+    if(currentSimulator()->threadComputer.isRunning())
+    {
+        QMessageBox::information(this, tr("Cannot analyze net"), tr("Cannot analyze net while computations still running"));
+        return;
+    }
+}
+
+void MainWindow::slotHelp()
+{
+}
+
+void MainWindow::slotAbout()
+{
+    QString text = tr("CPNSimulator version %1\nAuthor: %2\nContact: %3").arg("1.0, 2013", "Ondrej Navratil", "xnavra23@stud.fit.vutbr.cz, nav.ondrej@gmail.com");
+    QMessageBox::information(this, tr("About CPNSimulator"), text);
+}
 
 void MainWindow::slotTabCloseRequest(int index)
 {
