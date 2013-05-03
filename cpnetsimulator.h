@@ -42,10 +42,13 @@ public:
     void showOverlay(QString message);
     void hideOverlay();
 
+
 signals:
     
 public slots:
     void slotFire(SimulatorTransitionItem *sti);
+    void slotGenerateStateSpace();
+
     void slotCancelComputation();
     void slotComputerCompleted();
     void slotComputerFailed(QString message);

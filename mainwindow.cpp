@@ -400,6 +400,7 @@ void MainWindow::slotGenerateStateSpace()
         QMessageBox::information(this, tr("Cannot analyze net"), tr("Cannot analyze net while computations still running"));
         return;
     }
+    currentSimulator()->slotGenerateStateSpace();
 }
 
 void MainWindow::slotHelp()

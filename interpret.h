@@ -5,7 +5,7 @@
 #include "symboltable.h"
 #include <QtCore>
 
-    class BindingElement : QPair<QString, Data>
+    class BindingElement : public QPair<QString, Data>
     {
     public:
         BindingElement(QString id, Data::Type dataType) : QPair(id, dataType){}
@@ -37,9 +37,6 @@
         InterCode *last();
         InterCode *append(InterCode *ic);
     };
-
-
-
 
     Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer);
 

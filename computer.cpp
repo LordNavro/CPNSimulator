@@ -15,28 +15,16 @@ void Computer::run()
     try{
         if(mode == Computer::FindBinding)
         {
-            NetMarking marking;
-            foreach(Place *place, net->places)
-                marking[place] = *place->currentMarkingValue;
-            findBinding(marking);
+            findBinding(net->currentMarking());
         }
         else if(mode == Computer::FireTransition)
         {
-            NetMarking marking;
-            foreach(Place *place, net->places)
-                marking[place] = *place->currentMarkingValue;
-
-            NetMarking newMarking = fireTransition(marking, sti->transition, sti->transition->possibleBindings.at(sti->comboBinding->currentIndex()));
-
-            foreach(Place *place, net->places)
-            {
-                delete place->currentMarkingValue;
-                place->currentMarkingValue = new Data(newMarking[place]);
-            }
+            NetMarking newMarking = fireTransition(net->currentMarking(), sti->transition, sti->transition->possibleBindings.at(sti->comboBinding->currentIndex()));
+            net->setCurrentMarking(newMarking);
         }
         else if(mode == Computer::GenerateStateSpace)
         {
-            generateStateSpace();
+            graph.generate(net, this, depth);
         }
         emit signalCompleted();
     }
@@ -144,8 +132,4 @@ NetMarking Computer::fireTransition(NetMarking marking, Transition *transition, 
     foreach(pair, add)
         marking[pair.first] = marking[pair.first] + pair.second;
     return marking;
-}
-
-void Computer::generateStateSpace()
-{
 }

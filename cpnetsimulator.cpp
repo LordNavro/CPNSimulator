@@ -184,6 +184,18 @@ void CPNetSimulator::slotFire(SimulatorTransitionItem *sti)
     threadComputer.start();
 }
 
+void CPNetSimulator::slotGenerateStateSpace()
+{
+    bool ok;
+    int depth = QInputDialog::getInt(this, tr("Fast fwd"), tr("Number of transitions fired"), 20, 1, 1000, 10, &ok);
+    if(!ok)
+        return;
+    threadComputer.mode = Computer::GenerateStateSpace;
+    threadComputer.depth = depth;
+    showOverlay(tr("Generating state space"));
+    threadComputer.start();
+}
+
 void CPNetSimulator::slotCancelComputation()
 {
     threadComputer.cancelRequest = true;
@@ -198,7 +210,7 @@ void CPNetSimulator::slotComputerCompleted()
     }
     else if(threadComputer.mode == Computer::GenerateStateSpace)
     {
-
+        findBindings();
     }
     else
     {

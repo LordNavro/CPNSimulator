@@ -34,7 +34,7 @@
         Data(Data::Type type = Data::UNIT);
         Data(const Data &data);
         Data &operator =(const Data &data);
-        bool operator ==(const Data &data);
+        bool operator ==(const Data &data) const;
         Data operator +(const Data &data);
         Data operator -(const Data &data);
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}

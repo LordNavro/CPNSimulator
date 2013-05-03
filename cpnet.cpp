@@ -128,6 +128,23 @@ QList<Arc *> CPNet::postsetArcs(Transition *transition)
     return result;
 }
 
+NetMarking CPNet::currentMarking()
+{
+    NetMarking marking;
+    foreach(Place *place, places)
+        marking[place] = *place->currentMarkingValue;
+    return marking;
+}
+
+void CPNet::setCurrentMarking(NetMarking marking)
+{
+    foreach(Place *place, places)
+    {
+        delete place->currentMarkingValue;
+        place->currentMarkingValue = new Data(marking[place]);
+    }
+}
+
 void CPNet::semanticAnalysis()
 {
     /* Covering of variables */

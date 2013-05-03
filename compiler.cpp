@@ -56,7 +56,7 @@ Data &Data::operator=(const Data &data)
     return *this;
 }
 
-bool Data::operator ==(const Data &data)
+bool Data::operator ==(const Data &data) const
 {
     if(type != data.type)
         return false;

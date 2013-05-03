@@ -5,6 +5,7 @@
 #include "arc.h"
 #include "compiler.h"
 #include "parser.parser.hpp"
+#include "analyzer.h"
 
 extern int yylineno;
 
@@ -58,9 +59,13 @@ public:
 
     void syntaxAnalysis(void);
     void semanticAnalysis();
+
     IdList collectIds(Expression *expression);
     QList<Arc *> presetArcs(Transition *transition);
     QList<Arc *> postsetArcs(Transition *transition);
+
+    NetMarking currentMarking();
+    void setCurrentMarking(NetMarking marking);
 
 signals:
     

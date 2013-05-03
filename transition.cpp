@@ -7,6 +7,7 @@ Transition::Transition() :
 
 Transition::~Transition()
 {
+    //qDebug() << "transition destroyed";
     if(parsedGuard)
         delete parsedGuard;
 }
