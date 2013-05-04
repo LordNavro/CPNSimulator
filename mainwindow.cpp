@@ -243,7 +243,7 @@ void MainWindow::slotClose()
     int i = tabWidget->currentIndex();
     delete nets.at(i);
     nets.removeAt(i);
-    delete tabWidget->widget(i);
+    tabWidget->widget(i)->deleteLater();
     tabWidget->removeTab(i);
     refreshActions();
 }

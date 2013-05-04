@@ -11,8 +11,9 @@ Computer::~Computer()
 
 void Computer::run()
 {
-    cancelRequest = false;
     try{
+        if(cancelRequest)
+            throw(QString("Cancel request received, terminating computation."));
         if(mode == Computer::FindBinding)
         {
             findBinding(net->currentMarking());

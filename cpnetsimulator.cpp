@@ -204,7 +204,6 @@ void CPNetSimulator::slotCancelComputation()
 
 void CPNetSimulator::slotComputerCompleted()
 {
-    hideOverlay();
     if(threadComputer.mode == Computer::FireTransition)
     {
         findBindings();
@@ -212,26 +211,35 @@ void CPNetSimulator::slotComputerCompleted()
     else if(threadComputer.mode == Computer::GenerateStateSpace)
     {
         StateSpaceExplorer *explorer = new StateSpaceExplorer(threadComputer.graph, this);
-        explorer->show();
+        explorer->exec();
         findBindings();
     }
     else
     {
-        foreach(QGraphicsItem *item, scene->items())
-        {
-            if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
-                sti->populateCombo();
-        }
-        if(--transitionsToFire > 0)
+        if(--transitionsToFire > 0 && !threadComputer.cancelRequest)
             fireTransitions(transitionsToFire);
+        else
+        {
+            foreach(QGraphicsItem *item, scene->items())
+            {
+                if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
+                    sti->populateCombo();
+            }
+            hideOverlay();
+            threadComputer.cancelRequest = false;
+        }
     }
 }
 
 void CPNetSimulator::slotComputerFailed(QString message)
 {
+    transitionsToFire = 0;
     QMessageBox::critical(this, tr("Computation failed"), message);
     if(threadComputer.mode == Computer::FireTransition || threadComputer.mode == Computer::GenerateStateSpace)
+    {
+        threadComputer.cancelRequest = false;
         findBindings();
+    }
     else
     {
         foreach(QGraphicsItem *item, scene->items())
@@ -242,8 +250,9 @@ void CPNetSimulator::slotComputerFailed(QString message)
                 sti->populateCombo();
             }
         }
+        hideOverlay();
+        threadComputer.cancelRequest = false;
     }
-    hideOverlay();
 }
 
 int CPNetSimulator::randInt(int low, int high)

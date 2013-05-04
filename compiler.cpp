@@ -20,6 +20,14 @@ Data::Data(Data::Type type): type(type)
         value.multiInt = new MultiInt;
     else if(type == Data::MULTIBOOL)
         value.multiBool.f = value.multiBool.t = 0;
+    else if(type == Data::MULTIUNIT)
+        value.multiUnit = 0;
+    else if(type == Data::INT)
+        value.i = 0;
+    else if(type == Data::BOOL)
+        value.b = false;
+    else if(type == Data::UNIT)
+        value.b = true;
 }
 
 Data::Data(const Data &data)

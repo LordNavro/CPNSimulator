@@ -21,7 +21,19 @@ QVariant PlaceItem::itemChange(QGraphicsItem::GraphicsItemChange change, const Q
 void PlaceItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QGraphicsEllipseItem::paint(painter, option, widget);
-    painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, place->name);
+    QString set;
+    switch (place->colourSet) {
+    case Place::UNIT:
+        set = "UNIT";
+        break;
+    case Place::BOOL:
+        set = "BOOL";
+        break;
+    case Place::INT:
+        set = "INT";
+        break;
+    }
+    painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, place->name + " (" + set +")");
     if(type() == SimulatorPlaceItem::Type && place->currentMarkingValue)
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarkingValue->toString());
     else

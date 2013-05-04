@@ -47,16 +47,22 @@ void CPNet::syntaxAnalysis()
     currentParsedInscription = CPNet::DECLARATION;
     errorList.clear();
 
+    if(parsedDeclaration)
+    {
+        //so that some commands dont get deleted twice
+        foreach(Declaration *d, *parsedDeclaration)
+        {
+            if(globalSymbolTable && d->type == Declaration::FN && globalSymbolTable->findSymbol(d->id))
+                globalSymbolTable->findSymbol(d->id)->command = NULL;
+        }
+        qDeleteAll(*parsedDeclaration);
+        delete parsedDeclaration;
+    }
     if(globalSymbolTable != NULL)
         delete globalSymbolTable;
     currentGlobalSymbolTable = globalSymbolTable = new SymbolTable();
 
     /* compile net itself */
-    if(parsedDeclaration)
-    {
-        qDeleteAll(*parsedDeclaration);
-        delete parsedDeclaration;
-    }
     parseQString(declaration, START_DECLARATION);
     parsedDeclaration = currentParsedDeclarationList;
 

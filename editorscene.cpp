@@ -75,7 +75,9 @@ void EditorScene::keyPressEvent(QKeyEvent *event)
 
 void EditorScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    static int counter = 0;
     Place *place = new Place();
+    place->name = "P" + QString::number(++counter);
     EditorPlaceItem *placeItem = new EditorPlaceItem;
     placeItem->place = place;
     addItem(placeItem);
@@ -87,10 +89,10 @@ void EditorScene::addPlace(QGraphicsSceneMouseEvent *mouseEvent)
 
 void EditorScene::addTransition(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    Transition *transition;
-    EditorTransitionItem *transitionItem;
-    transition = new Transition;
-    transitionItem = new EditorTransitionItem;
+    static int counter = 0;
+    Transition *transition = new Transition();
+    transition->name = "T" + QString::number(++counter);
+    EditorTransitionItem *transitionItem = new EditorTransitionItem();
     transitionItem->transition = transition;
     transitionItem->setPos(mouseEvent->scenePos());
     addItem(transitionItem);
