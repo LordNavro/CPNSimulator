@@ -398,7 +398,7 @@ InterCode *InterCode::append(InterCode *ic)
 }
 
 
-QString Binding::toString()
+QString Binding::toString() const
 {
     QStringList values;
     foreach(BindingElement binding, *this)

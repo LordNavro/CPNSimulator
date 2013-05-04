@@ -1,5 +1,6 @@
 #include "cpnetsimulator.h"
 #include "interpret.h"
+#include "statespaceexplorer.h"
 
 CPNetSimulator::CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent) :
     QWidget(parent), net(net), editor(editor), threadComputer(net, this), transitionsToFire(0)
@@ -187,7 +188,7 @@ void CPNetSimulator::slotFire(SimulatorTransitionItem *sti)
 void CPNetSimulator::slotGenerateStateSpace()
 {
     bool ok;
-    int depth = QInputDialog::getInt(this, tr("Fast fwd"), tr("Number of transitions fired"), 20, 1, 1000, 10, &ok);
+    int depth = QInputDialog::getInt(this, tr("Genrate state space"), tr("Enter maximum step limit for state space generation:"), 20, 1, 1000, 10, &ok);
     if(!ok)
         return;
     threadComputer.mode = Computer::GenerateStateSpace;
@@ -210,6 +211,8 @@ void CPNetSimulator::slotComputerCompleted()
     }
     else if(threadComputer.mode == Computer::GenerateStateSpace)
     {
+        StateSpaceExplorer *explorer = new StateSpaceExplorer(threadComputer.graph, this);
+        explorer->show();
         findBindings();
     }
     else

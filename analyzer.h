@@ -13,39 +13,45 @@ class NetMarking : public QMap<Place *, Data>
 
 };
 
-class StateSpaceVertex
-{
-public:
-    explicit StateSpaceVertex(NetMarking marking) : marking(marking){}
-    NetMarking marking;
-    bool operator ==(const StateSpaceVertex &vertex);
-};
+class StateSpaceVertex;
 
 class StateSpaceEdge
 {
 public:
-    StateSpaceEdge(StateSpaceVertex *from, StateSpaceVertex *to, Transition *transition, Binding binding) :
+    StateSpaceEdge(int from, int to, Transition *transition, Binding binding) :
         from(from), to(to), transition(transition), binding(binding){}
 
-    StateSpaceVertex *from;
-    StateSpaceVertex *to;
+    int from;
+    int to;
     Transition *transition;
     Binding binding;
     bool operator ==(const StateSpaceEdge &edge);
+    QString toString() const;
 };
+
+class StateSpaceVertex
+{
+public:
+    explicit StateSpaceVertex(NetMarking marking) : marking(marking){}
+    QList<StateSpaceEdge> edges;
+    NetMarking marking;
+    bool operator ==(const StateSpaceVertex &vertex);
+    QString toString() const;
+};
+
 
 class StateSpaceGraph
 {
 public:
     QList<StateSpaceVertex> vertices;
-    QList<StateSpaceEdge> edges;
 
     bool depthLimitReached;
 
     void generate(CPNet *net, Computer *computer, int depth);
+    QList<int> findPath(int endIndex, int startIndex = 0);
 
 protected:
-    void findNewVertices(CPNet *net, StateSpaceVertex *vertex, Computer *computer, int depth);
+    void findNewVertices(CPNet *net, StateSpaceVertex *vertex, int vertexIndex, Computer *computer, int depth);
 };
 
 

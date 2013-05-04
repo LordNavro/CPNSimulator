@@ -38,7 +38,7 @@
         Data operator +(const Data &data);
         Data operator -(const Data &data);
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
-        QString toString();
+        QString toString() const;
         Data::Type type;
         Value value;
     };

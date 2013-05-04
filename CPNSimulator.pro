@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     simulatorscene.cpp \
     interpret.cpp \
     computer.cpp \
-    analyzer.cpp
+    analyzer.cpp \
+    statespaceexplorer.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -76,7 +77,8 @@ HEADERS  += mainwindow.h \
     simulatorscene.h \
     interpret.h \
     computer.h \
-    analyzer.h
+    analyzer.h \
+    statespaceexplorer.h
 
 RESOURCES += \
     icons.qrc

@@ -15,7 +15,7 @@
     class Binding : public QList<BindingElement>
     {
     public:
-        QString toString();
+        QString toString() const;
     };
 
     class InterCode;

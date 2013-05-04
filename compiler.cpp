@@ -162,7 +162,7 @@ Data Data::operator -(const Data &data)
     return Data();
 }
 
-QString Data::toString()
+QString Data::toString() const
 {
     switch(type)
     {
