@@ -22,7 +22,9 @@ public:
     Tool currentTool;
     CPNet *net;
 
+    QPointF selectionStartPoint;
     QGraphicsLineItem *line;
+    QGraphicsRectItem *rect;
 
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);

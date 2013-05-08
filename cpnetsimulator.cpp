@@ -162,13 +162,11 @@ void CPNetSimulator::showOverlay(QString message)
 {
     labelComputationDescription->setText(message);
     overlay->show();
-    //view->hide();
 }
 
 void CPNetSimulator::hideOverlay()
 {
     overlay->hide();
-    //view->show();
 }
 
 void CPNetSimulator::slotFire(SimulatorTransitionItem *sti)

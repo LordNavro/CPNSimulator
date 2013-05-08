@@ -1,20 +1,26 @@
 #include "editorscene.h"
 
 EditorScene::EditorScene(CPNet *net, QObject *parent) :
-    QGraphicsScene(parent), net(net)
+    QGraphicsScene(parent), net(net), line(NULL), rect(NULL)
 {
-    line = NULL;
     addLine(0,0,1,1,QPen(Qt::white));
 }
 
 void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if (mouseEvent->button() != Qt::LeftButton)
+    if (mouseEvent->button() != Qt::LeftButton && currentTool != SELECT)
         return;
     switch(currentTool)
     {
     case EditorScene::SELECT:
-        QGraphicsScene::mousePressEvent(mouseEvent);
+        if(mouseEvent->button() == Qt::RightButton)
+        {
+            selectionStartPoint = mouseEvent->scenePos();
+            rect = new QGraphicsRectItem(QRectF(selectionStartPoint, selectionStartPoint), 0, this);
+            rect->setPen(QPen(Qt::DashLine));
+        }
+        else
+            QGraphicsScene::mousePressEvent(mouseEvent);
         break;
     case EditorScene::PLACE:
         addPlace(mouseEvent);
@@ -39,6 +45,10 @@ void EditorScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
     {
         line->setLine(QLineF(line->line().p1(), mouseEvent->scenePos()));
     }
+    else if(currentTool == SELECT && rect != NULL)
+    {
+        rect->setRect(QRectF(selectionStartPoint, mouseEvent->scenePos()).normalized());
+    }
     else
     {
         QGraphicsScene::mouseMoveEvent(mouseEvent);
@@ -47,12 +57,21 @@ void EditorScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void EditorScene::mouseReleaseEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    if(currentTool == ARC && line != NULL)
+    if(currentTool == ARC && line != NULL && mouseEvent->button() == Qt::LeftButton)
     {
         addArc(line->line().p1(), line->line().p2());
         removeItem(line);
         delete line;
         line = NULL;
+    }
+    else if(currentTool == SELECT && rect != NULL && mouseEvent->button() == Qt::RightButton)
+    {
+        QPainterPath path;
+        path.addRect(rect->rect());
+        setSelectionArea(path);
+        removeItem(rect);
+        delete rect;
+        rect = NULL;
     }
     else
     {
