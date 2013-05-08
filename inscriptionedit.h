@@ -9,6 +9,7 @@ class InscriptionEdit : public QTextEdit
     Q_OBJECT
 public:
     explicit InscriptionEdit(QWidget *parent = 0);
+    void keyPressEvent(QKeyEvent *e);
     
 signals:
     

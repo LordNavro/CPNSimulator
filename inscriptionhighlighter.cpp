@@ -34,7 +34,7 @@ InscriptionHighlighter::InscriptionHighlighter(QTextDocument *parent) :
     rules.append(rule);
 
     QStringList operators;
-    operators << "\\+" << "-" << "\\*" << "[^/]/[^/]" << "<" << ">"  << "=" << "!";
+    operators << "\\+" << "-" << "\\*" << "/" << "`" << "<" << ">"  << "=" << "!";
     format.setFontWeight(QFont::Bold);
     format.setForeground(Qt::darkYellow);
     foreach(QString operator_, operators)

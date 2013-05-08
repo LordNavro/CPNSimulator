@@ -1,7 +1,7 @@
 #include "arcitem.h"
 #define PI 3.141592653589
 #define SEL_WIDTH 10
-#define BEZ_WIDTH 50
+#define BEZ_WIDTH 30
 
 ArcItem::ArcItem(QGraphicsItem *from, QGraphicsItem *to, QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsItem(parent, scene), from(from), to(to)

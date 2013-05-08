@@ -181,16 +181,16 @@ QString Data::toString() const
     case Data::INT:
         return QString::number(value.i);
     case Data::MULTIUNIT:
-        return QString::number(value.multiUnit) + " ^ unit";
+        return QString::number(value.multiUnit) + " ` unit";
     case Data::MULTIBOOL:
-        return QString::number(value.multiBool.t) + " ^ true + " + QString::number(value.multiBool.f) + " ^ false";
+        return QString::number(value.multiBool.t) + " ` true + " + QString::number(value.multiBool.f) + " ` false";
     case Data::MULTIINT:
         break;
     }
     //handle multiint
     QStringList values;
     for(MultiInt::iterator i = value.multiInt->begin(); i != value.multiInt->end(); i++)
-        values.append(QString::number(i.value()) + " ^ " + QString::number(i.key()));
+        values.append(QString::number(i.value()) + " ` " + QString::number(i.key()));
     if(values.isEmpty())
         return "";
     return values.join(" + ");

@@ -14,3 +14,22 @@ InscriptionEdit::InscriptionEdit(QWidget *parent) :
     this->setTabStopWidth(metrics.averageCharWidth() * 2);
     this->setFont(font);
 }
+
+void InscriptionEdit::keyPressEvent(QKeyEvent *e)
+{
+    QTextEdit::keyPressEvent(e);
+    if(e->key() == Qt::Key_Return)
+    {
+        QTextCursor c(textCursor());
+        c.movePosition(QTextCursor::Up);
+        c.movePosition(QTextCursor::StartOfLine);
+        QString tabs = "";
+        forever{
+            if(document()->toPlainText().at(c.position()) != '\t')
+                break;
+            tabs += '\t';
+            c.movePosition(QTextCursor::Right);
+        }
+        insertPlainText(tabs);
+    }
+}

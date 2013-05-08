@@ -12,12 +12,6 @@
     Expression *multiset(Expression *e1, Expression *e2);
     bool isSimpleType(Data::Type type);
 
-    #define checkNotDeclaration(command)  if(command->type == Command::DECL)\
-    {\
-        yyerror("syntax error, command in branch expression cannot be declaration");\
-        YYERROR;\
-    };
-
     #include <QtGui>
     extern int yylineno;
     extern char *yytext;
@@ -58,7 +52,7 @@
 %left LEQ GEQ EQ NEQ '>' '<'
 %left '+' '-'
 %left '*' '/' '%'
-%left '^'
+%left '`'
 %nonassoc '!' UMINUS DMINUS DPLUS
 %nonassoc THEN
 %nonassoc ELSE
@@ -269,7 +263,7 @@ expression:
     | expression '*' expression {$$ = binaryOp(Data::INT, Expression::MUL, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression '/' expression {$$ = binaryOp(Data::INT, Expression::DIV, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression '%' expression {$$ = binaryOp(Data::INT, Expression::MOD, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression '^' expression {$$ = multiset($1, $3); }
+    | expression '`' expression {$$ = multiset($1, $3); }
     | '(' expression ')'            {$$ = $2;}
     | '!' expression                {$$ = unaryOp(Data::BOOL, Expression::NOT, convert(Data::BOOL, $2));}
     | '-' expression %prec UMINUS   {$$ = unaryOp(Data::INT, Expression::UMINUS, convert(Data::INT, $2));}
@@ -373,7 +367,7 @@ marking: /* empty */ { $$ = NULL; }
 markingNE: markingItem
     | markingNE '+' markingItem { $$ = plus($1, $3); }
     ;
-markingItem: DATA '^' DATA {
+markingItem: DATA '`' DATA {
         Expression *e1 = new Expression(Expression::DATA); e1->data = $1; e1->dataType = $1->type;
         Expression *e2 = new Expression(Expression::DATA); e2->data = $3; e2->dataType = $3->type;
         $$ = multiset(e1, e2);
@@ -394,10 +388,10 @@ preset: expressionId {
         e->data->value.i = 1;
         $$ = multiset(e, $1);
     }
-    | expressionData '^' expressionId {
+    | expressionData '`' expressionId {
         $$ = multiset($1, $3);
     }
-    | expressionData '^' expressionData {
+    | expressionData '`' expressionData {
         $$ = multiset($1, $3);
     }
     ;
@@ -494,7 +488,7 @@ Expression *multiset(Expression *e1, Expression *e2)
     case Data::INT:
         return binaryOp(Data::MULTIINT, Expression::MULTISET, e1, e2);
     default:
-        currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in ^ expression, right operand must be simple type");
+        currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in ` expression, right operand must be simple type");
         return binaryOp(e2->dataType, Expression::MULTISET, e1, e2);
     }
     return NULL;

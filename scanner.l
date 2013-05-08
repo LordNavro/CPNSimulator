@@ -71,7 +71,7 @@ false       {DEBUG("booldata"); yylval.data = new Data(Data::BOOL); yylval.data-
 "--"                {DEBUG("--"); return DMINUS;}
 "++"                {DEBUG("++"); return DPLUS;}
 
-[-+*/!^=,{}<>()%;]  {DEBUG("implicit"); return yytext[0];}
+[-+*/!`=,{}<>()%;]  {DEBUG("implicit"); return yytext[0];}
 
 .               {DEBUG("unknown"); currentParsedNet->addError(CPNet::LEXICAL, QString("Unknown symbol ") + yytext);}
 
