@@ -35,6 +35,8 @@ public:
 
     void toInitialMarking();
 
+    void setPlaceMarking(Place *place, Expression *expression);
+
     void findBindings();
 
     void fireTransitions(int count);

@@ -46,26 +46,7 @@ void CPNetSimulator::loadNetGraph()
         EditorPlaceItem *epi = editor->scene->getPlaceItem(place);
         SimulatorPlaceItem *spi = new SimulatorPlaceItem(epi);
         scene->addItem(spi);
-        if(spi->place->currentMarkingValue)
-            delete spi->place->currentMarkingValue;
-        if(spi->place->parsedCurrentMarking)
-            spi->place->currentMarkingValue = new Data(eval(spi->place->parsedCurrentMarking, NULL, NULL, &threadComputer));
-        else
-            switch(spi->place->colourSet)
-            {
-            case Place::UNIT:
-                spi->place->currentMarkingValue = new Data(Data::MULTIUNIT);
-                spi->place->currentMarkingValue->value.multiUnit = 0;
-                break;
-            case Place::BOOL:
-                spi->place->currentMarkingValue = new Data(Data::MULTIBOOL);
-                spi->place->currentMarkingValue->value.multiBool.f = 0;
-                spi->place->currentMarkingValue->value.multiBool.t = 0;
-                break;
-            case Place::INT:
-                spi->place->currentMarkingValue = new Data(Data::MULTIINT);
-                break;
-            }
+        setPlaceMarking(place, place->parsedCurrentMarking);
     }
     foreach(Transition *transition, net->transitions)
     {
@@ -99,29 +80,38 @@ void CPNetSimulator::toInitialMarking()
     }
     foreach(Place *place, net->places)
     {
-        if(place->currentMarkingValue)
-            delete place->currentMarkingValue;
-        if(place->parsedInitialMarking)
-           place->currentMarkingValue = new Data(eval(place->parsedInitialMarking, NULL, NULL, &threadComputer));
-        else
-            switch(place->colourSet)
-            {
-            case Place::UNIT:
-                place->currentMarkingValue = new Data(Data::MULTIUNIT);
-                place->currentMarkingValue->value.multiUnit = 0;
-                break;
-            case Place::BOOL:
-                place->currentMarkingValue = new Data(Data::MULTIBOOL);
-                place->currentMarkingValue->value.multiBool.f = 0;
-                place->currentMarkingValue->value.multiBool.t = 0;
-                break;
-            case Place::INT:
-                place->currentMarkingValue = new Data(Data::MULTIINT);
-                break;
-            }
+        setPlaceMarking(place, place->parsedInitialMarking);
         scene->getPlaceItem(place)->update();
     }
     findBindings();
+}
+
+void CPNetSimulator::setPlaceMarking(Place *place, Expression *expression)
+{
+    if(place->currentMarkingValue)
+        delete place->currentMarkingValue;
+    if(expression)
+    {
+       place->currentMarkingValue = new Data(eval(expression, net->globalSymbolTable, NULL, &threadComputer));
+    }
+    else
+    {
+        switch(place->colourSet)
+        {
+        case Place::UNIT:
+            place->currentMarkingValue = new Data(Data::MULTIUNIT);
+            place->currentMarkingValue->value.multiUnit = 0;
+            break;
+        case Place::BOOL:
+            place->currentMarkingValue = new Data(Data::MULTIBOOL);
+            place->currentMarkingValue->value.multiBool.f = 0;
+            place->currentMarkingValue->value.multiBool.t = 0;
+            break;
+        case Place::INT:
+            place->currentMarkingValue = new Data(Data::MULTIINT);
+            break;
+        }
+    }
 }
 
 void CPNetSimulator::findBindings()
