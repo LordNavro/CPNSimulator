@@ -58,7 +58,6 @@
 %nonassoc ELSE
 
 %type <data> DATA
-%type <expression> marking markingNE markingItem
 %type <expression> preset
 %type <id> ID
 %type <dataType> DATATYPE
@@ -80,17 +79,39 @@
 
 %%
 
-start: START_DECLARATION { currentAssignmentAllowed = true; currentSymbolTable = currentLocalSymbolTable; }
+start: START_DECLARATION {
+            currentAssignmentAllowed = true;
+            currentIdAllowed = true;
+            currentSymbolTable = currentLocalSymbolTable;
+        }
         declarationList { currentParsedDeclarationList = $3; }
-    | START_EXPRESSION { currentAssignmentAllowed = false; currentSymbolTable = currentGlobalSymbolTable; }
+    | START_EXPRESSION {
+            currentAssignmentAllowed = false;
+            currentIdAllowed = true;
+            currentSymbolTable = currentGlobalSymbolTable;
+        }
         expression { currentParsedExpression = $3; }
-    | START_GUARD { currentAssignmentAllowed = false; currentSymbolTable = currentGlobalSymbolTable; }
+    | START_GUARD {
+            currentAssignmentAllowed = false;
+            currentIdAllowed = true;
+            currentSymbolTable = currentGlobalSymbolTable;
+        }
         expression { currentParsedExpression = $3; }
     | START_GUARD
         /* empty */ { currentParsedExpression = NULL; }
-    | START_MARKING { currentSymbolTable = currentGlobalSymbolTable;}
-        marking { currentParsedExpression = $3; }
-    | START_PRESET { currentSymbolTable = currentGlobalSymbolTable;}
+    | START_MARKING {
+            currentAssignmentAllowed = false;
+            currentIdAllowed = false;
+            currentSymbolTable = currentGlobalSymbolTable;
+        }
+        expression { currentParsedExpression = $3; }
+    | START_MARKING
+        /* empty */  { currentParsedExpression = NULL; }
+    | START_PRESET {
+            //has special rules w/o assign
+            currentIdAllowed = true;
+            currentSymbolTable = currentGlobalSymbolTable;
+        }
         preset { currentParsedExpression = $3; }
     | error { currentParsedDeclarationList = NULL; currentParsedExpression = NULL; }
     ;
@@ -347,6 +368,8 @@ expressionId: ID {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$1 + " is a function, cannot use as variable");
             $$->dataType = symbol->dataType;
         }
+        if(!currentIdAllowed)
+            currentParsedNet->addError(CPNet::SEMANTIC, "Variables are not allowed in this type of inscription");
         $$->id = *$1;
         delete $1;
     }
@@ -358,20 +381,6 @@ expressionList: /* empty */ { $$ = new ExpressionList(); }
 
 expressionListNE: expression { $$ = new ExpressionList(); $$->append($1); }
     | expression ',' expressionListNE { $$ = $3; $$->append($1); }
-    ;
-
-marking: /* empty */ { $$ = NULL; }
-    | markingNE {$$ = $1;}
-    ;
-
-markingNE: markingItem
-    | markingNE '+' markingItem { $$ = plus($1, $3); }
-    ;
-markingItem: DATA '`' DATA {
-        Expression *e1 = new Expression(Expression::DATA); e1->data = $1; e1->dataType = $1->type;
-        Expression *e2 = new Expression(Expression::DATA); e2->data = $3; e2->dataType = $3->type;
-        $$ = multiset(e1, e2);
-    }
     ;
 
 preset: expressionId {

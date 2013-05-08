@@ -72,6 +72,8 @@
     extern Data::Type currentReturnType;
     /* to disable assignments in transition guards and postset arc expressions */
     extern bool currentAssignmentAllowed;
+    /* to disable ID's in marking expressions */
+    extern bool currentIdAllowed;
 
     /* Expressions */
     class Expression
