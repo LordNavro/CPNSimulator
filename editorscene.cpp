@@ -30,6 +30,7 @@ void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
     case EditorScene::ARC:
         line = new QGraphicsLineItem(QLineF(mouseEvent->scenePos(), mouseEvent->scenePos()), NULL, this);
+        line->setPen(QPen(Qt::DashLine));
         break;
     case EditorScene::DELETE:
         deleteOnPos(mouseEvent);
