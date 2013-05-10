@@ -38,7 +38,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             {
                 delete symbol;
                 delete tempVarTable;
-                throw(QString("Redefinition of symbol " + fn->parameterList.at(i).second));
+                throw(QString("Runtime error: Redefinition of symbol " + fn->parameterList.at(i).second));
             }
         }
         try{
@@ -54,12 +54,16 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     else if(expression->type == Expression::DPLUSPRE)
     {
         SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        if(symbol == NULL)
+            throw(QString("Runtime error: Usage of undefined variable " + expression->id));
         symbol->data->value.i += 1;
         return *symbol->data;
     }
     else if(expression->type == Expression::DPLUSPOST)
     {
         SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        if(symbol == NULL)
+            throw(QString("Runtime error: Usage of undefined variable " + expression->id));
         Data ret(*symbol->data);
         symbol->data->value.i += 1;
         return ret;
@@ -73,6 +77,8 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     else if(expression->type == Expression::DMINUSPOST)
     {
         SymbolTable::Symbol *symbol = varTable->findSymbol(expression->id);
+        if(symbol == NULL)
+            throw(QString("Runtime error: Usage of undefined variable " + expression->id));
         Data ret(*symbol->data);
         symbol->data->value.i -= 1;
         return ret;
@@ -121,10 +127,31 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             else ret.value.b = false;
             return ret;
         }
-        else
+        else if(expression->dataType == Data::INT)
         {
             Data ret(Data::INT);
             ret.value.i = left.value.b ? 1 : 0;
+            return ret;
+        }
+        else if(expression->dataType == Data::MULTIUNIT)
+        {
+            Data ret(Data::MULTIUNIT);
+            ret.value.multiUnit = left.value.b ? 1 : 0;
+            return ret;
+        }
+        else if(expression->dataType == Data::MULTIBOOL)
+        {
+            Data ret(Data::MULTIBOOL);
+            if(left.value.b)
+                ret.value.multiBool.t = 1;
+            else
+                ret.value.multiBool.f = 1;
+            return ret;
+        }
+        else if(expression->dataType == Data::MULTIINT)
+        {
+            Data ret(Data::MULTIINT);
+            ret.value.multiInt->insert(left.value.i, 1);
             return ret;
         }
     }
@@ -144,50 +171,46 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     else if(expression->type == Expression::LEQ)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i <= right.value.i;
+        ret.value.b = left <= right;
         return ret;
     }
     else if(expression->type == Expression::EQ)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i == right.value.i;
+        ret.value.b = left == right;
         return ret;
     }
     else if(expression->type == Expression::NEQ)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i != right.value.i;
+        ret.value.b = left != right;
         return ret;
     }
     else if(expression->type == Expression::GEQ)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i >= right.value.i;
+        ret.value.b = left >= right;
         return ret;
     }
     else if(expression->type == Expression::GT)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i > right.value.i;
+        ret.value.b = left > right;
         return ret;
     }
     else if(expression->type == Expression::LT)
     {
         Data ret(Data::BOOL);
-        ret.value.b = left.value.i < right.value.i;
+        ret.value.b = left < right;
         return ret;
     }
     else if(expression->type == Expression::MINUS)
     {
-        Data ret(Data::INT);
-        ret.value.i = left.value.i - right.value.i;
-        return ret;
+        return left - right;
     }
     else if(expression->type == Expression::MUL)
     {
-        Data ret(Data::INT);
-        ret.value.i = left.value.i * right.value.i;
-        return ret;
+        return left * right;
     }
     else if(expression->type == Expression::DIV)
     {

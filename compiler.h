@@ -35,8 +35,14 @@
         Data(const Data &data);
         Data &operator =(const Data &data);
         bool operator ==(const Data &data) const;
-        Data operator +(const Data &data);
-        Data operator -(const Data &data);
+        bool operator !=(const Data &data) const;
+        bool operator >(const Data &data) const;
+        bool operator <(const Data &data) const;
+        bool operator >=(const Data &data) const;
+        bool operator <=(const Data &data) const;
+        Data operator +(const Data &data) const;
+        Data operator -(const Data &data) const;
+        Data operator *(const Data &data) const;
         ~Data(){if(this->type == Data::MULTIINT) delete value.multiInt;}
         QString toString() const;
         Data::Type type;

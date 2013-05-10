@@ -9,8 +9,13 @@
     Expression *incDec(Expression::Type type, Id id);
     Expression *convert(Data::Type type, Expression *e);
     Expression *plus(Expression *e1, Expression *e2);
+    Expression *minus(Expression *e1, Expression *e2);
+    Expression *mul(Expression *e1, Expression *e2);
     Expression *multiset(Expression *e1, Expression *e2);
+    Expression *compare(Expression::Type type, Expression *e1, Expression *e2);
     bool isSimpleType(Data::Type type);
+
+    char typeNames[][20] = {"unit", "bool", "int", "multiunit", "multibool", "multiint"};
 
     #include <QtGui>
     extern int yylineno;
@@ -273,15 +278,15 @@ commandND: WHILE '(' expression ')' commandND { $$ = branchCommand(Command::WHIL
 expression:
     expression AND expression {$$ = binaryOp(Data::BOOL, Expression::AND, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
     | expression OR expression {$$ = binaryOp(Data::BOOL, Expression::OR, convert(Data::BOOL, $1), convert(Data::BOOL, $3));}
-    | expression LEQ expression {$$ = binaryOp(Data::BOOL, Expression::LEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression GEQ expression {$$ = binaryOp(Data::BOOL, Expression::GEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression EQ  expression {$$ = binaryOp(Data::BOOL, Expression::EQ, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression NEQ expression {$$ = binaryOp(Data::BOOL, Expression::NEQ, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression '>' expression {$$ = binaryOp(Data::BOOL, Expression::GT, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression '<' expression {$$ = binaryOp(Data::BOOL, Expression::LT, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression LEQ expression {$$ = compare(Expression::LEQ, $1, $3);}
+    | expression GEQ expression {$$ = compare(Expression::GEQ, $1, $3);}
+    | expression EQ  expression {$$ = compare(Expression::EQ, $1, $3);}
+    | expression NEQ expression {$$ = compare(Expression::NEQ, $1, $3);}
+    | expression '>' expression {$$ = compare(Expression::GT, $1, $3);}
+    | expression '<' expression {$$ = compare(Expression::LT, $1, $3);}
     | expression '+' expression {$$ = plus($1, $3);}
-    | expression '-' expression {$$ = binaryOp(Data::INT, Expression::MINUS, convert(Data::INT, $1), convert(Data::INT, $3));}
-    | expression '*' expression {$$ = binaryOp(Data::INT, Expression::MUL, convert(Data::INT, $1), convert(Data::INT, $3));}
+    | expression '-' expression {$$ = minus($1, $3);}
+    | expression '*' expression {$$ = mul($1, $3);}
     | expression '/' expression {$$ = binaryOp(Data::INT, Expression::DIV, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression '%' expression {$$ = binaryOp(Data::INT, Expression::MOD, convert(Data::INT, $1), convert(Data::INT, $3));}
     | expression '`' expression {$$ = multiset($1, $3); }
@@ -459,13 +464,15 @@ Expression *convert(Data::Type type, Expression *e)
 {
     if(e->dataType == type)
         return e;
-    if(isSimpleType(e->dataType) && isSimpleType(type))
+    if((isSimpleType(e->dataType) && isSimpleType(type))
+        || (e->dataType == Data::UNIT && type == Data::MULTIUNIT)
+        || (e->dataType == Data::BOOL && type == Data::MULTIBOOL)
+        || (e->dataType == Data::INT && type == Data::MULTIINT))
     {
         Expression *expr = unaryOp(type, Expression::CONVERT, e);
         return expr;
     }
-    char keys[][20] = {"unit", "bool", "int", "multiunit", "multibool", "multiint"};
-    currentParsedNet->addError(CPNet::SEMANTIC, QString("Invalid conversion to ") + keys[type] + " in expression");
+    currentParsedNet->addError(CPNet::SEMANTIC, QString("Invalid conversion to ") + typeNames[type] + " in expression");
     return e;
 }
 
@@ -481,8 +488,30 @@ Expression *plus(Expression *e1, Expression *e2)
     if(e1->dataType == e2->dataType)
         return binaryOp(e1->dataType, Expression::PLUS, e1, e2);
 
-    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in + expression, multitypes do not match");
+    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in + expression, multiset types do not match");
     return binaryOp(e1->dataType, Expression::PLUS, e1, e2);
+}
+
+Expression *minus(Expression *e1, Expression *e2)
+{
+    if(isSimpleType(e1->dataType) && isSimpleType(e2->dataType))
+        return binaryOp(Data::INT, Expression::MINUS, convert(Data::INT, e1), convert(Data::INT, e2));
+    if(e1->dataType == e2->dataType)
+        return binaryOp(e1->dataType, Expression::MINUS, e1, e2);
+
+    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in - expression, multiset types do not match");
+    return binaryOp(e1->dataType, Expression::PLUS, e1, e2);
+}
+
+Expression *mul(Expression *e1, Expression *e2)
+{
+    if(isSimpleType(e1->dataType) && isSimpleType(e2->dataType))
+        return binaryOp(Data::INT, Expression::PLUS, convert(Data::INT, e1), convert(Data::INT, e2));
+    else if(isSimpleType(e1->dataType))
+        return binaryOp(e2->dataType, Expression::MUL, convert(Data::INT, e1), e2);
+
+    currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in * expression, first operand cant be multiset");
+    return binaryOp(e2->dataType, Expression::MUL, e1, e2);
 }
 
 Expression *multiset(Expression *e1, Expression *e2)
@@ -497,8 +526,19 @@ Expression *multiset(Expression *e1, Expression *e2)
     case Data::INT:
         return binaryOp(Data::MULTIINT, Expression::MULTISET, e1, e2);
     default:
-        currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in ` expression, right operand must be simple type");
+        currentParsedNet->addError(CPNet::SEMANTIC, "Invalid conversion in ` expression, right operand cant be multiset");
         return binaryOp(e2->dataType, Expression::MULTISET, e1, e2);
     }
     return NULL;
+}
+
+Expression *compare(Expression::Type type, Expression *e1, Expression *e2)
+{
+    if(isSimpleType(e1->dataType) && isSimpleType(e2->dataType))
+        return binaryOp(Data::BOOL, type, convert(Data::INT, e1), convert(Data::INT, e2));
+    else if(e1->dataType == e2->dataType)
+        return binaryOp(Data::BOOL, type, e1, e2);
+
+    currentParsedNet->addError(CPNet::SEMANTIC, QString("Invalid conversion in comparison expression ") + typeNames[e1->type] + ", " + typeNames[e2->type] );
+    return binaryOp(Data::BOOL, type, e1, e2);
 }

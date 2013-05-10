@@ -83,7 +83,64 @@ bool Data::operator ==(const Data &data) const
     return false;
 }
 
-Data Data::operator +(const Data &data)
+bool Data::operator !=(const Data &data) const
+{
+    return !(*this == data);
+}
+
+bool Data::operator >(const Data &data) const
+{
+    if(this->type == Data::MULTIUNIT)
+        return value.multiUnit > data.value.multiUnit;
+    else if(this->type == Data::MULTIBOOL)
+        return value.multiBool.t > data.value.multiBool.t && value.multiBool.f > data.value.multiBool.f;
+    else if(this->type == Data::MULTIINT)
+    {
+        QMapIterator<int, int>i(*data.value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            if(i.value() >= this->value.multiInt->value(i.key(), 0))
+                return false;
+        }
+        return true;
+    }
+    else
+        return value.i > data.value.i;
+}
+
+bool Data::operator <(const Data &data) const
+{
+    if(this->type == Data::MULTIUNIT)
+        return value.multiUnit < data.value.multiUnit;
+    else if(this->type == Data::MULTIBOOL)
+        return value.multiBool.t < data.value.multiBool.t && value.multiBool.f < data.value.multiBool.f;
+    else if(this->type == Data::MULTIINT)
+    {
+        QMapIterator<int, int>i(*this->value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            if(i.value() >= data.value.multiInt->value(i.key(), 0))
+                return false;
+        }
+        return true;
+    }
+    else
+        return value.i < data.value.i;
+}
+
+bool Data::operator >=(const Data &data) const
+{
+    return (*this > data || *this == data);
+}
+
+bool Data::operator <=(const Data &data) const
+{
+    return (*this < data || *this == data);
+}
+
+Data Data::operator +(const Data &data) const
 {
     if(data.type == Data::INT)
     {
@@ -127,7 +184,7 @@ Data Data::operator +(const Data &data)
     return Data();
 }
 
-Data Data::operator -(const Data &data)
+Data Data::operator -(const Data &data) const
 {
     if(data.type == Data::INT)
     {
@@ -135,7 +192,11 @@ Data Data::operator -(const Data &data)
         ret.value.i = this->value.i - data.value.i;
         return ret;
     }
-    else if(data.type == Data::MULTIUNIT)
+    if(!(*this >= data))
+    {
+        throw QString("Runtime error: invalid subtraction of multisets " + this->toString() + " - " + data.toString() );
+    }
+    if(data.type == Data::MULTIUNIT)
     {
         Data ret(Data::MULTIUNIT);
         ret.value.multiUnit = this->value.multiUnit - data.value.multiUnit;
@@ -168,6 +229,46 @@ Data Data::operator -(const Data &data)
         return ret;
     }
     Q_ASSERT(false);
+    return Data();
+}
+
+Data Data::operator *(const Data &data) const
+{
+    if(data.type == INT)
+    {
+        Data ret(Data::INT);
+        ret.value.i = value.i * data.value.i;
+        return ret;
+    }
+    if(value.i < 0)
+    {
+        throw QString("Runtime error: invalid multiplication of multiset " + this->toString() + " * " + data.toString() );
+    }
+    if(data.type == MULTIUNIT)
+    {
+        Data ret(Data::MULTIUNIT);
+        ret.value.multiUnit = value.i * data.value.multiUnit;
+        return ret;
+    }
+    else if(data.type == MULTIBOOL)
+    {
+        Data ret(Data::MULTIBOOL);
+        ret.value.multiBool.t = value.i * data.value.multiBool.t;
+        ret.value.multiBool.f = value.i * data.value.multiBool.f;
+        return ret;
+    }
+    else if(data.type == MULTIINT)
+    {
+        Data ret(Data::MULTIINT);
+        QMapIterator<int, int>i(*data.value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            if(value.i)
+                ret.value.multiInt->insert(i.key(), i.value() * value.i);
+        }
+        return ret;
+    }
     return Data();
 }
 
