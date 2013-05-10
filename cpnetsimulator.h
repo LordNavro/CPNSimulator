@@ -34,6 +34,7 @@ public:
     void loadNetGraph();
 
     void toInitialMarking();
+    void toCurrentMarking();
 
     void setPlaceMarking(Place *place, Expression *expression);
 

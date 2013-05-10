@@ -28,6 +28,14 @@ void Computer::run()
         {
             graph.generate(net, this, depth);
         }
+        else if(mode == Computer::ToInitialMarking)
+        {
+            toInitialMarking();
+        }
+        else if(mode == Computer::ToCurrentMarking)
+        {
+            toCurrentMarking();
+        }
         emit signalCompleted();
     }
     catch(QString message)
@@ -36,7 +44,6 @@ void Computer::run()
     }
     catch(const std::bad_alloc &a)
     {
-        qDebug() << "bad alloc";
         emit signalFailed(tr("std::bad_alloc cought: ran out of memory during computation."));
     }
 }
@@ -139,4 +146,49 @@ NetMarking Computer::fireTransition(NetMarking marking, Transition *transition, 
     foreach(pair, add)
         marking[pair.first] = marking[pair.first] + pair.second;
     return marking;
+}
+
+void Computer::setPlaceMarking(Place *place, Expression *expression)
+{
+    if(place->currentMarkingValue)
+        delete place->currentMarkingValue;
+    place->currentMarkingValue = NULL;
+    if(expression)
+    {
+       place->currentMarkingValue = new Data(eval(expression, net->globalSymbolTable, NULL, this));
+    }
+    else
+    {
+        switch(place->colourSet)
+        {
+        case Place::UNIT:
+            place->currentMarkingValue = new Data(Data::MULTIUNIT);
+            place->currentMarkingValue->value.multiUnit = 0;
+            break;
+        case Place::BOOL:
+            place->currentMarkingValue = new Data(Data::MULTIBOOL);
+            place->currentMarkingValue->value.multiBool.f = 0;
+            place->currentMarkingValue->value.multiBool.t = 0;
+            break;
+        case Place::INT:
+            place->currentMarkingValue = new Data(Data::MULTIINT);
+            break;
+        }
+    }
+}
+
+void Computer::toInitialMarking()
+{
+    foreach(Place *place, net->places)
+    {
+        setPlaceMarking(place, place->parsedInitialMarking);
+    }
+}
+
+void Computer::toCurrentMarking()
+{
+    foreach(Place *place, net->places)
+    {
+        setPlaceMarking(place, place->parsedCurrentMarking);
+    }
 }

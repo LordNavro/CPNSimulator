@@ -46,7 +46,6 @@ void CPNetSimulator::loadNetGraph()
         EditorPlaceItem *epi = editor->scene->getPlaceItem(place);
         SimulatorPlaceItem *spi = new SimulatorPlaceItem(epi);
         scene->addItem(spi);
-        setPlaceMarking(place, place->parsedCurrentMarking);
     }
     foreach(Transition *transition, net->transitions)
     {
@@ -68,50 +67,31 @@ void CPNetSimulator::loadNetGraph()
         scene->getPlaceItem(arc->place)->arcItems.append(sai);
         scene->getTransitionItem(arc->transition)->arcItems.append(sai);
     }
-    findBindings();
+    toCurrentMarking();
 }
 
 void CPNetSimulator::toInitialMarking()
 {
     if(threadComputer.isRunning())
     {
-        QMessageBox::information(this, tr("Cannot change to initial marking"), tr("Cannot change to initial marking while computations still running"));
+        QMessageBox::information(this, tr("Cannot move to initial marking"), tr("Cannot move to initial marking while computations still running"));
         return;
     }
-    foreach(Place *place, net->places)
-    {
-        setPlaceMarking(place, place->parsedInitialMarking);
-        scene->getPlaceItem(place)->update();
-    }
-    findBindings();
+    threadComputer.mode = Computer::ToInitialMarking;
+    showOverlay(tr("Moving to initial marking"));
+    threadComputer.start();
 }
 
-void CPNetSimulator::setPlaceMarking(Place *place, Expression *expression)
+void CPNetSimulator::toCurrentMarking()
 {
-    if(place->currentMarkingValue)
-        delete place->currentMarkingValue;
-    if(expression)
+    if(threadComputer.isRunning())
     {
-       place->currentMarkingValue = new Data(eval(expression, net->globalSymbolTable, NULL, &threadComputer));
+        QMessageBox::information(this, tr("Cannot move to current marking"), tr("Cannot move to current marking while computations still running"));
+        return;
     }
-    else
-    {
-        switch(place->colourSet)
-        {
-        case Place::UNIT:
-            place->currentMarkingValue = new Data(Data::MULTIUNIT);
-            place->currentMarkingValue->value.multiUnit = 0;
-            break;
-        case Place::BOOL:
-            place->currentMarkingValue = new Data(Data::MULTIBOOL);
-            place->currentMarkingValue->value.multiBool.f = 0;
-            place->currentMarkingValue->value.multiBool.t = 0;
-            break;
-        case Place::INT:
-            place->currentMarkingValue = new Data(Data::MULTIINT);
-            break;
-        }
-    }
+    threadComputer.mode = Computer::ToCurrentMarking;
+    showOverlay(tr("Moving to current marking"));
+    threadComputer.start();
 }
 
 void CPNetSimulator::findBindings()
@@ -192,7 +172,9 @@ void CPNetSimulator::slotCancelComputation()
 
 void CPNetSimulator::slotComputerCompleted()
 {
-    if(threadComputer.mode == Computer::FireTransition)
+    if(threadComputer.mode == Computer::FireTransition
+            || threadComputer.mode == Computer::ToCurrentMarking
+            || threadComputer.mode == Computer::ToInitialMarking)
     {
         findBindings();
     }
@@ -223,7 +205,24 @@ void CPNetSimulator::slotComputerFailed(QString message)
 {
     transitionsToFire = 0;
     QMessageBox::critical(this, tr("Computation failed"), message);
-    if(threadComputer.mode == Computer::FireTransition || threadComputer.mode == Computer::GenerateStateSpace)
+    if(threadComputer.mode == Computer::ToInitialMarking || threadComputer.mode == Computer::ToCurrentMarking)
+    {
+        foreach(Place *place, net->places)
+        {
+            if(place->currentMarkingValue)
+                delete place->currentMarkingValue;
+            if(place->colourSet == Place::UNIT)
+                place->currentMarkingValue = new Data(Data::MULTIUNIT);
+            if(place->colourSet == Place::BOOL)
+                place->currentMarkingValue = new Data(Data::MULTIBOOL);
+            if(place->colourSet == Place::INT)
+                place->currentMarkingValue = new Data(Data::MULTIINT);
+        }
+        QMessageBox::critical(this, tr("Warning"), tr("All markings changed to empty sets. This state may not be reachable in the original net. Return to edit mode or change to initial marking is suggested."));
+        threadComputer.cancelRequest = false;
+        findBindings();
+    }
+    else if(threadComputer.mode == Computer::FireTransition || threadComputer.mode == Computer::GenerateStateSpace)
     {
         threadComputer.cancelRequest = false;
         findBindings();

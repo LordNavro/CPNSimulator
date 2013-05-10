@@ -364,7 +364,6 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
         {
             if(computer->cancelRequest)
             {
-                delete icStart;
                 throw(QString("Stop request recieved, terminating execution."));
             }
 
@@ -429,7 +428,6 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
     }
     catch(const std::bad_alloc &a)
     {
-        qDebug() << "badalloc cought";
         delete icStart;
         throw;
     }
