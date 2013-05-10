@@ -3,7 +3,7 @@
 
 SymbolTable::SymbolTable()
 {
-    increaseScope();
+    //increaseScope();
 }
 
 SymbolTable::~SymbolTable()
@@ -37,13 +37,8 @@ void SymbolTable::bindVariables(Binding binding)
     foreach(BindingElement elem, binding)
     {
         SymbolTable::Symbol *s = findSymbol(elem.id());
-        if(!s || s->type == SymbolTable::FN)
-            qDebug() << "Invalid symbol" << elem.id() << " to be bound in table";
-        else
-        {
-            delete s->data;
-            s->data = new Data(elem.data());
-        }
+        delete s->data;
+        s->data = new Data(elem.data());
     }
 }
 

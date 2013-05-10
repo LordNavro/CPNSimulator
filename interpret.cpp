@@ -2,8 +2,13 @@
 #include <QStringList>
 #include "computer.h"
 
-Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer)
+static int recursionCounter = 0;
+const static int RECURSION_MAX = 800;
+
+Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer, bool resetCounter)
 {
+    if(resetCounter)
+        recursionCounter = 0;
     if(computer->cancelRequest)
         throw(QString("Stop request recieved, terminating evaluation."));
     if(expression->type == Expression::DATA)
@@ -22,13 +27,21 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
     {
         SymbolTable::Symbol *fn = funTable->findSymbol(expression->id);
         SymbolTable *tempVarTable = new SymbolTable();
+        tempVarTable->increaseScope();
         for(int i = 0; i < expression->expressionList->count(); i++)
         {
             SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
             try{
-                symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable, computer));
+                symbol->data = new Data(eval(expression->expressionList->at(i), funTable, varTable, computer, false));
             }catch(QString s)
             {
+                delete symbol;
+                delete tempVarTable;
+                throw;
+            }
+            catch(const std::bad_alloc &a)
+            {
+                qDebug() << "badalloc cought";
                 delete symbol;
                 delete tempVarTable;
                 throw;
@@ -47,6 +60,12 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             return ret;
         }catch(QString s)
         {
+            delete tempVarTable;
+            throw;
+        }
+        catch(const std::bad_alloc &a)
+        {
+            qDebug() << "badalloc cought";
             delete tempVarTable;
             throw;
         }
@@ -83,7 +102,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
         symbol->data->value.i -= 1;
         return ret;
     }
-    Data left = eval(expression->left, funTable, varTable, computer);
+    Data left = eval(expression->left, funTable, varTable, computer, false);
     if(expression->type == Expression::ASSIGN)
     {
         SymbolTable::Symbol *s = varTable->findSymbol(expression->id);
@@ -155,7 +174,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             return ret;
         }
     }
-    Data right = eval(expression->right, funTable, varTable, computer);
+    Data right = eval(expression->right, funTable, varTable, computer, false);
     if(expression->type == Expression::AND)
     {
         Data ret(Data::BOOL);
@@ -331,6 +350,13 @@ InterCode *generate3AC(Command *command)
 
 Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Computer *computer)
 {
+    recursionCounter++;
+    if(recursionCounter > RECURSION_MAX)
+    {
+        throw(QString("Maximum recursion level reached. Terminating computation to prevent stack overflow."));
+    }
+
+
     InterCode *icStart = generate3AC(command);
     InterCode *icCurrent = icStart;
     try{
@@ -373,7 +399,7 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
             }
             else if(icCurrent->type == InterCode::EVAL)
             {
-                eval(icCurrent->expression, funTable, varTable, computer);
+                eval(icCurrent->expression, funTable, varTable, computer, false);
                 icCurrent = icCurrent->next;
             }
             else if(icCurrent->type == InterCode::BRANCH)
@@ -382,15 +408,15 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
             }
             else if(icCurrent->type == InterCode::BRANCHIF)
             {
-                icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->label : icCurrent->next;
+                icCurrent = eval(icCurrent->expression, funTable, varTable, computer, false).value.b ? icCurrent->label : icCurrent->next;
             }
             else if(icCurrent->type == InterCode::BRANCHIFN)
             {
-                icCurrent = eval(icCurrent->expression, funTable, varTable, computer).value.b ? icCurrent->next : icCurrent->label;
+                icCurrent = eval(icCurrent->expression, funTable, varTable, computer, false).value.b ? icCurrent->next : icCurrent->label;
             }
             else if(icCurrent->type == InterCode::RETURN)
             {
-                Data data = eval(icCurrent->expression, funTable, varTable, computer);
+                Data data = eval(icCurrent->expression, funTable, varTable, computer, false);
                 delete icStart;
                 return data;
             }
@@ -398,6 +424,12 @@ Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Com
     }
     catch(QString s)
     {
+        delete icStart;
+        throw;
+    }
+    catch(const std::bad_alloc &a)
+    {
+        qDebug() << "badalloc cought";
         delete icStart;
         throw;
     }

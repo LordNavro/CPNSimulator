@@ -38,7 +38,7 @@
         InterCode *append(InterCode *ic);
     };
 
-    Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer);
+    Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer, bool resetCounter = true);
 
     InterCode *generate3AC(Command *command);
 

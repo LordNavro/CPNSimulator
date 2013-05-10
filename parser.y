@@ -150,6 +150,7 @@ declaration: DATATYPE idList ';' {
     }
     | DATATYPE ID '(' parameterList ')' {
         currentLocalSymbolTable = new SymbolTable();
+        currentLocalSymbolTable->increaseScope();
         currentSymbolTable = currentLocalSymbolTable;
         foreach(Parameter parameter, *$4)
         {
@@ -506,7 +507,7 @@ Expression *minus(Expression *e1, Expression *e2)
 Expression *mul(Expression *e1, Expression *e2)
 {
     if(isSimpleType(e1->dataType) && isSimpleType(e2->dataType))
-        return binaryOp(Data::INT, Expression::PLUS, convert(Data::INT, e1), convert(Data::INT, e2));
+        return binaryOp(Data::INT, Expression::MUL, convert(Data::INT, e1), convert(Data::INT, e2));
     else if(isSimpleType(e1->dataType))
         return binaryOp(e2->dataType, Expression::MUL, convert(Data::INT, e1), e2);
 

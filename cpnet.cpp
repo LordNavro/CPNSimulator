@@ -61,6 +61,7 @@ void CPNet::syntaxAnalysis()
     if(globalSymbolTable != NULL)
         delete globalSymbolTable;
     currentGlobalSymbolTable = globalSymbolTable = new SymbolTable();
+    currentGlobalSymbolTable->increaseScope();
 
     /* compile net itself */
     parseQString(declaration, START_DECLARATION);

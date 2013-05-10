@@ -117,7 +117,7 @@ bool Data::operator <(const Data &data) const
         return value.multiBool.t < data.value.multiBool.t && value.multiBool.f < data.value.multiBool.f;
     else if(this->type == Data::MULTIINT)
     {
-        QMapIterator<int, int>i(*this->value.multiInt);
+        QMapIterator<int, int>i(*value.multiInt);
         while(i.hasNext())
         {
             i.next();
@@ -132,12 +132,44 @@ bool Data::operator <(const Data &data) const
 
 bool Data::operator >=(const Data &data) const
 {
-    return (*this > data || *this == data);
+    if(this->type == Data::MULTIUNIT)
+        return value.multiUnit >= data.value.multiUnit;
+    else if(this->type == Data::MULTIBOOL)
+        return value.multiBool.t >= data.value.multiBool.t && value.multiBool.f >= data.value.multiBool.f;
+    else if(this->type == Data::MULTIINT)
+    {
+        QMapIterator<int, int>i(*data.value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            if(i.value() > this->value.multiInt->value(i.key(), 0))
+                return false;
+        }
+        return true;
+    }
+    else
+        return value.i >= data.value.i;
 }
 
 bool Data::operator <=(const Data &data) const
 {
-    return (*this < data || *this == data);
+    if(this->type == Data::MULTIUNIT)
+        return value.multiUnit <= data.value.multiUnit;
+    else if(this->type == Data::MULTIBOOL)
+        return value.multiBool.t <= data.value.multiBool.t && value.multiBool.f <= data.value.multiBool.f;
+    else if(this->type == Data::MULTIINT)
+    {
+        QMapIterator<int, int>i(*value.multiInt);
+        while(i.hasNext())
+        {
+            i.next();
+            if(i.value() > data.value.multiInt->value(i.key(), 0))
+                return false;
+        }
+        return true;
+    }
+    else
+        return value.i <= data.value.i;
 }
 
 Data Data::operator +(const Data &data) const
@@ -269,6 +301,7 @@ Data Data::operator *(const Data &data) const
         }
         return ret;
     }
+    Q_ASSERT(false);
     return Data();
 }
 

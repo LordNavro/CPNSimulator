@@ -3,6 +3,7 @@
 Computer::Computer(CPNet *net, QObject *parent) :
     QThread(parent), net(net), cancelRequest(false)
 {
+    setStackSize(1024*1024);
 }
 
 Computer::~Computer()
@@ -32,6 +33,11 @@ void Computer::run()
     catch(QString message)
     {
         emit signalFailed(message);
+    }
+    catch(const std::bad_alloc &a)
+    {
+        qDebug() << "bad alloc";
+        emit signalFailed(tr("std::bad_alloc cought: ran out of memory during computation."));
     }
 }
 
