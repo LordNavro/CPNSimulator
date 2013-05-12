@@ -118,12 +118,16 @@ void CPNetSimulator::fireTransitions(int count)
     foreach(QGraphicsItem *item, scene->items())
     {
         if(SimulatorTransitionItem *sti = qgraphicsitem_cast<SimulatorTransitionItem *>(item))
-            if(sti->transition->possibleBindings.count())
+            if(!sti->transition->possibleBindings.isEmpty())
                 available.append(sti);
     }
     if(available.isEmpty())
+    {
+        findBindings();
         return;
+    }
     SimulatorTransitionItem *sti = available.at(CPNetSimulator::randInt(0, available.count() -1));
+    sti->populateCombo();
     sti->comboBinding->setCurrentIndex(CPNetSimulator::randInt(0, sti->comboBinding->count() - 1));
     slotFire(sti);
 }
@@ -172,6 +176,7 @@ void CPNetSimulator::slotCancelComputation()
 
 void CPNetSimulator::slotComputerCompleted()
 {
+    while(threadComputer.isRunning());
     if(threadComputer.mode == Computer::FireTransition
             || threadComputer.mode == Computer::ToCurrentMarking
             || threadComputer.mode == Computer::ToInitialMarking)
@@ -203,6 +208,7 @@ void CPNetSimulator::slotComputerCompleted()
 
 void CPNetSimulator::slotComputerFailed(QString message)
 {
+    while(threadComputer.isRunning());
     transitionsToFire = 0;
     QMessageBox::critical(this, tr("Computation failed"), message);
     if(threadComputer.mode == Computer::ToInitialMarking || threadComputer.mode == Computer::ToCurrentMarking)
@@ -237,6 +243,7 @@ void CPNetSimulator::slotComputerFailed(QString message)
                 sti->populateCombo();
             }
         }
+        QMessageBox::critical(this, tr("Warning"), tr("Computation of possible bindings terminated during execution. To display enabled transitions, recompute it using the Find binding button."));
         hideOverlay();
         threadComputer.cancelRequest = false;
     }

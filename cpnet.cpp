@@ -259,6 +259,7 @@ void CPNet::semanticAnalysis()
 IdList CPNet::collectIds(Expression *expression)
 {
     IdList result;
+    Expression *exp;
     if(expression == NULL)
         return result;
     switch(expression->type)
@@ -285,7 +286,8 @@ IdList CPNet::collectIds(Expression *expression)
         result.append(collectIds(expression->left));
         break;
     case Expression::FN:
-        /*unused*/
+        foreach(exp, *expression->expressionList)
+            result.append(collectIds(exp));
         break;
     case Expression::DATA:
         /*no action*/
