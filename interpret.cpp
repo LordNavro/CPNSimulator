@@ -2,13 +2,12 @@
 #include <QStringList>
 #include "computer.h"
 
-static int recursionCounter = 0;
 const static int RECURSION_MAX = 800;
 
 Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, Computer *computer, bool resetCounter)
 {
     if(resetCounter)
-        recursionCounter = 0;
+        computer->recursionCounter = 0;
     if(computer->cancelRequest)
         throw(QString("Stop request recieved, terminating evaluation."));
     if(expression->type == Expression::DATA)
@@ -350,8 +349,8 @@ InterCode *generate3AC(Command *command)
 
 Data execute(Command *command, SymbolTable *funTable, SymbolTable *varTable, Computer *computer)
 {
-    recursionCounter++;
-    if(recursionCounter > RECURSION_MAX)
+    computer->recursionCounter++;
+    if(computer->recursionCounter > RECURSION_MAX)
     {
         throw(QString("Maximum recursion level reached. Terminating computation to prevent stack overflow."));
     }

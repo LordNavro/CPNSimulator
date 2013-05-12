@@ -21,6 +21,7 @@ public:
     StateSpaceGraph graph;
     enum Mode{FindBinding, FireTransition, GenerateStateSpace, ToInitialMarking, ToCurrentMarking};
     Mode mode;
+    int recursionCounter;
 
 protected:
     void run();
