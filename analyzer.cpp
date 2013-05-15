@@ -17,11 +17,13 @@ QList<int> StateSpaceGraph::findPath(int endIndex, int startIndex)
     for(int i = 0; i < vertices.size(); i++)
         walked.append(false);
     QList<QPair<QList<int>, int> > toWalk;
-    toWalk.append(QPair<QList<int>, int>(QList<int>(), startIndex));
-    for(int i = 0; i < toWalk.count(); i++)
+    toWalk.prepend(QPair<QList<int>, int>(QList<int>(), startIndex));
+    while(!toWalk.isEmpty())
     {
-        QList<int> currentPath = toWalk.at(i).first;
-        int currentIndex = toWalk.at(i).second;
+        QPair<QList<int>, int> current = toWalk.first();
+        toWalk.removeFirst();
+        QList<int> currentPath = current.first;
+        int currentIndex = current.second;
         walked[currentIndex] = true;
         currentPath.append(currentIndex);
         if(currentIndex == endIndex)
@@ -33,7 +35,7 @@ QList<int> StateSpaceGraph::findPath(int endIndex, int startIndex)
                 continue;
             QList<int> newPath(currentPath);
             newPath.append(j);
-            toWalk.append(QPair<QList<int>, int>(newPath, edges.at(j).to));
+            toWalk.prepend(QPair<QList<int>, int>(newPath, edges.at(j).to));
         }
     }
     return QList<int>();

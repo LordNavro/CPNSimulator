@@ -53,8 +53,10 @@
 
 
 %right '='
-%left AND OR
-%left LEQ GEQ EQ NEQ '>' '<'
+%left OR
+%left AND
+%left EQ NEQ
+%left LEQ GEQ '>' '<'
 %left '+' '-'
 %left '*' '/' '%'
 %left '`'
