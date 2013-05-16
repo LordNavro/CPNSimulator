@@ -4,6 +4,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    assistant = new Assistant();
     createActions();
     createToolBars();
     createMenuBars();
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    delete assistant;
     while(tabWidget->currentIndex() != -1)
         slotClose();
 }
@@ -92,6 +94,7 @@ void MainWindow::createActions()
     actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("&About program"), this);
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
+    connect(actionHelp, SIGNAL(triggered()), this, SLOT(slotHelp()));
 }
 
 void MainWindow::createToolBars()
@@ -366,7 +369,7 @@ void MainWindow::slotEdit()
     {
         place->currentMarking = place->currentMarkingValue->toString();
     }
-
+    currentEditor()->slotSelectionChanged();
     refreshActions();
 }
 
@@ -405,6 +408,7 @@ void MainWindow::slotGenerateStateSpace()
 
 void MainWindow::slotHelp()
 {
+    assistant->showDocumentation();
 }
 
 void MainWindow::slotAbout()

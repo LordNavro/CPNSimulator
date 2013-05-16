@@ -4,6 +4,7 @@
 #include <QtGui>
 #include "cpneteditor.h"
 #include "cpnetsimulator.h"
+#include "assistant.h"
 
 //icons: http://www.iconfinder.com/search/?q=iconset%3Afatcow+control
 
@@ -17,6 +18,8 @@ public:
     ~MainWindow();
 
 private:
+    Assistant *assistant;
+
     QActionGroup *actionGroupTool;
 
     QAction *actionNew;

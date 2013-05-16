@@ -176,7 +176,7 @@ void CPNetSimulator::slotCancelComputation()
 
 void CPNetSimulator::slotComputerCompleted()
 {
-    while(threadComputer.isRunning());
+    threadComputer.wait(3000);
     if(threadComputer.mode == Computer::FireTransition
             || threadComputer.mode == Computer::ToCurrentMarking
             || threadComputer.mode == Computer::ToInitialMarking)
@@ -208,7 +208,7 @@ void CPNetSimulator::slotComputerCompleted()
 
 void CPNetSimulator::slotComputerFailed(QString message)
 {
-    while(threadComputer.isRunning());
+    threadComputer.wait(3000);
     transitionsToFire = 0;
     QMessageBox::critical(this, tr("Computation failed"), message);
     if(threadComputer.mode == Computer::ToInitialMarking || threadComputer.mode == Computer::ToCurrentMarking)

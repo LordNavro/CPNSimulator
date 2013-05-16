@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QHelpCollectionProject version="1.0">
+    <assistant>
+        <title>CPNSimulator</title>
+        <cacheDirectory>Trolltech/CPNSimulator</cacheDirectory>
+        <startPage>qthelp://com.codesaur.cpnsimulator/doc/index.html</startPage>
+        <aboutMenuText>
+            <text>About CPNSimulator</text>
+        </aboutMenuText>
+        <aboutDialog>
+            <file>about.txt</file>
+            <icon>images/about.jpg</icon>
+        </aboutDialog>
+        <enableDocumentationManager>false</enableDocumentationManager>
+        <enableAddressBar>false</enableAddressBar>
+        <enableFilterFunctionality>false</enableFilterFunctionality>
+    </assistant>
+    <docFiles>
+        <generate>
+            <file>
+                <input>cpnsimulator.qhp</input>
+                <output>cpnsimulator.qch</output>
+            </file>
+        </generate>
+        <register>
+            <file>cpnsimulator.qch</file>
+        </register>
+    </docFiles>
+</QHelpCollectionProject>

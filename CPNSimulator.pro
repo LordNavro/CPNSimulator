@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     interpret.cpp \
     computer.cpp \
     analyzer.cpp \
-    statespaceexplorer.cpp
+    statespaceexplorer.cpp \
+    assistant.cpp
 
 HEADERS  += mainwindow.h \
     place.h \
@@ -80,7 +81,17 @@ HEADERS  += mainwindow.h \
     interpret.h \
     computer.h \
     analyzer.h \
-    statespaceexplorer.h
+    statespaceexplorer.h \
+    assistant.h
 
 RESOURCES += \
     icons.qrc
+
+OTHER_FILES += \
+    doc/index.html \
+    doc/editor.html \
+    doc/cpnsimulator.qhp \
+    doc/cpnsimulator.qhcp \
+    doc/about.txt \
+    doc/simulator.html \
+    doc/analysis.html
