@@ -105,6 +105,8 @@ public slots:
     void slotTabCloseRequest(int index);
 
     void slotTabChanged(int i);
+
+    void slotForceSelect();
 };
 
 #endif // MAINWINDOW_H

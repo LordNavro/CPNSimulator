@@ -8,6 +8,16 @@ EditorScene::EditorScene(CPNet *net, QObject *parent) :
 
 void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
+    if(mouseEvent->button() == Qt::RightButton)
+    {
+        if(line)
+        {
+            delete line;
+            line = NULL;
+        }
+        currentTool = SELECT;
+        emit signalForceSelect();
+    }
     if (mouseEvent->button() != Qt::LeftButton && currentTool != SELECT)
         return;
     switch(currentTool)

@@ -161,6 +161,7 @@ void MainWindow::slotNew()
 {
     CPNet *net = new CPNet();
     CPNetEditor *e = new CPNetEditor(net, this);
+    connect(e->scene, SIGNAL(signalForceSelect()), this, SLOT(slotForceSelect()));
     CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
     QStackedWidget *sw = new QStackedWidget;
@@ -191,6 +192,7 @@ void MainWindow::slotLoad()
 
     CPNet *net = new CPNet();
     CPNetEditor *e = new CPNetEditor(net, this);
+    connect(e->scene, SIGNAL(signalForceSelect()), this, SLOT(slotForceSelect()));
     CPNetSimulator *s = new CPNetSimulator(net, e, this);
     nets.append(net);
     QStackedWidget *sw = new QStackedWidget;
@@ -427,4 +429,9 @@ void MainWindow::slotTabCloseRequest(int index)
 void MainWindow::slotTabChanged(int /*i*/)
 {
     refreshActions();
+}
+
+void MainWindow::slotForceSelect()
+{
+    actionSelect->setChecked(true);
 }

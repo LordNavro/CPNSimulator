@@ -110,7 +110,9 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
         symbol->data->value.i -= 1;
         return ret;
     }
+
     Data left = eval(expression->left, funTable, varTable, computer, false);
+
     if(expression->type == Expression::ASSIGN)
     {
         SymbolTable::Symbol *s = varTable->findSymbol(expression->id);

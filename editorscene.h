@@ -43,7 +43,7 @@ public:
     EditorArcItem *getArcItem(Arc *arc);
 
 signals:
-    
+    void signalForceSelect();
 public slots:
 };
 
