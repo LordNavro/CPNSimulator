@@ -264,6 +264,8 @@ IdList CPNet::collectIds(Expression *expression)
         return result;
     switch(expression->type)
     {
+    case Expression::TERNAR:
+        result.append(collectIds(expression->condition));
     case Expression::MULTISET:
     case Expression::AND:
     case Expression::OR:

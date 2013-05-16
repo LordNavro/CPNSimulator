@@ -52,7 +52,7 @@
 %token LEQ GEQ EQ NEQ AND OR DMINUS DPLUS
 
 
-%right '='
+%right '=' ':' '?'
 %left OR
 %left AND
 %left EQ NEQ
@@ -297,6 +297,12 @@ expression:
     | '!' expression                {$$ = unaryOp(Data::BOOL, Expression::NOT, convert(Data::BOOL, $2));}
     | '-' expression %prec UMINUS   {$$ = unaryOp(Data::INT, Expression::UMINUS, convert(Data::INT, $2));}
     | '(' DATATYPE ')' expression %prec UMINUS   {$$ = convert($2, $4);}
+    | expression '?' expression ':' expression {
+        $$ = binaryOp($3->dataType, Expression::TERNAR, $3, $5);
+        $$->condition = convert(Data::BOOL, $1);
+        if($3->dataType != $5->dataType)
+            currentParsedNet->addError(CPNet::SEMANTIC, "Different data types in ? operation");
+    }
     | expressionId
     | expressionData
     | DPLUS ID {$$ = incDec(Expression::DPLUSPRE, *$2); delete $2;}

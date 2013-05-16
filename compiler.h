@@ -87,7 +87,7 @@
     public:
         enum Type {ASSIGN, MULTISET, AND, OR, LEQ, EQ, NEQ, GEQ, GT, LT,
                    PLUS, MINUS, MUL, DIV, MOD, NOT, UMINUS, FN, VAR, DATA,
-                   CONVERT, DPLUSPRE, DPLUSPOST, DMINUSPRE, DMINUSPOST};
+                   CONVERT, DPLUSPRE, DPLUSPOST, DMINUSPRE, DMINUSPOST, TERNAR};
 
         Expression(Expression::Type type) : type(type){}
         ~Expression();
@@ -95,6 +95,7 @@
         Data::Type dataType;  //expression return type
         Expression *left;   //for operators
         Expression *right;   //for operators
+        Expression *condition;   //for ternar operator
         Id id;  //for functions/variables
         ExpressionList *expressionList;  //for function calls
         Data *data; //for direct data

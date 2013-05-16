@@ -10,7 +10,16 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
         computer->recursionCounter = 0;
     if(computer->cancelRequest)
         throw(QString("Stop request recieved, terminating evaluation."));
-    if(expression->type == Expression::DATA)
+
+    if(expression->type == Expression::TERNAR)
+    {
+        Data condition = eval(expression->condition, funTable, varTable, computer, false);
+        if(condition.value.b)
+            return eval(expression->left, funTable, varTable, computer, false);
+        else
+            return eval(expression->right, funTable, varTable, computer, false);
+    }
+    else if(expression->type == Expression::DATA)
         return *expression->data;
     else if(expression->type == Expression::VAR)
     {
@@ -173,20 +182,22 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             return ret;
         }
     }
-    Data right = eval(expression->right, funTable, varTable, computer, false);
-    if(expression->type == Expression::AND)
+    else if(expression->type == Expression::AND)
     {
-        Data ret(Data::BOOL);
-        ret.value.b = left.value.b && right.value.b;
-        return ret;
+        if(left.value.b == false)
+            return left;
+        return eval(expression->right, funTable, varTable, computer, false);
     }
     else if(expression->type == Expression::OR)
     {
-        Data ret(Data::BOOL);
-        ret.value.b = left.value.b || right.value.b;
-        return ret;
+        if(left.value.b == true)
+            return left;
+        return eval(expression->right, funTable, varTable, computer, false);
     }
-    else if(expression->type == Expression::LEQ)
+
+    Data right = eval(expression->right, funTable, varTable, computer, false);
+
+    if(expression->type == Expression::LEQ)
     {
         Data ret(Data::BOOL);
         ret.value.b = left <= right;
@@ -277,6 +288,7 @@ Data eval(Expression *expression, SymbolTable *funTable, SymbolTable *varTable, 
             return ret;
         }
     }
+
     Q_ASSERT(false);
     return Data(Data::UNIT); //compile-killer
 }

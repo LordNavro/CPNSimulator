@@ -335,6 +335,8 @@ Expression::~Expression()
 {
     switch(type)
     {
+    case Expression::TERNAR:
+        delete condition;
     case Expression::MULTISET:
     case Expression::AND:
     case Expression::OR:
