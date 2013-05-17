@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tabWidget, SIGNAL(currentChanged(int)), this, SLOT(slotTabChanged(int)));
 
     setWindowTitle("CPNSimulator");
-    setWindowIcon(QIcon(style()->standardIcon(QStyle::SP_CommandLink)));
+    setWindowIcon(QIcon(":icons/icons/diagram.ico"));
     slotNew();
     showMaximized();
     refreshActions();
@@ -34,7 +34,7 @@ void MainWindow::createActions()
 {
     actionNew = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogResetButton)), tr("New net"), this);
     actionSave = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogSaveButton)), tr("Save net"), this);
-    actionSaveAs = new QAction(QIcon(QIcon(":icons/icons/save.ico")), tr("Save net as"), this);
+    actionSaveAs = new QAction(QIcon(":icons/icons/save.ico"), tr("Save net as"), this);
     actionLoad = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogOpenButton)), tr("Load net"), this);
     actionClose = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogCloseButton)), tr("Close net"), this);
 
@@ -67,8 +67,8 @@ void MainWindow::createActions()
 
     actionsEditor << actionSelect << actionPlace << actionTransition << actionArc << actionDelete;
 
-    actionCompile = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaPlay)), tr("Compile"), this);
-    actionEdit = new QAction(QIcon(style()->standardIcon(QStyle::SP_DesktopIcon)), tr("Edit net"), this);
+    actionCompile = new QAction(QIcon(":icons/icons/hammer.ico"), tr("Compile"), this);
+    actionEdit = new QAction(QIcon(":icons/icons/editor.ico"), tr("Edit net"), this);
     actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("Step"), this);
     actionStop = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaStop)), tr("To init marking"), this);
     actionFastForward = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSeekForward)), tr("Fast forward"), this);
