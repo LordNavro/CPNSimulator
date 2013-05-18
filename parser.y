@@ -159,7 +159,10 @@ declaration: DATATYPE idList ';' {
             SymbolTable::Symbol *symbol = new SymbolTable::Symbol(SymbolTable::VAR);
             symbol->dataType = parameter.first;
             if(!currentLocalSymbolTable->addSymbol(parameter.second, symbol))
+            {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Duplicate parameter " + parameter.second);
+                delete symbol;
+            }
         }
         currentReturnType = $1;
     } commandND {
@@ -214,7 +217,10 @@ declaration: DATATYPE idList ';' {
         symbol->parameterList = *$4;
         symbol->command = NULL;
         if(!currentGlobalSymbolTable->addSymbol(*$2, symbol))
+        {
             currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already declared/defined in this scope");
+            delete symbol;
+        }
         delete $4;
         delete $2;
     }
@@ -263,7 +269,10 @@ command: commandND
             symbol->dataType = $1;
             symbol->data = new Data($1);
             if(!currentLocalSymbolTable->addSymbol(id, symbol))
+            {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + id + " already declared/defined in this scope");
+                delete symbol;
+            }
         }
         delete $2;
     }
