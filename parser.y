@@ -174,12 +174,12 @@ declaration: DATATYPE idList ';' {
             if(existing->type != SymbolTable::FN)
             {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already declared as a variable");
-                delete $7;
+                //delete $7; will be deleted along with the parsedDeclarationList
             }
             else if(existing->command)
             {
                 currentParsedNet->addError(CPNet::SEMANTIC, "Symbol " + *$2 + " already defined");
-                delete $7;
+                //delete $7; will be deleted along with the parsedDeclarationList
             }
             else
             {
@@ -196,8 +196,9 @@ declaration: DATATYPE idList ';' {
             symbol->command = $7;
             currentGlobalSymbolTable->addSymbol(*$2, symbol);
         }
-        if($7->type != Command::RETURN && ($7->type != Command::BLOCK || $7->commandList.last()->type != Command::RETURN))
+        if($7->type != Command::RETURN && ($7->type != Command::BLOCK || $7->commandList.isEmpty() || $7->commandList.last()->type != Command::RETURN))
             currentParsedNet->addError(CPNet::SEMANTIC, "Missing return from function");
+
         delete $4;
         delete $2;
         delete(currentLocalSymbolTable);
