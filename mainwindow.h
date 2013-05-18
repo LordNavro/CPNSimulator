@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QtGui>
+#include <QtXmlPatterns>
 #include "cpneteditor.h"
 #include "cpnetsimulator.h"
 #include "assistant.h"

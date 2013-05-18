@@ -1,0 +1,96 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <!-- TYPE DEFINITIONS -->
+    <xs:simpleType name="colourSetType">
+      <xs:restriction base="xs:unsignedLong">
+        <xs:enumeration value="0"/>
+        <xs:enumeration value="1"/>
+        <xs:enumeration value="2"/>
+      </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="placeType">
+        <xs:sequence>
+            <xs:element name="initialMarking" type="xs:string" />
+            <xs:element name="currentMarking" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="x" type="xs:int" />
+        <xs:attribute name="y" type="xs:int" />
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="placeId" type="xs:unsignedLong" />
+        <xs:attribute name="colourSet" type="colourSetType" />
+    </xs:complexType>
+
+    <xs:complexType name="transitionType">
+        <xs:sequence>
+            <xs:element name="guard" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="x" type="xs:int" />
+        <xs:attribute name="y" type="xs:int" />
+        <xs:attribute name="name" type="xs:string" />
+        <xs:attribute name="transitionId" type="xs:unsignedLong" />
+    </xs:complexType>
+
+    <xs:complexType name="arcType">
+        <xs:sequence>
+            <xs:element name="expression" type="xs:string" />
+        </xs:sequence>
+        <xs:attribute name="arcId" type="xs:unsignedLong" />
+        <xs:attribute name="isPreset" type="xs:unsignedLong" />
+        <xs:attribute name="placeId" type="xs:unsignedLong" />
+        <xs:attribute name="transitionId" type="xs:unsignedLong" />
+    </xs:complexType>
+
+    <!-- ELEMENT SCHEMA -->
+    <xs:element name="cpnet">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="declaration" type="xs:string" />
+                <xs:element name="places">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="place" type="placeType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <!-- PLACE KEY -->
+                    <xs:key name="placeKey">
+                        <xs:selector xpath="place"/>
+                        <xs:field xpath="@placeId"/>
+                    </xs:key>
+                </xs:element>
+                <xs:element name="transitions">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="transition" type="transitionType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                    <!-- TRANS KEY -->
+                    <xs:key name="transitionKey">
+                        <xs:selector xpath="transition"/>
+                        <xs:field xpath="@transitionId"/>
+                    </xs:key>
+                </xs:element>
+                <xs:element name="arcs">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="arc" type="arcType" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>
+                    </xs:complexType>
+
+                    <!-- PLACE REF -->
+                    <xs:keyref name="placeExists" refer="placeKey">
+                        <xs:selector xpath="arc"/>
+                        <xs:field xpath="@placeId"/>
+                    </xs:keyref>
+                    <!-- TRANS REF -->
+                    <xs:keyref name="transitionExists" refer="transitionKey">
+                        <xs:selector xpath="arc"/>
+                        <xs:field xpath="@transitionId"/>
+                    </xs:keyref>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:string" />
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

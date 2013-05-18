@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT      += core gui xml
+QT      += core gui xml xmlpatterns
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -85,7 +85,8 @@ HEADERS  += mainwindow.h \
     assistant.h
 
 RESOURCES += \
-    icons.qrc
+    icons.qrc \
+    schema.qrc
 
 OTHER_FILES += \
     doc/index.html \

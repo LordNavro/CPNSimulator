@@ -186,8 +186,34 @@ void MainWindow::slotLoad()
         QMessageBox::warning(this, "Open file error", "Failed to open file " + fileName);
         return;
     }
+    QFile schemaFile(":/schema/schema/savednet.xsd");
+    schemaFile.open(QIODevice::ReadOnly);
+    if(!schemaFile.isOpen())
+    {
+        QMessageBox::warning(this, "Open file error", "Failed to open file " + schemaFile.fileName());
+        return;
+    }
+    QByteArray schemaData = schemaFile.readAll();
+    QXmlSchema schema;
+    schema.load(schemaData);
+    if(!schema.isValid())
+    {
+        QMessageBox::warning(this, "Open file error", "Xml schema is not valid");
+        return;
+    }
+    QByteArray fileData = file.readAll();
+    QXmlSchemaValidator validator(schema);
+    if(!validator.validate(fileData))
+    {
+        QMessageBox::warning(this, "Open file error", "Failed to validate " + fileName);
+        return;
+    }
     QDomDocument xml("ColouredPetriNet");
-    xml.setContent(file.readAll());
+    if(!xml.setContent(fileData))
+    {
+        QMessageBox::warning(this, "Open file error", "Failed to read xml in " + fileName);
+        return;
+    }
 
 
     CPNet *net = new CPNet();

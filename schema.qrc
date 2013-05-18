@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/schema">
+        <file>schema/savednet.xsd</file>
+    </qresource>
+</RCC>
