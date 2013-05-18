@@ -3,8 +3,6 @@
 
 int main(int argc, char *argv[])
 {
-    Q_INIT_RESOURCE(schema);
-    Q_INIT_RESOURCE(icons);
     QTime time = QTime::currentTime();
     qsrand((uint)time.msec());
 

@@ -316,8 +316,16 @@ QString Data::toString() const
     case Data::INT:
         return QString::number(value.i);
     case Data::MULTIUNIT:
+        if(value.multiUnit == 0)
+            return "";
         return QString::number(value.multiUnit) + " ` unit";
     case Data::MULTIBOOL:
+        if(value.multiBool.t == 0 && value.multiBool.f == 0)
+            return "";
+        if(value.multiBool.t == 0)
+            return QString::number(value.multiBool.f) + " ` false";
+        if(value.multiBool.f == 0)
+            return QString::number(value.multiBool.t) + " ` true";
         return QString::number(value.multiBool.t) + " ` true + " + QString::number(value.multiBool.f) + " ` false";
     case Data::MULTIINT:
         break;
