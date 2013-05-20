@@ -1,0 +1,72 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Context language">
+ <declaration><![CDATA[/* Net generating context language a^n.b^n.c^n considering empty final marking */
+
+int i;]]></declaration>
+ <places>
+  <place x="275" y="248" name="counter1" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="449" y="99" name="counter2" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="271" y="91" name="curSymbol" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`1]]></initialMarking>
+   <currentMarking><![CDATA[1`1]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="81" y="234" name="a" transitionId="0">
+   <guard><![CDATA[i == 1]]></guard>
+  </transition>
+  <transition x="425" y="243" name="b" transitionId="1">
+   <guard><![CDATA[i == 2]]></guard>
+  </transition>
+  <transition x="84" y="-22" name="nextSymbol" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="422" y="-43" name="c" transitionId="3">
+   <guard><![CDATA[i == 3]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="2" transitionId="2">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="0" placeId="2" transitionId="2">
+   <expression><![CDATA[i == 3 ? 0`i : 1`(i + 1)]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="2" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="2" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="2" transitionId="3">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="2" transitionId="3">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="1" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

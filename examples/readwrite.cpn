@@ -1,0 +1,79 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Readers and writers">
+ <declaration><![CDATA[/* Common example of readers and writers problem.
+3 readers and 1 writer, noone can read while writer is writing */]]></declaration>
+ <places>
+  <place x="244" y="177" name="locks" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[3`unit]]></initialMarking>
+   <currentMarking><![CDATA[3 ` unit]]></currentMarking>
+  </place>
+  <place x="386" y="158" name="want read" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[3`unit]]></initialMarking>
+   <currentMarking><![CDATA[3 ` unit]]></currentMarking>
+  </place>
+  <place x="532" y="164" name="read" placeId="2" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="105" y="167" name="want write" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="-16" y="161" name="write" placeId="4" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="386" y="-23" name="start reading" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="394" y="334" name="finish reading" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="95" y="330" name="start writing" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="108" y="-28" name="finish writing" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="2" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="0" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="0" transitionId="3">
+   <expression><![CDATA[3`unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[3`unit]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="4" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="0" placeId="4" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="1" placeId="3" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="0" placeId="3" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

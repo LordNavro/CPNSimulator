@@ -90,7 +90,8 @@ QString StateSpaceVertex::toString() const
     NetMarking::const_iterator i = marking.constBegin();
     while(i != marking.constEnd())
     {
-        ret += i.key()->name + ": " + i.value().toString();
+        if(!i.value().toString().isEmpty())
+            ret += i.key()->name + ": " + i.value().toString();
         ++i;
     }
     return ret.join("; ");

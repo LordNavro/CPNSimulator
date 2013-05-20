@@ -1,0 +1,120 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Dining philosophers">
+ <declaration><![CDATA[/* Net showing an well-known problem of dining philosophers. There are 2 philosophers and 2 chopsticks modelled in this net */]]></declaration>
+ <places>
+  <place x="184" y="-64" name="1 think" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="179" y="208" name="1 got ch1" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="171" y="513" name="1 eat" placeId="2" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="621" y="-75" name="2 think" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="638" y="229" name="1 got ch1" placeId="4" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="628" y="499" name="2 eat" placeId="5" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="418" y="104" name="ch1" placeId="6" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="425" y="426" name="ch2" placeId="7" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="168" y="71" name="1 take ch1" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="175" y="353" name="1 take ch2" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="350" y="265" name="1 finish" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="650" y="70" name="2 take ch1" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="638" y="343" name="2 take ch2" transitionId="4">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="510" y="266" name="2 finish" transitionId="5">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="2" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="2" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="0" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="5" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="5" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="4" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="0" placeId="4" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="1" placeId="3" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="0" placeId="3" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="1" placeId="6" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="13" isPreset="1" placeId="6" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="14" isPreset="0" placeId="6" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="15" isPreset="0" placeId="6" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="16" isPreset="0" placeId="7" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="17" isPreset="0" placeId="7" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="18" isPreset="1" placeId="7" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="19" isPreset="1" placeId="7" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
