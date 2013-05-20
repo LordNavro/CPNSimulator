@@ -36,6 +36,7 @@ void PlaceForm::setPlaceItem(EditorPlaceItem *placeItem)
 void PlaceForm::nameChanged(QString name)
 {
     placeItem->place->name = name;
+    placeItem->update();
 }
 
 
@@ -53,6 +54,7 @@ void PlaceForm::colourSetChanged(int colourSet)
         placeItem->place->colourSet = Place::INT;
         break;
     }
+    placeItem->update();
 }
 
 void PlaceForm::initialMarkingChanged()
@@ -60,6 +62,7 @@ void PlaceForm::initialMarkingChanged()
     if(placeItem == NULL)
         return;
     placeItem->place->initialMarking = inscriptionInitialMarking->document()->toPlainText();
+    placeItem->update();
 }
 
 void PlaceForm::currentMarkingChanged()
@@ -67,4 +70,5 @@ void PlaceForm::currentMarkingChanged()
     if(placeItem == NULL)
         return;
     placeItem->place->currentMarking = inscriptionCurrentMarking->document()->toPlainText();
+    placeItem->update();
 }

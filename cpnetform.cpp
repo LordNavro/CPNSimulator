@@ -11,6 +11,8 @@ CPNetForm::CPNetForm(QWidget *parent) :
     layout = new QFormLayout(this);
     layout->addRow(tr("Net &name"), lineName);
     layout->addRow(tr("Net &declarations"), inscriptionDeclaration);
+    layout->setFieldGrowthPolicy(QFormLayout::ExpandingFieldsGrow);
+
     this->setLayout(layout);
 }
 

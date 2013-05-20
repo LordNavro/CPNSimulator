@@ -38,10 +38,12 @@ void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*
     QTextOption o;
     o.setAlignment(Qt::AlignCenter);
     painter->drawText(rectText, this->arc->expression, o);
-
+    setToolTip(this->arc->expression);
     if (isSelected())
     {
-        painter->setPen(QPen(Qt::DashLine));
+        pen.setStyle(Qt::DashLine);
+        pen.setWidth(0);
+        painter->setPen(pen);
         painter->drawPath(pathShape);
     }
 }
@@ -69,7 +71,7 @@ void ArcItem::computePath()
     pathCurve = QPainterPath(pointStart);
     QPointF center = line.pointAt(0.5);
     center += QPointF(line.normalVector().p2() - line.p1()) / line.length() * BEZ_WIDTH;
-    rectText = QRectF(center - QPointF(40,10), QSize(80,20));
+    rectText = QRectF(center - QPointF(40,10), QSize(80,30));
     pathCurve.quadTo(center,line.p2());
 }
 

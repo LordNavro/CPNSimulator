@@ -24,4 +24,5 @@ void ArcForm::expressionChanged()
     if(arcItem == NULL)
         return;
     arcItem->arc->expression = inscriptionExpression->document()->toPlainText();
+    arcItem->update();
 }

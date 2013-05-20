@@ -26,4 +26,5 @@ void TransitionItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     QGraphicsRectItem::paint(painter, option, widget);
     painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, transition->name);
     painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, transition->guard);
+    setToolTip(transition->name + ": " + transition->guard);
 }

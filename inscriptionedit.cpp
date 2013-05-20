@@ -9,6 +9,10 @@ InscriptionEdit::InscriptionEdit(QWidget *parent) :
     font.setPointSize(12);
 
     new InscriptionHighlighter(this->document());
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    QSizePolicy policy = sizePolicy();
+    policy.setVerticalStretch(1);
+    setSizePolicy(policy);
 
     QFontMetrics metrics(font);
     this->setTabStopWidth(metrics.averageCharWidth() * 2);

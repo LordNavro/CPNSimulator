@@ -26,6 +26,7 @@ void TransitionForm::nameChanged(QString name)
     if(this->transitionItem == NULL)
         return;
     transitionItem->transition->name = name;
+    transitionItem->update();
 }
 
 void TransitionForm::guardChanged()
@@ -33,4 +34,5 @@ void TransitionForm::guardChanged()
     if(this->transitionItem == NULL)
         return;
     transitionItem->transition->guard = inscriptionGuard->document()->toPlainText();
+    transitionItem->update();
 }

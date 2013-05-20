@@ -8,6 +8,7 @@ PlaceItem::PlaceItem() :
     QPen pen(Qt::black);
     pen.setWidth(1);
     setPen(pen);
+
     //setFlag(QGraphicsItem::ItemClipsToShape, true);
 }
 
@@ -36,11 +37,17 @@ void PlaceItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
         set = "INT";
         break;
     }
-    painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, place->name + " (" + set +")");
+    painter->drawText(-40, -40, 80, 40, Qt::AlignHCenter | Qt::AlignBottom | Qt::TextWordWrap, place->name + " (" + set + ")");
     if(type() == SimulatorPlaceItem::Type && place->currentMarkingValue)
+    {
+        setToolTip(place->name + " (" + set + ") :" + place->currentMarkingValue->toString());
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarkingValue->toString());
+    }
     else
+    {
+        setToolTip(place->name + " (" + set + ") :" + place->currentMarking);
         painter->drawText(-40, 0, 80, 40, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, place->currentMarking);
+    }
 }
 
 
