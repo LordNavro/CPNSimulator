@@ -32,11 +32,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::createActions()
 {
-    actionNew = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogResetButton)), tr("&New net"), this);
-    actionSave = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogSaveButton)), tr("&Save net"), this);
+    actionNew = new QAction(style()->standardIcon(QStyle::SP_DialogResetButton), tr("&New net"), this);
+    actionSave = new QAction(style()->standardIcon(QStyle::SP_DialogSaveButton), tr("&Save net"), this);
     actionSaveAs = new QAction(QIcon(":icons/icons/save.ico"), tr("Save net as"), this);
-    actionLoad = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogOpenButton)), tr("&Load net"), this);
-    actionClose = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogCloseButton)), tr("&Close net"), this);
+    actionLoad = new QAction(style()->standardIcon(QStyle::SP_DialogOpenButton), tr("&Load net"), this);
+    actionClose = new QAction(style()->standardIcon(QStyle::SP_DialogCloseButton), tr("&Close net"), this);
+    actionExport = new QAction(style()->standardIcon(QStyle::SP_DesktopIcon), tr("&Export to PDF"), this);
 
     actionNew->setShortcut(QKeySequence::New);
     actionSave->setShortcut(QKeySequence::Save);
@@ -49,8 +50,9 @@ void MainWindow::createActions()
     connect(actionSaveAs, SIGNAL(triggered()), this, SLOT(slotSaveAs()));
     connect(actionLoad, SIGNAL(triggered()), this, SLOT(slotLoad()));
     connect(actionClose, SIGNAL(triggered()), this, SLOT(slotClose()));
+    connect(actionExport, SIGNAL(triggered()), this, SLOT(slotExport()));
 
-    actionsEditor << actionSave << actionSaveAs;
+    actionsEditor << actionSave << actionSaveAs << actionExport;
 
     actionGroupTool = new QActionGroup(this);
     actionSelect = new QAction(QIcon(":icons/icons/cursor.ico"), tr("&Select"), actionGroupTool);
@@ -132,6 +134,8 @@ void MainWindow::createToolBars()
     toolBarFile->addAction(actionSave);
     toolBarFile->addAction(actionSaveAs);
     toolBarFile->addAction(actionClose);
+    toolBarFile->addSeparator();
+    toolBarFile->addAction(actionExport);
 
     toolBarTools->addAction(actionSelect);
     toolBarTools->addAction(actionPlace);
@@ -300,6 +304,32 @@ void MainWindow::slotClose()
     tabWidget->widget(i)->deleteLater();
     tabWidget->removeTab(i);
     refreshActions();
+}
+
+void MainWindow::slotExport()
+{
+    EditorScene *scene = currentEditor()->scene;
+    if(scene->items().isEmpty())
+    {
+        QMessageBox::warning(this, tr("Export failure"), tr("The scene is empty"));
+        return;
+    }
+    QString fileName = QFileDialog::getSaveFileName(this, "Export to PDF", QString(), "*.pdf");
+    if(fileName.isEmpty())
+        return;
+    QPrinter printer;
+    printer.setPageMargins(0,0,0,0,QPrinter::Millimeter);
+    QRectF boundary = scene->itemsBoundingRect();
+
+    printer.setPaperSize(boundary.size(), QPrinter::Millimeter);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setOutputFileName(fileName);
+
+    QPainter p(&printer);
+    currentEditor()->scene->render(&p, QRectF(), boundary);
+    p.end();
+    QMessageBox::information(this, tr("Export completed"), tr("Net exported to %1").arg(fileName));
+    return;
 }
 
 void MainWindow::setCurrentTool(EditorScene::Tool tool)

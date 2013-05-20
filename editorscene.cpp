@@ -3,7 +3,10 @@
 EditorScene::EditorScene(CPNet *net, QObject *parent) :
     QGraphicsScene(parent), net(net), line(NULL), rect(NULL)
 {
-    addLine(0,0,1,1,QPen(Qt::white));
+    //initialize viewport
+    QGraphicsLineItem *line = addLine(0,0,10,10);
+    emit sceneRectChanged(sceneRect());
+    delete line;
 }
 
 void EditorScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

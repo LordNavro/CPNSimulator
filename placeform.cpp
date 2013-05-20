@@ -20,7 +20,7 @@ PlaceForm::PlaceForm(QWidget *parent) :
     layout->addRow(tr("Place &name"), lineName);
     layout->addRow(tr("C&olour set"), comboColourSet);
     layout->addRow(tr("&Initial marking"), inscriptionInitialMarking);
-    layout->addRow(tr("&CurrentMarking"), inscriptionCurrentMarking);
+    layout->addRow(tr("&Current marking"), inscriptionCurrentMarking);
 
 }
 

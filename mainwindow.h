@@ -28,6 +28,7 @@ private:
     QAction *actionSave;
     QAction *actionSaveAs;
     QAction *actionClose;
+    QAction *actionExport;
 
     QAction *actionSelect;
     QAction *actionPlace;
@@ -84,6 +85,7 @@ public slots:
     void slotSave();
     void slotSaveAs();
     void slotClose();
+    void slotExport();
 
     void slotSelect();
     void slotPlace();

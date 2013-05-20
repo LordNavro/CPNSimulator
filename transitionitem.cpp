@@ -4,6 +4,9 @@ TransitionItem::TransitionItem() :
     QGraphicsRectItem()
 {
     setRect(-40,-40,80,80);
+    QPen pen(Qt::black);
+    pen.setWidth(1);
+    setPen(pen);
 }
 
 

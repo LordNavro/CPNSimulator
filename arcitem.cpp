@@ -25,6 +25,9 @@ QPainterPath ArcItem::shape() const
 
 void ArcItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/)
 {
+    QPen pen(Qt::black);
+    pen.setWidth(1);
+    painter->setPen(pen);
     if(from->collidesWithItem(to))
         return;
     painter->drawPath(pathCurve);
