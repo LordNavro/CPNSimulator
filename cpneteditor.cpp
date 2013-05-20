@@ -365,7 +365,7 @@ void CPNetEditor::slotCellClicked(int x, int /*y*/)
         i->setFocus();
         c = i->textCursor();
         c.setPosition(0);
-        c.movePosition(QTextCursor::Down, QTextCursor::MoveAnchor, error.lineNo);
+        c.movePosition(QTextCursor::NextBlock, QTextCursor::MoveAnchor, error.lineNo);
         i->setTextCursor(c);
     }
 }

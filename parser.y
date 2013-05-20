@@ -131,7 +131,7 @@ declarationList: /*empty*/ { $$ = new DeclarationList(); }
 declaration: DATATYPE idList ';' {
         if($1 == Data::MULTIUNIT || $1 == Data::MULTIBOOL || $1 == Data::MULTIINT)
         {
-            yyerror("syntax error, global variables cannot be of multiset type");
+            currentParsedNet->addError(CPNet::SEMANTIC, "Global variables cant have multiset type");
             YYERROR;
         }
         $$ = new Declaration(Declaration::VAR);

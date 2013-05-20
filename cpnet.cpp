@@ -235,6 +235,9 @@ void CPNet::semanticAnalysis()
         {
             if(arc->isPreset)
             {
+                currentParsedReference = CPNet::ErrorReference(arc);
+                currentParsedItem = CPNet::ARC;
+                currentParsedInscription = CPNet::EXPRESSION;
                 if(arc->parsedExpression->dataType != dataType)
                     addError(CPNet::SEMANTIC, "Invalid type of arc expression");
             }
@@ -251,6 +254,9 @@ void CPNet::semanticAnalysis()
     /* Transition guard types */
     foreach(Transition *transition, transitions)
     {
+        currentParsedReference = CPNet::ErrorReference(transition);
+        currentParsedItem = CPNet::TRANSITION;
+        currentParsedInscription = CPNet::GUARD;
         if(transition->parsedGuard)
             transition->parsedGuard = convert(Data::BOOL, transition->parsedGuard);
     }

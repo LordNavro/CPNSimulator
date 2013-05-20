@@ -97,8 +97,12 @@ void EditorScene::keyPressEvent(QKeyEvent *event)
 {
     if(event->key() == Qt::Key_Delete)
     {
-        foreach(QGraphicsItem *item, selectedItems())
-            deleteItem(item);
+        //so that we dont delete arcs twice (they get deleted along with the incident item
+        blockSignals(true);
+        while(!selectedItems().isEmpty())
+            deleteItem(selectedItems().first());
+        blockSignals(false);
+        emit selectionChanged();
     }
     else
     {
