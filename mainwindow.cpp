@@ -32,11 +32,17 @@ MainWindow::~MainWindow()
 
 void MainWindow::createActions()
 {
-    actionNew = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogResetButton)), tr("New net"), this);
-    actionSave = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogSaveButton)), tr("Save net"), this);
+    actionNew = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogResetButton)), tr("&New net"), this);
+    actionSave = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogSaveButton)), tr("&Save net"), this);
     actionSaveAs = new QAction(QIcon(":icons/icons/save.ico"), tr("Save net as"), this);
-    actionLoad = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogOpenButton)), tr("Load net"), this);
-    actionClose = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogCloseButton)), tr("Close net"), this);
+    actionLoad = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogOpenButton)), tr("&Load net"), this);
+    actionClose = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogCloseButton)), tr("&Close net"), this);
+
+    actionNew->setShortcut(QKeySequence::New);
+    actionSave->setShortcut(QKeySequence::Save);
+    actionSaveAs->setShortcut(QKeySequence::SaveAs);
+    actionLoad->setShortcut(QKeySequence::Open);
+    actionClose->setShortcut(QKeySequence::Close);
 
     connect(actionNew, SIGNAL(triggered()), this, SLOT(slotNew()));
     connect(actionSave, SIGNAL(triggered()), this, SLOT(slotSave()));
@@ -47,17 +53,23 @@ void MainWindow::createActions()
     actionsEditor << actionSave << actionSaveAs;
 
     actionGroupTool = new QActionGroup(this);
-    actionSelect = new QAction(QIcon(":icons/icons/cursor.ico"), tr("Select"), actionGroupTool);
-    actionPlace = new QAction(QIcon(":icons/icons/place.ico"), tr("New place"), actionGroupTool);
-    actionTransition = new QAction(QIcon(":icons/icons/transition.ico"), tr("New transition"), actionGroupTool);
-    actionArc = new QAction(QIcon(":icons/icons/arc.ico"), tr("New arc"), actionGroupTool);
-    actionDelete = new QAction(QIcon(":icons/icons/delete.ico"), tr("Delete object"), actionGroupTool);
+    actionSelect = new QAction(QIcon(":icons/icons/cursor.ico"), tr("&Select"), actionGroupTool);
+    actionPlace = new QAction(QIcon(":icons/icons/place.ico"), tr("New &place"), actionGroupTool);
+    actionTransition = new QAction(QIcon(":icons/icons/transition.ico"), tr("New &transition"), actionGroupTool);
+    actionArc = new QAction(QIcon(":icons/icons/arc.ico"), tr("New &arc"), actionGroupTool);
+    actionDelete = new QAction(QIcon(":icons/icons/delete.ico"), tr("&Delete object"), actionGroupTool);
     actionSelect->setCheckable(true);
     actionPlace->setCheckable(true);
     actionTransition->setCheckable(true);
     actionArc->setCheckable(true);
     actionDelete->setCheckable(true);
     actionSelect->setChecked(true);
+
+    actionSelect->setShortcut(QKeySequence("s"));
+    actionPlace->setShortcut(QKeySequence("p"));
+    actionTransition->setShortcut(QKeySequence("t"));
+    actionArc->setShortcut(QKeySequence("a"));
+    actionDelete->setShortcut(QKeySequence("d"));
 
     connect(actionSelect, SIGNAL(triggered()), this, SLOT(slotSelect()));
     connect(actionPlace, SIGNAL(triggered()), this, SLOT(slotPlace()));
@@ -67,12 +79,19 @@ void MainWindow::createActions()
 
     actionsEditor << actionSelect << actionPlace << actionTransition << actionArc << actionDelete;
 
-    actionCompile = new QAction(QIcon(":icons/icons/hammer.ico"), tr("Compile"), this);
-    actionEdit = new QAction(QIcon(":icons/icons/editor.ico"), tr("Edit net"), this);
-    actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("Step"), this);
-    actionStop = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaStop)), tr("To init marking"), this);
-    actionFastForward = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSeekForward)), tr("Fast forward"), this);
-    actionFindBinding = new QAction(QIcon(style()->standardIcon(QStyle::SP_BrowserReload)), tr("Find binding"), this);
+    actionCompile = new QAction(QIcon(":icons/icons/hammer.ico"), tr("&Compile"), this);
+    actionEdit = new QAction(QIcon(":icons/icons/editor.ico"), tr("&Edit net"), this);
+    actionStep = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSkipForward)), tr("&Step"), this);
+    actionStop = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaStop)), tr("To &init marking"), this);
+    actionFastForward = new QAction(QIcon(style()->standardIcon(QStyle::SP_MediaSeekForward)), tr("&Fast forward"), this);
+    actionFindBinding = new QAction(QIcon(style()->standardIcon(QStyle::SP_BrowserReload)), tr("Find &binding"), this);
+
+    actionCompile->setShortcut(QKeySequence("c"));
+    actionEdit->setShortcut(QKeySequence("e"));
+    actionStep->setShortcut(QKeySequence("s"));
+    actionStop->setShortcut(QKeySequence("i"));
+    actionFastForward->setShortcut(QKeySequence("f"));
+    actionFindBinding->setShortcut(QKeySequence("b"));
 
     connect(actionCompile, SIGNAL(triggered()), this, SLOT(slotCompile()));
     connect(actionEdit, SIGNAL(triggered()), this, SLOT(slotEdit()));
@@ -86,12 +105,16 @@ void MainWindow::createActions()
 
     actionGenerateStateSpace = new QAction(QIcon(style()->standardIcon(QStyle::SP_CustomBase)), tr("&Generate state space"), this);
 
+    actionGenerateStateSpace->setShortcut(QKeySequence("g"));
+
     connect(actionGenerateStateSpace, SIGNAL(triggered()), this, SLOT(slotGenerateStateSpace()));
 
     actionsSimulator << actionGenerateStateSpace;
 
     actionHelp = new QAction(QIcon(style()->standardIcon(QStyle::SP_DialogHelpButton)), tr("&Help"), this);
     actionAbout = new QAction(QIcon(style()->standardIcon(QStyle::SP_MessageBoxInformation)), tr("&About program"), this);
+
+    actionHelp->setShortcut(QKeySequence::HelpContents);
 
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(slotAbout()));
     connect(actionHelp, SIGNAL(triggered()), this, SLOT(slotHelp()));

@@ -18,7 +18,7 @@ PlaceForm::PlaceForm(QWidget *parent) :
 
     layout = new QFormLayout(this);
     layout->addRow(tr("Place &name"), lineName);
-    layout->addRow(tr("Colour &set"), comboColourSet);
+    layout->addRow(tr("C&olour set"), comboColourSet);
     layout->addRow(tr("&Initial marking"), inscriptionInitialMarking);
     layout->addRow(tr("&CurrentMarking"), inscriptionCurrentMarking);
 

@@ -7,6 +7,7 @@ CPNetSimulator::CPNetSimulator(CPNet *net, CPNetEditor *editor, QWidget *parent)
 {
     scene = new SimulatorScene(net, this);
     view = new QGraphicsView(scene, this);
+    view->setRenderHint(QPainter::Antialiasing);
 
     overlay = new QWidget(this);
     overlay->hide();

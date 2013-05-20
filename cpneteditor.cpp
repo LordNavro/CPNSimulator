@@ -5,6 +5,7 @@ CPNetEditor::CPNetEditor(CPNet* net, QWidget *parent) :
     QWidget(parent), net(net)
 {
     view = new QGraphicsView(this);
+    view->setRenderHint(QPainter::Antialiasing);
     scene = new EditorScene(net, this);
     view->setAlignment(Qt::AlignLeft | Qt::AlignTop);
     view->setScene(scene);
