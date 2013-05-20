@@ -1,0 +1,28 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Counter">
+ <declaration><![CDATA[/* Simple counter example, each
+occurance of "increase" increases
+the value */
+
+int i;]]></declaration>
+ <places>
+  <!-- THE PLACE colouSet OUT OF ENUM CAUSES XML VALIDATION TO FAIL -->
+  <place x="60" y="80" name="value" placeId="0" colourSet="10">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1`0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="232" y="78" name="increase" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="10" transitionId="0">
+   <expression><![CDATA[i+1]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

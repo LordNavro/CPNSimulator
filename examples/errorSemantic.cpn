@@ -1,0 +1,48 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Semantic errors">
+ <declaration><![CDATA[/* This net contains semantic erors and is not compilable. Its purpose is to demonstrate various semantic controls performed on the inscriptions */
+
+//multiple def.
+int i, i;
+
+//cant use multiset globals
+multiint var;
+
+//undefined function
+int onlyDeclared();
+
+//declaration doesnt match definition
+int declared();
+bool declared()
+{
+	//use of undefined variable
+	return x;
+}]]></declaration>
+ <places>
+  <place x="107" y="161" name="P1" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[//bad types
+a ? 1`1 : 1]]></currentMarking>
+  </place>
+  <place x="503" y="168" name="P2" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[//operands
+true`10]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="288" y="168" name="T1" transitionId="0">
+   <guard><![CDATA[//cant convert
+1`10]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[//not covered
+1`i]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

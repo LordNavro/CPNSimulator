@@ -1,0 +1,63 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Sum">
+ <declaration><![CDATA[/* simple net computing integer average of elements in input place */
+
+int i, j, c , a;
+
+
+//utility function for init marking
+multiint populate()
+{
+	int i;
+	multiint result;
+	for(i=0; i<20; i++)
+		result = result + (i%3 +1)`i;
+	return result;
+}]]></declaration>
+ <places>
+  <place x="219" y="29" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[populate()]]></initialMarking>
+   <currentMarking><![CDATA[populate()]]></currentMarking>
+  </place>
+  <place x="196" y="390" name="sum" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="431" y="354" name="count" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="1" y="201" name="output" placeId="3" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="213" y="184" name="getNext" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i + j]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[j]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[c+1]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[c]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="3" transitionId="0">
+   <expression><![CDATA[(i+j)/(c+1)]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="3" transitionId="0">
+   <expression><![CDATA[a]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

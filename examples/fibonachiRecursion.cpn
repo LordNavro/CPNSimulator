@@ -1,0 +1,43 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Fibonachi recursion">
+ <declaration><![CDATA[/* Computation of fibonachi row
+using recursive functions 
+After computation, all elements
+of the row are present in place "output" */
+int i;
+multiint fib2(int first, int second, int step);
+multiint fib(int i)
+{
+	return fib2(0,1,i);
+}
+multiint fib2(int first, int second, int step)
+{
+	if(step < 1)
+		return 1`0;
+	return fib2(second, first + second, step - 1) 
+		+ 1`second;
+}]]></declaration>
+ <places>
+  <place x="138" y="43" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1`5]]></currentMarking>
+  </place>
+  <place x="142" y="332" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="136" y="188" name="compute fib" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[fib(i)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

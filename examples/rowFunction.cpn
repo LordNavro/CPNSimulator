@@ -1,0 +1,37 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Row by function">
+ <declaration><![CDATA[/* Net computing row using a defined function */
+
+int i;
+
+multiint row(int i)
+{
+	multiint result;
+	while(i>0)
+		result = result + 1`i--;
+	return result;
+}]]></declaration>
+ <places>
+  <place x="114" y="62" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1`5]]></currentMarking>
+  </place>
+  <place x="113" y="325" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="114" y="184" name="compute" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[row(i)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

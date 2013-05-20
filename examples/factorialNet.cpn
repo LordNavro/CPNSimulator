@@ -1,0 +1,42 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Factorial by net">
+ <declaration><![CDATA[/* This example shows the computation of factorial through occuring transitions. After all enabled binding elements occured, factorial of input is in the output place */
+
+int i,j;
+]]></declaration>
+ <places>
+  <place x="190" y="168" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 5]]></currentMarking>
+  </place>
+  <place x="181" y="486" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[1`1]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 1]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="186" y="321" name="computeNext" transitionId="0">
+   <guard><![CDATA[i>0]]></guard>
+  </transition>
+  <transition x="382" y="177" name="end" transitionId="1">
+   <guard><![CDATA[i<=0]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i*j]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[j]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

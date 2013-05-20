@@ -1,0 +1,37 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Factorial via recursive functions">
+ <declaration><![CDATA[/* This example shows computation of factorial via recursive functions. After a step occurance, output place contains factorial of input */
+
+int i;
+
+int fact(int i);
+int fact(int i)
+{
+	if(i<=1)
+		return 1;
+	return i * fact(i-1);
+}]]></declaration>
+ <places>
+  <place x="129" y="58" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 5]]></currentMarking>
+  </place>
+  <place x="113" y="366" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="120" y="208" name="compute" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[fact(i)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

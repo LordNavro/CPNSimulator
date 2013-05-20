@@ -1,0 +1,42 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Sum">
+ <declaration><![CDATA[/* simple net computing sum of elements in input place */
+
+int i,j;
+
+//utility function for init marking
+multiint populate()
+{
+	int i;
+	multiint result;
+	for(i=0; i<20; i++)
+		result = result + (i%3 +1)`i;
+	return result;
+}]]></declaration>
+ <places>
+  <place x="137" y="85" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[populate()]]></initialMarking>
+   <currentMarking><![CDATA[populate()]]></currentMarking>
+  </place>
+  <place x="143" y="393" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="135" y="232" name="getNext" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i + j]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[j]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

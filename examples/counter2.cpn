@@ -1,0 +1,35 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Counter UpDown ">
+ <declaration><![CDATA[/* Example of simple counter that can count
+up and down, value allways stays positive */
+
+int i;]]></declaration>
+ <places>
+  <place x="245" y="226" name="value" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="247" y="402" name="increase" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="250" y="54" name="decrease" transitionId="1">
+   <guard><![CDATA[i>0]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[i+1]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="0" transitionId="1">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

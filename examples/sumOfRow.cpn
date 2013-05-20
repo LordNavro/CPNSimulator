@@ -1,0 +1,49 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="">
+ <declaration><![CDATA[/* Net sum of a row. This example is composed from the sum.cpn and rowNet.cpn. Implementation of hierarchical operations would ease creation of such nets */
+
+int i, j;
+]]></declaration>
+ <places>
+  <place x="66" y="58" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 5]]></currentMarking>
+  </place>
+  <place x="251" y="209" name="row" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="409" y="376" name="sum" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="261" y="62" name="nextRowElem" transitionId="0">
+   <guard><![CDATA[i>0]]></guard>
+  </transition>
+  <transition x="414" y="211" name="addToSum" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="2" transitionId="1">
+   <expression><![CDATA[j]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="2" transitionId="1">
+   <expression><![CDATA[i + j]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

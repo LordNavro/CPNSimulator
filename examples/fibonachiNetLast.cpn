@@ -1,0 +1,64 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Fibonachi net - last element">
+ <declaration><![CDATA[/* Computation of fibonachi row
+using as few inscriptions as possible.
+At the end, the n-th element of the row
+is present in the "fib" place */
+
+int b, c, i, unused;]]></declaration>
+ <places>
+  <place x="132" y="180" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 5]]></currentMarking>
+  </place>
+  <place x="312" y="48" name="fib" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="161" y="357" name="2 last" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="361" y="418" name="last" placeId="3" colourSet="2">
+   <initialMarking><![CDATA[1`1]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 1]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="294" y="227" name="Compute next" transitionId="0">
+   <guard><![CDATA[i >= 0]]></guard>
+  </transition>
+  <transition x="173" y="53" name="end" transitionId="1">
+   <guard><![CDATA[i < 0]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[1`b]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="3" transitionId="0">
+   <expression><![CDATA[c]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[1`c]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="3" transitionId="0">
+   <expression><![CDATA[1`(b+c)]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[1`(i-1)]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[unused]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

@@ -1,0 +1,32 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="">
+ <declaration><![CDATA[/* Simple net computing row by transitions */
+
+int i;]]></declaration>
+ <places>
+  <place x="136" y="60" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`5]]></initialMarking>
+   <currentMarking><![CDATA[1`5]]></currentMarking>
+  </place>
+  <place x="131" y="340" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="127" y="205" name="nextStep" transitionId="0">
+   <guard><![CDATA[i>0]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

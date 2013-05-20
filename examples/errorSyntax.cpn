@@ -1,0 +1,29 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Syntax errors">
+ <declaration><![CDATA[/* This net contains syntax errors and is not compilable. Its purpose is to show capabilities of the generated parser */
+
+int i,j;
+
+//unit does not name a type, its meaning is data
+unit x;]]></declaration>
+ <places>
+  <place x="160" y="87" name="P1" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[//invalid
+10 + * 8]]></initialMarking>
+   <currentMarking><![CDATA[//invalid
+10++]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="-81" y="83" name="T1" transitionId="0">
+   <guard><![CDATA[//missing else
+true ? 1]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[//invalid
+1`i + 1`j]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

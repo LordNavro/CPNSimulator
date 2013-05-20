@@ -1,0 +1,42 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Fibonachi iteration Last">
+ <declaration><![CDATA[/* Computation of fibonachi row
+using iteration 
+After computation, n-th element
+of the row are present in place "output" */
+int i;
+multiint fib(int i)
+{
+	int c1, c2;
+	c1 = 0; c2 = 1;
+	for(i=i;i>0;i--)
+	{
+		int temp;
+		temp = c2; c2 = c1 + c2;	c1 = temp;
+	}
+	return c1;
+}]]></declaration>
+ <places>
+  <place x="138" y="38" name="input" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`10]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="142" y="332" name="output" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="136" y="188" name="compute fib" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[fib(i)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

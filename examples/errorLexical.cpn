@@ -1,0 +1,23 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Net with lexical errors">
+ <declaration><![CDATA[/* This net contains various lexical errors and is not compilable. Its purpose is demonstration of scanner capabilities 
+Errors and their reference will be listed in the Compilation output table. Click to 
+*/]]></declaration>
+ <places>
+  <place x="144" y="195" name="place" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[//wrong sym.
+1 ^` unit]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="332" y="202" name="transition" transitionId="0">
+   <guard><![CDATA[/*endless comment]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
