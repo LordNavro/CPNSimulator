@@ -10,7 +10,7 @@ class InscriptionEdit : public QTextEdit
 public:
     explicit InscriptionEdit(QWidget *parent = 0);
     void keyPressEvent(QKeyEvent *e);
-    
+    void insertFromMimeData(const QMimeData *source);
 signals:
     
 public slots:

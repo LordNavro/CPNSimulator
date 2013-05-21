@@ -37,3 +37,8 @@ void InscriptionEdit::keyPressEvent(QKeyEvent *e)
         insertPlainText(tabs);
     }
 }
+
+void InscriptionEdit::insertFromMimeData(const QMimeData *source)
+{
+    insertPlainText(source->text());
+}

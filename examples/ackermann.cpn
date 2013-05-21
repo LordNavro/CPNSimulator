@@ -1,0 +1,47 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Ackermann function">
+ <declaration><![CDATA[/* Net computing the Ackermann function for the given inputs. Due to double recursion used in the definition and absence of complex data types, the computation cannot be modelled without these inscriptions */
+
+int m, n;
+
+int ack(int m, int n);
+int ack(int m, int n)
+{
+	if(m == 0)
+		return n+1;
+	if(n == 0)
+		return ack(m-1, 1);
+		
+	return ack(m-1, ack(m, n-1));
+}]]></declaration>
+ <places>
+  <place x="181" y="90" name="P5" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`2]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 2]]></currentMarking>
+  </place>
+  <place x="513" y="173" name="P6" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="170" y="270" name="P7" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`3]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 3]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="346" y="170" name="compute" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[m]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[n]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[ack(m,n)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

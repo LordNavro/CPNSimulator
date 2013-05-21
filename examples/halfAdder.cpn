@@ -1,0 +1,55 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Half adder">
+ <declaration><![CDATA[/* model of half binary adder with inputs a, b and cin and outputs cout, s 
+
+You can verify all the possible combinations in the state space explorer with depth = 1 */
+
+bool a,b;
+
+bool sum(bool a, bool b)
+{
+	return (a + b) == 1;
+}
+
+bool carry(bool a, bool b)
+{
+	return a && b;
+}]]></declaration>
+ <places>
+  <place x="201" y="348" name="COUT" placeId="0" colourSet="1">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="167" y="1" name="A" placeId="1" colourSet="1">
+   <initialMarking><![CDATA[1`true + 1`false]]></initialMarking>
+   <currentMarking><![CDATA[1`true + 1`false]]></currentMarking>
+  </place>
+  <place x="419" y="19" name="B" placeId="2" colourSet="1">
+   <initialMarking><![CDATA[1`true + 1`false]]></initialMarking>
+   <currentMarking><![CDATA[1`true + 1`false]]></currentMarking>
+  </place>
+  <place x="438" y="364" name="S" placeId="3" colourSet="1">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="302" y="195" name="full adder" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[a]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="3" transitionId="0">
+   <expression><![CDATA[sum(a,b)]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[carry(a,b)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
