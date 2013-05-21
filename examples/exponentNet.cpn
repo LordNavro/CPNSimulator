@@ -1,0 +1,77 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Exponent by Net">
+ <declaration><![CDATA[/* This net models the computation of exponent by net elements */
+
+int b, e, cv, ce;]]></declaration>
+ <places>
+  <place x="69" y="10" name="Base" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[2]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 2]]></currentMarking>
+  </place>
+  <place x="89" y="177" name="Exponent" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[10]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 10]]></currentMarking>
+  </place>
+  <place x="324" y="207" name="current exp" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="552" y="233" name="current val" placeId="3" colourSet="2">
+   <initialMarking><![CDATA[1]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 1]]></currentMarking>
+  </place>
+  <place x="88" y="350" name="result" placeId="4" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="344" y="24" name="Next element" transitionId="0">
+   <guard><![CDATA[ce < e]]></guard>
+  </transition>
+  <transition x="327" y="352" name="Get Result" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[ce]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[ce + 1]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="3" transitionId="0">
+   <expression><![CDATA[cv]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="3" transitionId="0">
+   <expression><![CDATA[cv * b]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="3" transitionId="1">
+   <expression><![CDATA[cv]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="4" transitionId="1">
+   <expression><![CDATA[cv]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="1" placeId="2" transitionId="1">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

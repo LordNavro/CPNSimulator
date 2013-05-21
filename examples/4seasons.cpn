@@ -1,0 +1,62 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="4 seasons">
+ <declaration><![CDATA[/* contact-free C/E-like net modelling the changes of 4 seasons */]]></declaration>
+ <places>
+  <place x="212" y="-30" name="Autumn" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="496" y="249" name="Spring" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[unit]]></currentMarking>
+  </place>
+  <place x="216" y="250" name="Summer" placeId="2" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="493" y="-23" name="Winter" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="184" y="94" name="Autumn start" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="522" y="110" name="Spring start" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="350" y="-118" name="Winter start" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="358" y="290" name="Summer start" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="2" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="2" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="3" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="3" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

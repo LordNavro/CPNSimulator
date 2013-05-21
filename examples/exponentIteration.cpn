@@ -1,0 +1,47 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Exponent by iteration">
+ <declaration><![CDATA[/* This net shows computation of exponent by iterative function */
+
+int b, e;
+
+int exp(int b, int e)
+{
+	int current;
+	current = 1;
+	while(e-- > 0)
+	{
+		current = current * b;
+	}
+	return current;
+}]]></declaration>
+ <places>
+  <place x="163" y="102" name="base" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[2]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 2]]></currentMarking>
+  </place>
+  <place x="355" y="103" name="exponent" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[10]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 10]]></currentMarking>
+  </place>
+  <place x="235" y="400" name="result" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="246" y="253" name="Compute" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[e]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[exp(b, e)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
