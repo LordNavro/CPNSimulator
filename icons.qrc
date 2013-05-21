@@ -20,5 +20,6 @@
         <file>icons/hammer.ico</file>
         <file>icons/editor.ico</file>
         <file>icons/diagram.ico</file>
+        <file>icons/pdf.ico</file>
     </qresource>
 </RCC>

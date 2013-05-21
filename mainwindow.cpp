@@ -37,7 +37,7 @@ void MainWindow::createActions()
     actionSaveAs = new QAction(QIcon(":icons/icons/save.ico"), tr("Save net as"), this);
     actionLoad = new QAction(style()->standardIcon(QStyle::SP_DialogOpenButton), tr("&Load net"), this);
     actionClose = new QAction(style()->standardIcon(QStyle::SP_DialogCloseButton), tr("&Close net"), this);
-    actionExport = new QAction(style()->standardIcon(QStyle::SP_DesktopIcon), tr("&Export to PDF"), this);
+    actionExport = new QAction(QIcon(":icons/icons/pdf.ico"), tr("&Export to PDF"), this);
 
     actionNew->setShortcut(QKeySequence::New);
     actionSave->setShortcut(QKeySequence::Save);
@@ -125,8 +125,8 @@ void MainWindow::createActions()
 void MainWindow::createToolBars()
 {
     toolBarFile = addToolBar(tr("File options"));
-    toolBarSimulation = addToolBar(tr("Simulation options"));
     toolBarTools = addToolBar(tr("Tool options"));
+    toolBarSimulation = addToolBar(tr("Simulation options"));
 
     toolBarFile->addAction(actionNew);
     toolBarFile->addAction(actionLoad);
@@ -163,6 +163,8 @@ void MainWindow::createMenuBars()
     menuFile->addAction(actionSave);
     menuFile->addAction(actionSaveAs);
     menuFile->addAction(actionClose);
+    menuFile->addSeparator();
+    menuFile->addAction(actionExport);
 
     menuTool->addAction(actionSelect);
     menuTool->addAction(actionPlace);
