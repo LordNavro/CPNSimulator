@@ -1,0 +1,51 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="A plus B plus">
+ <declaration><![CDATA[/* Net generating regular language a+b+ (considering the T type) */]]></declaration>
+ <places>
+  <place x="148" y="184" name="gen. a" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="331" y="356" name="gen. b" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="230" y="48" name="a" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="304" y="188" name="a" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="533" y="341" name="b" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="314" y="488" name="b" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="1" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="1" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

@@ -1,0 +1,27 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Error - endless loop">
+ <declaration><![CDATA[/* Despite its size, this net generates endless state space with exponential growth (based on the depth limit). Its analysis is very slow.
+
+The bearable limit is around 12 (depending on the machine). It demonstrates the limits of the state space explorer. */
+
+int i;]]></declaration>
+ <places>
+  <place x="166" y="161" name="Place" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="372" y="165" name="Step" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[1`i + 1`(i+1)]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

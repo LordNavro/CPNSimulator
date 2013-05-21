@@ -1,0 +1,99 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Friday night">
+ <declaration><![CDATA[/* Net demonstrating capabilities of application on a simple example */
+
+int i, drink;
+
+int price(int drink)
+{
+	if(drink == 0) //rum
+		return 30;
+	if(drink == 1) //schnaps
+		return 40;
+	if(drink == 2) //tequila
+		return 50;
+	return 70; //whisky
+}]]></declaration>
+ <places>
+  <place x="191" y="359" name="Home" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="206" y="45" name="At pub" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="599" y="91" name="Money" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[1`500]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 500]]></currentMarking>
+  </place>
+  <place x="404" y="253" name="Bar" placeId="3" colourSet="2">
+   <initialMarking><![CDATA[2`0 + 1`1 + 2`2 + 2`3]]></initialMarking>
+   <currentMarking><![CDATA[2 ` 0 + 1 ` 1 + 2 ` 2 + 2 ` 3]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="407" y="364" name="Stay home" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="113" y="186" name="Go to pub" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="295" y="185" name="Return home" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="595" y="-78" name="Take a beer" transitionId="3">
+   <guard><![CDATA[i>=30]]></guard>
+  </transition>
+  <transition x="604" y="254" name="Take a shot" transitionId="4">
+   <guard><![CDATA[i >= 50]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="1" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="0" placeId="0" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="1" placeId="2" transitionId="3">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="0" placeId="2" transitionId="3">
+   <expression><![CDATA[i-30]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="1" placeId="1" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="1" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="1" placeId="2" transitionId="4">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="0" placeId="2" transitionId="4">
+   <expression><![CDATA[i - price(drink)]]></expression>
+  </arc>
+  <arc arcId="13" isPreset="1" placeId="3" transitionId="4">
+   <expression><![CDATA[drink]]></expression>
+  </arc>
+  <arc arcId="14" isPreset="0" placeId="3" transitionId="4">
+   <expression><![CDATA[0`drink]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

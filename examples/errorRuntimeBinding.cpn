@@ -1,0 +1,13 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Runtime error - binding elements">
+ <declaration><![CDATA[/* This net shows how the program handles runtime errors while finding enabled binding elements. The error is division by zero in the guard.
+
+Application will suggest recomputation via the Find binding button, but it will not be any helpfull in this case. */]]></declaration>
+ <places/>
+ <transitions>
+  <transition x="267" y="218" name="error" transitionId="0">
+   <guard><![CDATA[10/0]]></guard>
+  </transition>
+ </transitions>
+ <arcs/>
+</cpnet>

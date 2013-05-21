@@ -1,0 +1,17 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Error - endless loop">
+ <declaration><![CDATA[/* This net is syntactically correct, however the endless loop in the guard prevents it from being simulated. The application will try to find binding elements, but can never succeed - the computation of enabled binding elements must be terminated manually via the Cancel operation button */
+
+bool endless()
+{
+	while(true){}
+	return true;
+}]]></declaration>
+ <places/>
+ <transitions>
+  <transition x="254" y="173" name="transition" transitionId="0">
+   <guard><![CDATA[endless()]]></guard>
+  </transition>
+ </transitions>
+ <arcs/>
+</cpnet>

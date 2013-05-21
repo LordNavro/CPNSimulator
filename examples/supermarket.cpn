@@ -1,0 +1,125 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Supermarket">
+ <declaration><![CDATA[/* simple model of a supermarket */]]></declaration>
+ <places>
+  <place x="245" y="377" name="Baskets" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[20`unit]]></initialMarking>
+   <currentMarking><![CDATA[20 ` unit]]></currentMarking>
+  </place>
+  <place x="380" y="331" name="Wait for basket" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="181" y="162" name="Shopping" placeId="2" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="-101" y="224" name="Wait for cashier" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="105" y="298" name="Mark goods and pay" placeId="4" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="-51" y="506" name="Cashier" placeId="5" colourSet="0">
+   <initialMarking><![CDATA[3`unit]]></initialMarking>
+   <currentMarking><![CDATA[3 ` unit]]></currentMarking>
+  </place>
+  <place x="-345" y="490" name="Cashier   break" placeId="6" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="373" y="466" name="Customer comes" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="366" y="188" name="Take basket" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="6" y="83" name="Finish shopping" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-40" y="332" name="Free cashier" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="130" y="499" name="customer leaves" transitionId="4">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-209" y="578" name="Take a break" transitionId="5">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-207" y="346" name="Return from break" transitionId="6">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="342" y="11" name="Take bread" transitionId="7">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="131" y="3" name="Take other goods" transitionId="8">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="2" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="0" placeId="3" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="3" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="5" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="4" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="0" placeId="2" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="1" placeId="4" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="0" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="0" placeId="5" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="1" placeId="5" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="13" isPreset="0" placeId="6" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="14" isPreset="1" placeId="6" transitionId="6">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="15" isPreset="0" placeId="5" transitionId="6">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="16" isPreset="1" placeId="2" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="17" isPreset="0" placeId="2" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="18" isPreset="1" placeId="2" transitionId="8">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="19" isPreset="0" placeId="2" transitionId="8">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

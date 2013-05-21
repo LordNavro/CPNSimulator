@@ -1,0 +1,12 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Runtime error  - marking">
+ <declaration><![CDATA[/* This net shows how runtime error in marking expressions are handled. The error is invalid multiplication of multiset (n must be >= 0 for the operation to be computed correctly) */]]></declaration>
+ <places>
+  <place x="155" y="204" name="P4" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[(-1)*1`10]]></initialMarking>
+   <currentMarking><![CDATA[(-1)*1`10]]></currentMarking>
+  </place>
+ </places>
+ <transitions/>
+ <arcs/>
+</cpnet>

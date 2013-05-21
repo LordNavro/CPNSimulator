@@ -1,0 +1,353 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Dekker's algorithm">
+ <declaration><![CDATA[/* Net modeling Dekker's algorithm
+
+P0:
+0   flag[0] = true;
+1   while (flag[1] == true) {
+2      if (turn != 0) {
+3         flag[0] = false;
+4         while (turn != 0) {
+5           // busy wait
+6         }
+7         flag[0] = true;
+8      }
+9   } 
+10   // critical section
+11   turn    = 1;
+12   flag[0] = false;
+
+P1:
+0   flag[1] = true;
+1   while (flag[0] == true) {
+2      if (turn != 1) {
+3         flag[1] = false;
+4         while (turn ≠ 1) {
+5           // busy wait
+6         }
+7         flag[1] = true;
+8      }
+9   }
+10   // critical section
+11   turn    = 0;
+12   flag[1] = false;
+*/
+
+
+bool b;
+int i;]]></declaration>
+ <places>
+  <place x="358" y="63" name="flag[0]  " placeId="0" colourSet="1">
+   <initialMarking><![CDATA[false]]></initialMarking>
+   <currentMarking><![CDATA[1 ` false]]></currentMarking>
+  </place>
+  <place x="418" y="300" name="flag[1]  " placeId="1" colourSet="1">
+   <initialMarking><![CDATA[false]]></initialMarking>
+   <currentMarking><![CDATA[1 ` false]]></currentMarking>
+  </place>
+  <place x="414" y="486" name="turn" placeId="2" colourSet="2">
+   <initialMarking><![CDATA[0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="-112" y="82" name="p10 0" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="58" y="196" name="p0 1" placeId="4" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="246" y="363" name="p0 2" placeId="5" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="128" y="718" name="p0 4" placeId="6" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="-106" y="392" name="p0 critical" placeId="7" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="721" y="72" name="p1 0" placeId="8" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="804" y="268" name="p1 2" placeId="9" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="531" y="415" name="p1 2" placeId="10" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="730" y="718" name="p1 4" placeId="11" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="915" y="347" name="p1 critical" placeId="12" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="456" y="727" name="VIOLATION" placeId="13" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="36" y="81" name="flag[0] = true" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="174" y="171" name="while flag[1] == true" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="306" y="680" name="if(turn != 0) flag[0] = false" transitionId="2">
+   <guard><![CDATA[i != 0]]></guard>
+  </transition>
+  <transition x="44" y="393" name="else             (turn == 0)" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-34" y="627" name="turn == 0 (end of busy wait) flag[0] = true" transitionId="4">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-86" y="257" name="end loop" transitionId="5">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="-107" y="510" name="turn = 1; flag[0] = false; " transitionId="6">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="576" y="83" name="flag[1] = true" transitionId="7">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="539" y="250" name="while flag[0] == true" transitionId="8">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="590" y="665" name="if(turn !=1) flag[1] = false" transitionId="9">
+   <guard><![CDATA[i != 1]]></guard>
+  </transition>
+  <transition x="914" y="616" name="turn == 1 (end of busy wait) flag[1] = true" transitionId="10">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="878" y="203" name="end loop" transitionId="11">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="922" y="478" name="turn = 0; flag[1] = false" transitionId="12">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="696" y="340" name="else(turn == 1)" transitionId="13">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="469" y="842" name="VIOLATION" transitionId="14">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="3" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="4" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="4" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="5" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="2" transitionId="2">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="0" placeId="2" transitionId="2">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="1" placeId="5" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="1" placeId="2" transitionId="3">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="0" placeId="2" transitionId="3">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="13" isPreset="1" placeId="5" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="14" isPreset="0" placeId="4" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="15" isPreset="1" placeId="2" transitionId="4">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="16" isPreset="0" placeId="2" transitionId="4">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="17" isPreset="1" placeId="6" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="18" isPreset="0" placeId="0" transitionId="4">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="19" isPreset="1" placeId="0" transitionId="4">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="20" isPreset="0" placeId="4" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="21" isPreset="1" placeId="4" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="22" isPreset="1" placeId="1" transitionId="5">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="23" isPreset="0" placeId="1" transitionId="5">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="24" isPreset="0" placeId="7" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="25" isPreset="1" placeId="7" transitionId="6">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="26" isPreset="0" placeId="2" transitionId="6">
+   <expression><![CDATA[1]]></expression>
+  </arc>
+  <arc arcId="27" isPreset="1" placeId="2" transitionId="6">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="28" isPreset="0" placeId="1" transitionId="7">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="29" isPreset="1" placeId="1" transitionId="7">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="30" isPreset="1" placeId="8" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="31" isPreset="0" placeId="9" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="32" isPreset="1" placeId="0" transitionId="8">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="33" isPreset="0" placeId="0" transitionId="8">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="34" isPreset="1" placeId="9" transitionId="8">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="35" isPreset="0" placeId="6" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="36" isPreset="0" placeId="0" transitionId="2">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="37" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="38" isPreset="0" placeId="10" transitionId="8">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="39" isPreset="1" placeId="2" transitionId="9">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="40" isPreset="0" placeId="2" transitionId="9">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="41" isPreset="1" placeId="1" transitionId="9">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="42" isPreset="0" placeId="1" transitionId="9">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="43" isPreset="0" placeId="11" transitionId="9">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="44" isPreset="1" placeId="11" transitionId="10">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="45" isPreset="1" placeId="2" transitionId="10">
+   <expression><![CDATA[1]]></expression>
+  </arc>
+  <arc arcId="46" isPreset="0" placeId="2" transitionId="10">
+   <expression><![CDATA[1]]></expression>
+  </arc>
+  <arc arcId="47" isPreset="1" placeId="1" transitionId="10">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="48" isPreset="0" placeId="1" transitionId="10">
+   <expression><![CDATA[true]]></expression>
+  </arc>
+  <arc arcId="49" isPreset="1" placeId="10" transitionId="9">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="50" isPreset="0" placeId="9" transitionId="10">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="51" isPreset="1" placeId="9" transitionId="11">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="52" isPreset="0" placeId="0" transitionId="11">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="53" isPreset="1" placeId="0" transitionId="11">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="54" isPreset="0" placeId="12" transitionId="11">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="55" isPreset="1" placeId="2" transitionId="12">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="56" isPreset="0" placeId="2" transitionId="12">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="57" isPreset="1" placeId="1" transitionId="12">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="58" isPreset="0" placeId="1" transitionId="12">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+  <arc arcId="59" isPreset="1" placeId="10" transitionId="13">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="60" isPreset="0" placeId="9" transitionId="13">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="61" isPreset="1" placeId="2" transitionId="13">
+   <expression><![CDATA[1]]></expression>
+  </arc>
+  <arc arcId="62" isPreset="0" placeId="2" transitionId="13">
+   <expression><![CDATA[1]]></expression>
+  </arc>
+  <arc arcId="63" isPreset="1" placeId="12" transitionId="12">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="64" isPreset="0" placeId="13" transitionId="14">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="65" isPreset="1" placeId="7" transitionId="14">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="66" isPreset="1" placeId="12" transitionId="14">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="67" isPreset="1" placeId="0" transitionId="6">
+   <expression><![CDATA[b]]></expression>
+  </arc>
+  <arc arcId="68" isPreset="0" placeId="0" transitionId="6">
+   <expression><![CDATA[false]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

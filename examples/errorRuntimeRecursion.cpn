@@ -1,0 +1,14 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Runtime error - recursion">
+ <declaration><![CDATA[/* This net shows the violation of recursion limit. This limit prevents stack overflow due to recursive evaluation in the interpret. */
+
+bool endless();
+bool endless(){ return endless(); }]]></declaration>
+ <places/>
+ <transitions>
+  <transition x="274" y="221" name="T8" transitionId="0">
+   <guard><![CDATA[endless()]]></guard>
+  </transition>
+ </transitions>
+ <arcs/>
+</cpnet>

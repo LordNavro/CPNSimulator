@@ -34,6 +34,7 @@
 "/*"                {DEBUG("blockCommentBegin"); BEGIN(COMMENT);}
 <COMMENT>"*/"       {DEBUG("blockCommentEnd"); BEGIN(INITIAL);}
 <COMMENT>\n         {}
+<COMMENT>\r         {}
 <COMMENT>.          {}
 <COMMENT><<EOF>>    {DEBUG("blockCommentEOF");currentParsedNet->addError(CPNet::LEXICAL, QString("Unfinished comment")); BEGIN(INITIAL);}
 [\t\n\r]            {}

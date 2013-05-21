@@ -1,0 +1,29 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Runtime error - firing transition">
+ <declaration><![CDATA[/* This net shows how the application deals with runtime error during computing new marking based on transition occurance. The error is invalid multiset subtraction which violates the definition of this operation.
+
+Notice that after the failed attempt to fire the binding element, the net returns to the marking before the attemp (the unit stays in the input) */]]></declaration>
+ <places>
+  <place x="315" y="43" name="input" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="158" y="184" name="output" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="356" y="180" name="transition" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[1`unit - 2`unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
