@@ -46,7 +46,7 @@ int price(int drink)
    <guard><![CDATA[i>=30]]></guard>
   </transition>
   <transition x="604" y="254" name="Take a shot" transitionId="4">
-   <guard><![CDATA[i >= 50]]></guard>
+   <guard><![CDATA[i >= price(drink)]]></guard>
   </transition>
  </transitions>
  <arcs>
