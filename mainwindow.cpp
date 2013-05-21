@@ -127,7 +127,6 @@ void MainWindow::createToolBars()
     toolBarFile = addToolBar(tr("File options"));
     toolBarSimulation = addToolBar(tr("Simulation options"));
     toolBarTools = addToolBar(tr("Tool options"));
-    toolBarSimulation = addToolBar(tr("Simulation options"));
 
     toolBarFile->addAction(actionNew);
     toolBarFile->addAction(actionLoad);
