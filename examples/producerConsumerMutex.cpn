@@ -1,0 +1,154 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Producer and consumer - mutex">
+ <declaration><![CDATA[/* This example shows usage of a mutex token to handle producer-consumer problem. It reflects the intersperseability of process instructions.
+
+This mechanism prevents from reading empty buffer or writing to full buffer even if more producers/consumers were present. */
+
+int i;]]></declaration>
+ <places>
+  <place x="10" y="137" name="producer ready" placeId="0" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="592" y="137" name="consumer ready" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[1`unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+  <place x="530" y="363" name="consumer locked" placeId="2" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="-111" y="309" name="producer locked" placeId="3" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="257" y="447" name="buffer" placeId="4" colourSet="2">
+   <initialMarking><![CDATA[0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="655" y="485" name="consumer done" placeId="5" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="-86" y="564" name="producer done" placeId="6" colourSet="0">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+  <place x="280" y="150" name="mutex" placeId="7" colourSet="0">
+   <initialMarking><![CDATA[unit]]></initialMarking>
+   <currentMarking><![CDATA[1 ` unit]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="395" y="153" name="consumer lock" transitionId="0">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="378" y="322" name="consumer unlock" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="134" y="163" name="producer lock" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="150" y="315" name="producer unlock" transitionId="3">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="378" y="595" name="consume" transitionId="4">
+   <guard><![CDATA[i > 0]]></guard>
+  </transition>
+  <transition x="151" y="591" name="produce" transitionId="5">
+   <guard><![CDATA[i < 3]]></guard>
+  </transition>
+  <transition x="109" y="431" name="producer pass" transitionId="6">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="410" y="442" name="consumer pass" transitionId="7">
+   <guard><![CDATA[]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="1" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="2" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="3" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="4" transitionId="5">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="0" placeId="4" transitionId="5">
+   <expression><![CDATA[i+1]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="4" transitionId="4">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="4" transitionId="4">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="0" placeId="6" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="0" placeId="6" transitionId="6">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="5" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="0" placeId="5" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="12" isPreset="1" placeId="5" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="13" isPreset="1" placeId="6" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="14" isPreset="0" placeId="0" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="15" isPreset="0" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="16" isPreset="1" placeId="2" transitionId="7">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="17" isPreset="1" placeId="3" transitionId="6">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="18" isPreset="1" placeId="4" transitionId="6">
+   <expression><![CDATA[5]]></expression>
+  </arc>
+  <arc arcId="19" isPreset="0" placeId="4" transitionId="6">
+   <expression><![CDATA[5]]></expression>
+  </arc>
+  <arc arcId="20" isPreset="1" placeId="4" transitionId="7">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="21" isPreset="0" placeId="4" transitionId="7">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="22" isPreset="1" placeId="3" transitionId="5">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="23" isPreset="1" placeId="2" transitionId="4">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="24" isPreset="1" placeId="7" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="25" isPreset="1" placeId="7" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="26" isPreset="0" placeId="7" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="27" isPreset="0" placeId="7" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

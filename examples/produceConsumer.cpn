@@ -1,0 +1,70 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Producer and consumer">
+ <declaration><![CDATA[/* This example shows expresivity of CPN in the meaning of paralelism. Due to discreteness of transition firing, no lock is needed, the check buffer state, produce/consume token and increase/decrease buffer operations are atomic.
+
+The buffer is bound to size of 5 tokens with 10 initial "untouchable" tokens, so the "buffer" place will allways contain 10-15 tokens. This can be verified in the state space explorer */
+
+int i;]]></declaration>
+ <places>
+  <place x="292" y="402" name="buffer size" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`0]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 0]]></currentMarking>
+  </place>
+  <place x="282" y="61" name="buffer" placeId="1" colourSet="0">
+   <initialMarking><![CDATA[10`unit]]></initialMarking>
+   <currentMarking><![CDATA[10 ` unit]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="193" y="208" name="producer" transitionId="0">
+   <guard><![CDATA[i<5]]></guard>
+  </transition>
+  <transition x="555" y="205" name="consumer1" transitionId="1">
+   <guard><![CDATA[i>0]]></guard>
+  </transition>
+  <transition x="371" y="206" name="consumer 2" transitionId="2">
+   <guard><![CDATA[i > 0]]></guard>
+  </transition>
+  <transition x="43" y="214" name="producer 2" transitionId="3">
+   <guard><![CDATA[i < 5]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="0" placeId="0" transitionId="0">
+   <expression><![CDATA[i+1]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="0" placeId="0" transitionId="1">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="0" transitionId="1">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="1" placeId="1" transitionId="2">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="7" isPreset="0" placeId="0" transitionId="2">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+  <arc arcId="8" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="9" isPreset="0" placeId="1" transitionId="3">
+   <expression><![CDATA[unit]]></expression>
+  </arc>
+  <arc arcId="10" isPreset="0" placeId="0" transitionId="3">
+   <expression><![CDATA[i + 1]]></expression>
+  </arc>
+  <arc arcId="11" isPreset="1" placeId="0" transitionId="3">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+ </arcs>
+</cpnet>

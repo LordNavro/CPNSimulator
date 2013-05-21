@@ -1,0 +1,53 @@
+<!DOCTYPE ColouredPetriNet>
+<cpnet name="Iterative DNS protocol">
+ <declaration><![CDATA[/* This net represents the flow of the request processing in recursive domain name resolution. The server place represents all servers in the network (not just one). The "Solve next level" represents communication among different servers. The integer variable processed represents the DNS hierarchy level of the request and gets decreased as higher-level domains are resolved. */
+
+int i;]]></declaration>
+ <places>
+  <place x="104" y="251" name="Client's request" placeId="0" colourSet="2">
+   <initialMarking><![CDATA[1`3]]></initialMarking>
+   <currentMarking><![CDATA[1 ` 3]]></currentMarking>
+  </place>
+  <place x="397" y="248" name="(any)       Server" placeId="1" colourSet="2">
+   <initialMarking><![CDATA[]]></initialMarking>
+   <currentMarking><![CDATA[]]></currentMarking>
+  </place>
+ </places>
+ <transitions>
+  <transition x="261" y="111" name="Send request to some server" transitionId="0">
+   <guard><![CDATA[i > 0]]></guard>
+  </transition>
+  <transition x="260" y="377" name="Return resolved" transitionId="1">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="99" y="83" name="Domain IP found" transitionId="2">
+   <guard><![CDATA[]]></guard>
+  </transition>
+  <transition x="571" y="237" name="Solve next level" transitionId="3">
+   <guard><![CDATA[i > 0]]></guard>
+  </transition>
+ </transitions>
+ <arcs>
+  <arc arcId="0" isPreset="1" placeId="0" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="1" isPreset="0" placeId="1" transitionId="0">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="2" isPreset="1" placeId="1" transitionId="1">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="3" isPreset="0" placeId="0" transitionId="1">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="4" isPreset="1" placeId="0" transitionId="2">
+   <expression><![CDATA[0]]></expression>
+  </arc>
+  <arc arcId="5" isPreset="1" placeId="1" transitionId="3">
+   <expression><![CDATA[i]]></expression>
+  </arc>
+  <arc arcId="6" isPreset="0" placeId="1" transitionId="3">
+   <expression><![CDATA[i-1]]></expression>
+  </arc>
+ </arcs>
+</cpnet>
