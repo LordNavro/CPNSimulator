@@ -364,7 +364,11 @@ void MainWindow::refreshActions()
         action->setDisabled(true);
 
     if(tabWidget->currentIndex() == -1)
+    {
+        actionClose->setDisabled(true);
         return;
+    }
+    actionClose->setDisabled(false);
 
     QStackedWidget *sw = currentStackedWidget();
     if(sw->currentIndex() == 0)
