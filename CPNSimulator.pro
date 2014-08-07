@@ -95,4 +95,6 @@ OTHER_FILES += \
     doc/cpnsimulator.qhcp \
     doc/about.txt \
     doc/simulator.html \
-    doc/analysis.html
+    doc/analysis.html \
+    LICENCE.txt \
+    INSTALL.txt

@@ -1,0 +1,7 @@
+Copyright 2013, 2014 Ondrej Navratil.
+This project and all of its contents are distributed under the terms of the GNU General Public License.
+
+To compile this project successfully on your computer, Qt 5.0.2, Flex and Bison are required.
+To compile the project, simply run "qmake && make" in the root directory.
+
+
